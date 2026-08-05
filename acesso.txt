@@ -8,6 +8,8 @@ Endereço da pasta do site: /home/kryontecnologic/conectovolt
 endereço ao GitHub: https://github.com/agenciagoodea/conectovolt.git
 SSH: git@github.com:agenciagoodea/conectovolt.git
 Token de acesso: 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
+login: agenciagoodea
+senha: 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
 
 Configuração de Email:
 Login: contato@conectovolt.com.br

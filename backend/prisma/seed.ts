@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 async function main() {
-  const { PrismaClient } = await import('../src/generated/client.js');
+  const { PrismaClient } = await import('../src/generated/client');
   const provider = process.env.DB_PROVIDER || 'sqlite';
   let prisma;
 
@@ -12,9 +12,11 @@ async function main() {
     const adapter = new PrismaLibSql({
       url: process.env.DATABASE_URL || 'file:./prisma/dev.db',
     });
-    prisma = new PrismaClient({ adapter });
+    prisma = new (PrismaClient as any)({ adapter });
   } else {
-    prisma = new PrismaClient();
+    const { PrismaMariaDb } = await import('@prisma/adapter-mariadb');
+    const adapter = new PrismaMariaDb(process.env.DATABASE_URL!);
+    prisma = new (PrismaClient as any)({ adapter });
   }
 
   console.log(`Seeding database (${provider})...`);
@@ -24,7 +26,7 @@ async function main() {
 
   const superAdmin1 = await prisma.user.upsert({
     where: { email: 'admin@evcharge.com' },
-    update: {},
+    update: { passwordHash },
     create: {
       name: 'Super Admin',
       email: 'admin@evcharge.com',
@@ -37,7 +39,7 @@ async function main() {
 
   const superAdmin2 = await prisma.user.upsert({
     where: { email: 'contato@agenciagoodea.com' },
-    update: {},
+    update: { passwordHash: goodeaPasswordHash },
     create: {
       name: 'Adriano Amorim Souza',
       email: 'contato@agenciagoodea.com',

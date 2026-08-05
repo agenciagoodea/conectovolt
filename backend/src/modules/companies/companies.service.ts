@@ -84,6 +84,26 @@ export class CompaniesService {
   }
 
   async remove(id: string) {
+    // Clean up related records before deleting
+    await this.prisma.user.updateMany({ where: { companyId: id }, data: { companyId: null } });
+    await this.prisma.tariff.deleteMany({ where: { companyId: id } });
+    await this.prisma.commission.deleteMany({ where: { companyId: id } });
+    await this.prisma.platformUsage.deleteMany({ where: { companyId: id } });
+    await this.prisma.subscription.deleteMany({ where: { companyId: id } });
+    await this.prisma.wallet.deleteMany({ where: { companyId: id } });
+
+    const stations = await this.prisma.station.findMany({ where: { companyId: id }, select: { id: true } });
+    for (const s of stations) {
+      const chargers = await this.prisma.charger.findMany({ where: { stationId: s.id }, select: { id: true } });
+      for (const c of chargers) {
+        await this.prisma.connector.deleteMany({ where: { chargerId: c.id } });
+        await this.prisma.chargingSession.updateMany({ where: { chargerId: c.id }, data: { chargerId: 'deleted' } as any });
+        await this.prisma.charger.delete({ where: { id: c.id } });
+      }
+      await this.prisma.chargingSession.updateMany({ where: { stationId: s.id }, data: { stationId: 'deleted' } as any });
+      await this.prisma.station.delete({ where: { id: s.id } });
+    }
+
     return this.prisma.company.delete({ where: { id } });
   }
 }

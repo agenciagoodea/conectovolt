@@ -106,6 +106,9 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
         case 'Heartbeat':
           result = await this.ocppService.handleHeartbeat(ocppId);
           break;
+        case 'Authorize':
+          result = await this.ocppService.handleAuthorize(ocppId, payload);
+          break;
         case 'StatusNotification':
           result = await this.ocppService.handleStatusNotification(ocppId, payload);
           break;
@@ -115,20 +118,35 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
         case 'StopTransaction':
           result = await this.ocppService.handleStopTransaction(ocppId, payload);
           break;
-        case 'Authorize':
-          result = { idTagInfo: { status: 'Accepted' } };
-          break;
         case 'MeterValues':
-          result = {};
+          result = await this.ocppService.handleMeterValues(ocppId, payload);
           break;
         case 'DataTransfer':
-          result = { status: 'Accepted' };
+          result = await this.ocppService.handleDataTransfer(ocppId, payload);
           break;
         case 'DiagnosticsStatusNotification':
+          result = await this.ocppService.handleDiagnosticsStatusNotification(ocppId, payload);
+          break;
         case 'FirmwareStatusNotification':
-          result = {};
+          result = await this.ocppService.handleFirmwareStatusNotification(ocppId, payload);
+          break;
+        case 'TriggerMessage':
+          result = { status: 'Accepted' };
+          break;
+        case 'ClearCache':
+          result = { status: 'Accepted' };
+          break;
+        case 'GetConfiguration':
+          result = await this.ocppService.handleGetConfiguration(ocppId, payload);
+          break;
+        case 'ChangeConfiguration':
+          result = await this.ocppService.handleChangeConfiguration(ocppId, payload);
+          break;
+        case 'GetLocalListVersion':
+          result = { listVersion: 1 };
           break;
         default:
+          this.logger.warn(`Unsupported OCPP action: ${action}`);
           this.sendError(ws, uniqueId, 'NotSupported', `Action ${action} not supported`, {});
           return;
       }
@@ -138,6 +156,44 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
       this.logger.error(`Error processing action ${action}: ${error.message}`);
       this.sendError(ws, uniqueId, 'InternalError', error.message, {});
     }
+  }
+
+  // Remote commands: send message from server to charger
+  sendRemoteStartTransaction(ocppId: string, idTag: string, connectorId?: number) {
+    return this.sendCall(ocppId, 'RemoteStartTransaction', { connectorId, idTag });
+  }
+
+  sendRemoteStopTransaction(ocppId: string, transactionId: number) {
+    return this.sendCall(ocppId, 'RemoteStopTransaction', { transactionId });
+  }
+
+  sendUnlockConnector(ocppId: string, connectorId: number) {
+    return this.sendCall(ocppId, 'UnlockConnector', { connectorId });
+  }
+
+  sendReset(ocppId: string, type: 'Hard' | 'Soft' = 'Soft') {
+    return this.sendCall(ocppId, 'Reset', { type });
+  }
+
+  sendChangeConfiguration(ocppId: string, key: string, value: string) {
+    return this.sendCall(ocppId, 'ChangeConfiguration', { key, value });
+  }
+
+  sendGetConfiguration(ocppId: string, keys?: string[]) {
+    return this.sendCall(ocppId, 'GetConfiguration', keys ? { key: keys } : {});
+  }
+
+  private sendCall(ocppId: string, action: string, payload: any) {
+    const ws = (this.ocppService as any).chargerConnections?.get(ocppId);
+    if (!ws || ws.readyState !== 1) {
+      this.logger.warn(`Cannot send ${action}: charger ${ocppId} not connected`);
+      return false;
+    }
+    const uniqueId = `${action}-${Date.now()}`;
+    const message = [2, uniqueId, action, payload];
+    ws.send(JSON.stringify(message));
+    this.logger.log(`Sent ${action} to ${ocppId}`);
+    return true;
   }
 
   private sendResult(ws: WebSocket, uniqueId: string, payload: any) {
