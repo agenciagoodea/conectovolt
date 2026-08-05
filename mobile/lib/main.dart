@@ -28,16 +28,16 @@ final router = GoRouter(
 );
 
 void main() {
-  runApp(const ProviderScope(child: EVChargeApp()));
+  runApp(const ProviderScope(child: ConectoVoltApp()));
 }
 
-class EVChargeApp extends StatelessWidget {
-  const EVChargeApp({super.key});
+class ConectoVoltApp extends StatelessWidget {
+  const ConectoVoltApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'EV Charge',
+      title: 'ConectoVolt',
       theme: AppTheme.darkTheme,
       routerConfig: router,
       debugShowCheckedModeBanner: false,

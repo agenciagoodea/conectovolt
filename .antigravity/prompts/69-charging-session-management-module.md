@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o gerenciamento completo das sessões de carregamento da EV Charge Platform.
+Você está implementando o gerenciamento completo das sessões de carregamento da ConectoVolt.
 
 Este módulo conecta:
 

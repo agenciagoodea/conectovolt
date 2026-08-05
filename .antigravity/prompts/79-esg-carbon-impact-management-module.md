@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de sustentabilidade e impacto ambiental da EV Charge Platform.
+Você está implementando o módulo de sustentabilidade e impacto ambiental da ConectoVolt.
 
 Este módulo transforma dados de carregamento elétrico em indicadores ESG.
 

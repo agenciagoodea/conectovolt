@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o modelo SaaS da EV Charge Platform.
+Você está implementando o modelo SaaS da ConectoVolt.
 
 Antes de iniciar:
 

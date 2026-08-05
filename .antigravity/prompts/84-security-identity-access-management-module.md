@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a camada de segurança, identidade e controle de acesso da EV Charge Platform.
+Você está implementando a camada de segurança, identidade e controle de acesso da ConectoVolt.
 
 Este módulo protege usuários, operadores, administradores, pagamentos e infraestrutura energética.
 

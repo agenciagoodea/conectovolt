@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está criando a plataforma de dados e analytics operacional da EV Charge Platform.
+Você está criando a plataforma de dados e analytics operacional da ConectoVolt.
 
 O objetivo é transformar dados de operação em informações estratégicas para clientes e gestão interna.
 

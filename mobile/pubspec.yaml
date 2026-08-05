@@ -1,5 +1,5 @@
-name: ev_charge_app
-description: EV Charge Platform - Motorista
+name: conectovolt_app
+description: ConectoVolt - Motorista
 publish_to: 'none'
 version: 1.0.0+1
 

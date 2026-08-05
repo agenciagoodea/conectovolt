@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de suporte e sucesso do cliente da EV Charge Platform.
+Você está implementando o módulo de suporte e sucesso do cliente da ConectoVolt.
 
 Antes de iniciar:
 

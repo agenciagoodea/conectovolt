@@ -308,6 +308,7 @@ export type StationOrderByWithRelationInput = {
   tariff?: Prisma.TariffOrderByWithRelationInput
   chargers?: Prisma.ChargerOrderByRelationAggregateInput
   chargingSessions?: Prisma.ChargingSessionOrderByRelationAggregateInput
+  _relevance?: Prisma.StationOrderByRelevanceInput
 }
 
 export type StationWhereUniqueInput = Prisma.AtLeast<{
@@ -499,6 +500,12 @@ export type StationListRelationFilter = {
 
 export type StationOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type StationOrderByRelevanceInput = {
+  fields: Prisma.StationOrderByRelevanceFieldEnum | Prisma.StationOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type StationCountOrderByAggregateInput = {
@@ -725,6 +732,7 @@ export type StationCreateOrConnectWithoutCompanyInput = {
 
 export type StationCreateManyCompanyInputEnvelope = {
   data: Prisma.StationCreateManyCompanyInput | Prisma.StationCreateManyCompanyInput[]
+  skipDuplicates?: boolean
 }
 
 export type StationUpsertWithWhereUniqueWithoutCompanyInput = {
@@ -887,6 +895,7 @@ export type StationCreateOrConnectWithoutTariffInput = {
 
 export type StationCreateManyTariffInputEnvelope = {
   data: Prisma.StationCreateManyTariffInput | Prisma.StationCreateManyTariffInput[]
+  skipDuplicates?: boolean
 }
 
 export type StationUpsertWithWhereUniqueWithoutTariffInput = {
@@ -1178,41 +1187,7 @@ export type StationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   _count?: boolean | Prisma.StationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["station"]>
 
-export type StationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  companyId?: boolean
-  tariffId?: boolean
-  name?: boolean
-  description?: boolean
-  address?: boolean
-  city?: boolean
-  state?: boolean
-  latitude?: boolean
-  longitude?: boolean
-  status?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
-  tariff?: boolean | Prisma.Station$tariffArgs<ExtArgs>
-}, ExtArgs["result"]["station"]>
 
-export type StationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  companyId?: boolean
-  tariffId?: boolean
-  name?: boolean
-  description?: boolean
-  address?: boolean
-  city?: boolean
-  state?: boolean
-  latitude?: boolean
-  longitude?: boolean
-  status?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
-  tariff?: boolean | Prisma.Station$tariffArgs<ExtArgs>
-}, ExtArgs["result"]["station"]>
 
 export type StationSelectScalar = {
   id?: boolean
@@ -1237,14 +1212,6 @@ export type StationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   chargers?: boolean | Prisma.Station$chargersArgs<ExtArgs>
   chargingSessions?: boolean | Prisma.Station$chargingSessionsArgs<ExtArgs>
   _count?: boolean | Prisma.StationCountOutputTypeDefaultArgs<ExtArgs>
-}
-export type StationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
-  tariff?: boolean | Prisma.Station$tariffArgs<ExtArgs>
-}
-export type StationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
-  tariff?: boolean | Prisma.Station$tariffArgs<ExtArgs>
 }
 
 export type $StationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1387,30 +1354,6 @@ export interface StationDelegate<ExtArgs extends runtime.Types.Extensions.Intern
   createMany<T extends StationCreateManyArgs>(args?: Prisma.SelectSubset<T, StationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many Stations and returns the data saved in the database.
-   * @param {StationCreateManyAndReturnArgs} args - Arguments to create many Stations.
-   * @example
-   * // Create many Stations
-   * const station = await prisma.station.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many Stations and only return the `id`
-   * const stationWithIdOnly = await prisma.station.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends StationCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, StationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a Station.
    * @param {StationDeleteArgs} args - Arguments to delete one Station.
    * @example
@@ -1473,36 +1416,6 @@ export interface StationDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    * 
    */
   updateMany<T extends StationUpdateManyArgs>(args: Prisma.SelectSubset<T, StationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more Stations and returns the data updated in the database.
-   * @param {StationUpdateManyAndReturnArgs} args - Arguments to update many Stations.
-   * @example
-   * // Update many Stations
-   * const station = await prisma.station.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more Stations and only return the `id`
-   * const stationWithIdOnly = await prisma.station.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends StationUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, StationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Station.
@@ -1943,28 +1856,7 @@ export type StationCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data used to create many Stations.
    */
   data: Prisma.StationCreateManyInput | Prisma.StationCreateManyInput[]
-}
-
-/**
- * Station createManyAndReturn
- */
-export type StationCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Station
-   */
-  select?: Prisma.StationSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Station
-   */
-  omit?: Prisma.StationOmit<ExtArgs> | null
-  /**
-   * The data used to create many Stations.
-   */
-  data: Prisma.StationCreateManyInput | Prisma.StationCreateManyInput[]
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.StationIncludeCreateManyAndReturn<ExtArgs> | null
+  skipDuplicates?: boolean
 }
 
 /**
@@ -2009,36 +1901,6 @@ export type StationUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Stations to update.
    */
   limit?: number
-}
-
-/**
- * Station updateManyAndReturn
- */
-export type StationUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Station
-   */
-  select?: Prisma.StationSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Station
-   */
-  omit?: Prisma.StationOmit<ExtArgs> | null
-  /**
-   * The data used to update Stations.
-   */
-  data: Prisma.XOR<Prisma.StationUpdateManyMutationInput, Prisma.StationUncheckedUpdateManyInput>
-  /**
-   * Filter which Stations to update
-   */
-  where?: Prisma.StationWhereInput
-  /**
-   * Limit how many Stations to update.
-   */
-  limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.StationIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

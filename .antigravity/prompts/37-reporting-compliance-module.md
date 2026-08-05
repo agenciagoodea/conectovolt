@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de relatórios, documentos e conformidade da EV Charge Platform.
+Você está implementando o módulo de relatórios, documentos e conformidade da ConectoVolt.
 
 Antes de iniciar:
 

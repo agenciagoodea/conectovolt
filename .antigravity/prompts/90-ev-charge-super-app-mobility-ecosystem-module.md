@@ -1,8 +1,8 @@
-# PROMPT 90 — EV CHARGE SUPER APP & MOBILITY ECOSYSTEM MODULE
+# PROMPT 90 — ConectoVolt SUPER APP & MOBILITY ECOSYSTEM MODULE
 
 ## Contexto
 
-Você está implementando o Super App da EV Charge Platform.
+Você está implementando o Super App da ConectoVolt.
 
 Este módulo unifica todos os serviços de mobilidade elétrica em uma experiência única.
 
@@ -21,7 +21,7 @@ Leia:
 
 # Objetivo
 
-Criar uma aplicação central que reúna todos os serviços da plataforma EV Charge.
+Criar uma aplicação central que reúna todos os serviços da plataforma ConectoVolt.
 
 ---
 
@@ -31,7 +31,7 @@ Usuário
 
 ↓
 
-EV Charge Super App
+ConectoVolt Super App
 
 ↓
 

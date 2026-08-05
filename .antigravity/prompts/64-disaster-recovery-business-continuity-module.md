@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a estratégia de continuidade de negócio e recuperação de desastres da EV Charge Platform.
+Você está implementando a estratégia de continuidade de negócio e recuperação de desastres da ConectoVolt.
 
 Antes de iniciar:
 

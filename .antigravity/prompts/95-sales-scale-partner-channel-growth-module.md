@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está criando a máquina de crescimento comercial da EV Charge Platform.
+Você está criando a máquina de crescimento comercial da ConectoVolt.
 
 O objetivo é escalar aquisição de clientes através de vendas diretas e canais parceiros.
 

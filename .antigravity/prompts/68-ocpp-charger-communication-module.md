@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a camada de comunicação entre a EV Charge Platform e carregadores elétricos físicos utilizando protocolo OCPP.
+Você está implementando a camada de comunicação entre a ConectoVolt e carregadores elétricos físicos utilizando protocolo OCPP.
 
 Antes de iniciar:
 

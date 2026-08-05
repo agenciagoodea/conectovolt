@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está preparando a EV Charge Platform para crescimento empresarial, captação de investimento e expansão de mercado.
+Você está preparando a ConectoVolt para crescimento empresarial, captação de investimento e expansão de mercado.
 
 O objetivo é estruturar a empresa para investidores e crescimento sustentável.
 

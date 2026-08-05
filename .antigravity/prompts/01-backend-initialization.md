@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está trabalhando no projeto EV Charge Platform.
+Você está trabalhando no projeto ConectoVolt.
 
 Antes de executar qualquer alteração, leia:
 

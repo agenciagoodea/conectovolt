@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a camada de inteligência comercial e operações de receita da EV Charge Platform.
+Você está implementando a camada de inteligência comercial e operações de receita da ConectoVolt.
 
 Antes de iniciar:
 

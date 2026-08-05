@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está criando a estratégia comercial inicial da EV Charge Platform.
+Você está criando a estratégia comercial inicial da ConectoVolt.
 
 O objetivo é conquistar os primeiros clientes pagantes e validar o modelo de negócio.
 
@@ -164,7 +164,7 @@ Criar roteiro:
 
 Criar:
 
-EV Charge Pilot Program
+ConectoVolt Pilot Program
 
 
 Definir:

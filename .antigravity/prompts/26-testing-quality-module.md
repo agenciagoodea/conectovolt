@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a estratégia de testes da EV Charge Platform.
+Você está implementando a estratégia de testes da ConectoVolt.
 
 Antes de iniciar:
 

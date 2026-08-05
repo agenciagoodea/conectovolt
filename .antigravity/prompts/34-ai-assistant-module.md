@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de inteligência artificial da EV Charge Platform.
+Você está implementando o módulo de inteligência artificial da ConectoVolt.
 
 Antes de iniciar:
 

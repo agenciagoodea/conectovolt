@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de gestão de tarifas e receita da EV Charge Platform.
+Você está implementando o módulo de gestão de tarifas e receita da ConectoVolt.
 
 Antes de iniciar:
 

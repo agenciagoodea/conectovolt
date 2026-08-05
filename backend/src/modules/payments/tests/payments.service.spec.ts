@@ -2,14 +2,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PaymentsService } from '../payments.service';
 import { MercadoPagoService } from '../mercadopago.service';
 import { CommissionsService } from '../../commissions/commissions.service';
+import { AuditService } from '../../audit/audit.service';
+import { NotificationsService } from '../../notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { mockPrismaService, mockCommissionsService, mockMercadoPagoService } from '../../../../test/helpers/mocks';
 import { PaymentGateway } from '../../../common/enums';
 
+const mockAuditService = { log: jest.fn(), notifications: { paymentApproved: jest.fn().mockReturnValue({}) } };
+const mockNotificationsService = { create: jest.fn() };
+
 describe('PaymentsService', () => {
   let service: PaymentsService;
-  let prisma: typeof mockPrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -18,11 +22,12 @@ describe('PaymentsService', () => {
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: MercadoPagoService, useValue: mockMercadoPagoService },
         { provide: CommissionsService, useValue: mockCommissionsService },
+        { provide: AuditService, useValue: mockAuditService },
+        { provide: NotificationsService, useValue: mockNotificationsService },
       ],
     }).compile();
 
     service = module.get<PaymentsService>(PaymentsService);
-    prisma = mockPrismaService;
     jest.clearAllMocks();
   });
 

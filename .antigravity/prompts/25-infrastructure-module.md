@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está preparando a EV Charge Platform para ambiente de produção.
+Você está preparando a ConectoVolt para ambiente de produção.
 
 Antes de iniciar:
 

@@ -3,13 +3,13 @@ version: '3.8'
 services:
   mysql:
     image: mysql:8.0
-    container_name: evcharge-mysql
+    container_name: conectovolt-mysql
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${DB_NAME:-evcharge}
-      MYSQL_USER: ${DB_USER:-evcharge}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-evcharge}
+      MYSQL_DATABASE: ${DB_NAME:-conectovolt}
+      MYSQL_USER: ${DB_USER:-conectovolt}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-conectovolt}
     ports:
       - "${DB_PORT:-3306}:3306"
     volumes:
@@ -22,7 +22,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: evcharge-redis
+    container_name: conectovolt-redis
     restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:
@@ -37,7 +37,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: evcharge-backend
+    container_name: conectovolt-backend
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -46,9 +46,9 @@ services:
       - ./backend/.env.production
     environment:
       DB_HOST: mysql
-      DB_USER: ${DB_USER:-evcharge}
-      DB_PASSWORD: ${DB_PASSWORD:-evcharge}
-      DB_NAME: ${DB_NAME:-evcharge}
+      DB_USER: ${DB_USER:-conectovolt}
+      DB_PASSWORD: ${DB_PASSWORD:-conectovolt}
+      DB_NAME: ${DB_NAME:-conectovolt}
       DB_PORT: 3306
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
@@ -65,7 +65,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: evcharge-frontend
+    container_name: conectovolt-frontend
     restart: unless-stopped
     ports:
       - "80:3000"
@@ -76,7 +76,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: evcharge-nginx
+    container_name: conectovolt-nginx
     restart: unless-stopped
     ports:
       - "443:443"

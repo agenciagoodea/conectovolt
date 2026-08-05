@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está finalizando a experiência de usuário da EV Charge Platform antes do lançamento comercial.
+Você está finalizando a experiência de usuário da ConectoVolt antes do lançamento comercial.
 
 O objetivo é garantir uma experiência premium, simples e profissional para usuários, operadores e administradores.
 
@@ -39,7 +39,7 @@ Criar melhorias para:
 
 Criar:
 
-EV Charge Design System
+ConectoVolt Design System
 
 
 Definir:

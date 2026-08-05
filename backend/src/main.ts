@@ -30,7 +30,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggingInterceptor());
 
   const config = new DocumentBuilder()
-    .setTitle('EV Charge Platform API')
+    .setTitle('ConectoVolt API')
     .setDescription('API para gestao de postos de recarga de veiculos eletricos')
     .setVersion('1.0')
     .addBearerAuth()

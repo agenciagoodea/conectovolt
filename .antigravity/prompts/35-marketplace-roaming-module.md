@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de marketplace e roaming da EV Charge Platform.
+Você está implementando o módulo de marketplace e roaming da ConectoVolt.
 
 Antes de iniciar:
 
@@ -28,7 +28,7 @@ Vários operadores
 
 ↓
 
-Rede EV Charge
+Rede ConectoVolt
 
 ↓
 

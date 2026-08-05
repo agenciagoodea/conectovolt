@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o painel administrativo para operadores de estações de carregamento da EV Charge Platform.
+Você está implementando o painel administrativo para operadores de estações de carregamento da ConectoVolt.
 
 Este módulo permite que empresas gerenciem sua infraestrutura de recarga.
 

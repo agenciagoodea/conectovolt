@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a camada global de interoperabilidade da EV Charge Platform.
+Você está implementando a camada global de interoperabilidade da ConectoVolt.
 
 Este módulo permite que usuários carreguem veículos em diferentes redes e países usando uma única identidade digital.
 
@@ -30,11 +30,11 @@ Motorista
 
 ↓
 
-Conta EV Charge
+Conta ConectoVolt
 
 ↓
 
-Rede EV Charge
+Rede ConectoVolt
 
 ↓
 

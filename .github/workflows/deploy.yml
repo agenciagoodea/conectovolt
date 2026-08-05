@@ -1,0 +1,43 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'backend/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install & Build
+        working-directory: backend
+        run: |
+          npm ci
+          DB_PROVIDER=mysql npx prisma generate --schema=prisma/schema.mysql.prisma
+          npm run build
+
+      - name: Run Tests
+        working-directory: backend
+        run: npm test
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: pro122.dnspro.com.br
+          username: kryontecnologic
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/kryontecnologic/conectovolt
+            git pull origin master
+            cd backend
+            npm ci --production
+            DB_PROVIDER=mysql npx prisma generate --schema=prisma/schema.mysql.prisma
+            npx prisma migrate deploy --schema=prisma/schema.mysql.prisma
+            pm2 restart conectovolt-api || pm2 start dist/src/main.js --name conectovolt-api

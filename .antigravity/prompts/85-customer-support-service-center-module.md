@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o centro de atendimento e suporte da EV Charge Platform.
+Você está implementando o centro de atendimento e suporte da ConectoVolt.
 
 Este módulo será responsável pelo suporte de usuários, operadores, empresas e parceiros.
 

@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está criando a estratégia comercial e lançamento da EV Charge Platform.
+Você está criando a estratégia comercial e lançamento da ConectoVolt.
 
 Antes de iniciar:
 

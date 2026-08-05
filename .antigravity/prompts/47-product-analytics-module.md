@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de análise de comportamento e inteligência de produto da EV Charge Platform.
+Você está implementando o módulo de análise de comportamento e inteligência de produto da ConectoVolt.
 
 Antes de iniciar:
 

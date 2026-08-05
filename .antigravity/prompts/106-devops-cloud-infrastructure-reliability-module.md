@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está criando a infraestrutura de produção, DevOps e confiabilidade da EV Charge Platform.
+Você está criando a infraestrutura de produção, DevOps e confiabilidade da ConectoVolt.
 
 O objetivo é garantir que a plataforma opere com alta disponibilidade, segurança, performance e capacidade de escala.
 
@@ -21,7 +21,7 @@ Leia:
 
 # Objetivo
 
-Criar uma infraestrutura profissional de produção para suportar crescimento da EV Charge.
+Criar uma infraestrutura profissional de produção para suportar crescimento da ConectoVolt.
 
 ---
 

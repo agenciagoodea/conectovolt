@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o Hub de Ecossistema e Integrações da EV Charge Platform.
+Você está implementando o Hub de Ecossistema e Integrações da ConectoVolt.
 
 Antes de iniciar:
 

@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando uma camada de rastreabilidade digital e certificação energética para a EV Charge Platform.
+Você está implementando uma camada de rastreabilidade digital e certificação energética para a ConectoVolt.
 
 Este módulo cria registros confiáveis para energia, sustentabilidade e ativos digitais.
 

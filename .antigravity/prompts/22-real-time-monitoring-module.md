@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de monitoramento em tempo real da EV Charge Platform.
+Você está implementando o módulo de monitoramento em tempo real da ConectoVolt.
 
 Antes de iniciar:
 

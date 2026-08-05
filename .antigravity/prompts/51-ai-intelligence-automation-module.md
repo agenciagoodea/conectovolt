@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a camada de inteligência artificial e automação da EV Charge Platform.
+Você está implementando a camada de inteligência artificial e automação da ConectoVolt.
 
 Antes de iniciar:
 

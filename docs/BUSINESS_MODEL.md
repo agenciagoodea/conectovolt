@@ -1,6 +1,6 @@
 # BUSINESS MODEL
 
-Projeto: EV Charge Platform
+Projeto: ConectoVolt
 
 Versão: 1.0
 
@@ -8,7 +8,7 @@ Versão: 1.0
 
 # Objetivo
 
-A EV Charge Platform é uma plataforma SaaS que conecta operadores de postos de recarga e motoristas.
+A ConectoVolt é uma plataforma SaaS que conecta operadores de postos de recarga e motoristas.
 
 Além da gestão dos carregadores, a plataforma intermedia os pagamentos e recebe uma comissão sobre cada recarga realizada.
 
@@ -38,7 +38,7 @@ Motorista
 
 ↓
 
-App EV Charge
+App ConectoVolt
 
 ↓
 

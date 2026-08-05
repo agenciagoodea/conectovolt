@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o dashboard administrativo da EV Charge Platform.
+Você está implementando o dashboard administrativo da ConectoVolt.
 
 Antes de iniciar:
 

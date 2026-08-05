@@ -3,6 +3,8 @@ import { PrismaService } from '../../database/prisma.service';
 import { CreatePaymentDto } from './dto/payment.dto';
 import { MercadoPagoService } from './mercadopago.service';
 import { CommissionsService } from '../commissions/commissions.service';
+import { AuditService } from '../audit/audit.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class PaymentsService {
@@ -13,6 +15,10 @@ export class PaymentsService {
     private readonly mercadoPagoService: MercadoPagoService,
     @Inject(forwardRef(() => CommissionsService))
     private readonly commissionsService: CommissionsService,
+    @Inject(forwardRef(() => AuditService))
+    private readonly auditService: AuditService,
+    @Inject(forwardRef(() => NotificationsService))
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(dto: CreatePaymentDto, userEmail?: string) {
@@ -153,6 +159,26 @@ export class PaymentsService {
     } catch (error) {
       this.logger.error(`Failed to calculate commission for payment ${paymentId}: ${error.message}`);
     }
+
+    // Audit log
+    try {
+      await this.auditService.log({
+        userId: payment.session?.userId,
+        action: 'PAYMENT_APPROVED',
+        entity: 'Payment',
+        entityId: paymentId,
+        newValue: { amount: payment.amount, status: 'APPROVED' },
+      });
+    } catch {}
+
+    // Send notification
+    try {
+      const notif = this.auditService.notifications.paymentApproved(
+        payment.session?.userId || '',
+        Number(payment.amount),
+      );
+      await this.notificationsService.create(notif);
+    } catch {}
 
     return updatedPayment;
   }

@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está realizando a auditoria final e preparação para lançamento da EV Charge Platform.
+Você está realizando a auditoria final e preparação para lançamento da ConectoVolt.
 
 Antes de iniciar:
 

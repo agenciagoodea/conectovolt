@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo White Label da EV Charge Platform.
+Você está implementando o módulo White Label da ConectoVolt.
 
 Antes de iniciar:
 
@@ -297,7 +297,7 @@ Agora temos uma plataforma que pode atender:
 
 ```text
 id="s6k2mq"
-EV Charge
+ConectoVolt
     |
     |---- Operadores de postos
     |

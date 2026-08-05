@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está criando a estrutura jurídica, regulatória e de gestão de riscos da EV Charge Platform.
+Você está criando a estrutura jurídica, regulatória e de gestão de riscos da ConectoVolt.
 
 O objetivo é proteger a empresa, clientes, parceiros e usuários durante o crescimento.
 

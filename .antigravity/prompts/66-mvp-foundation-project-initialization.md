@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está iniciando a implementação real da EV Charge Platform após conclusão da arquitetura completa.
+Você está iniciando a implementação real da ConectoVolt após conclusão da arquitetura completa.
 
 Antes de iniciar:
 

@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a plataforma de dados, analytics e inteligência de negócios da EV Charge Platform.
+Você está implementando a plataforma de dados, analytics e inteligência de negócios da ConectoVolt.
 
 Este módulo consolida informações operacionais, financeiras e estratégicas.
 

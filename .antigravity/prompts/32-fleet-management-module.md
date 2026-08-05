@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de gestão de frotas elétricas da EV Charge Platform.
+Você está implementando o módulo de gestão de frotas elétricas da ConectoVolt.
 
 Antes de iniciar:
 

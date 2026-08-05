@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o aplicativo mobile MVP da EV Charge Platform para usuários finais.
+Você está implementando o aplicativo mobile MVP da ConectoVolt para usuários finais.
 
 Este aplicativo será a principal interface entre motoristas e a rede de carregamento.
 

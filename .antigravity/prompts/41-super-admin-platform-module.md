@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo central de administração da EV Charge Platform.
+Você está implementando o módulo central de administração da ConectoVolt.
 
 Antes de iniciar:
 

@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de postos de recarga da EV Charge Platform.
+Você está implementando o módulo de postos de recarga da ConectoVolt.
 
 Antes de iniciar:
 

@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está criando a camada completa de segurança cibernética da EV Charge Platform.
+Você está criando a camada completa de segurança cibernética da ConectoVolt.
 
 O objetivo é proteger usuários, empresas, operadores, dados, pagamentos, APIs e infraestrutura contra ameaças digitais.
 

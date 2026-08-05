@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a infraestrutura de produção da EV Charge Platform.
+Você está implementando a infraestrutura de produção da ConectoVolt.
 
 Antes de iniciar:
 

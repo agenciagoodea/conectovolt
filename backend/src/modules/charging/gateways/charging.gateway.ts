@@ -43,7 +43,7 @@ export class ChargingGateway implements OnGatewayConnection, OnGatewayDisconnect
         return;
       }
 
-      const secret = process.env.JWT_SECRET || 'evcharge-jwt-secret-change-in-production';
+      const secret = process.env.JWT_SECRET || 'conectovolt-jwt-secret-change-in-production';
       const payload = jwt.verify(token, secret) as { sub: string; email: string };
 
       (client as any).userId = payload.sub;

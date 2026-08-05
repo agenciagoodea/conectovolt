@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o sistema de gerenciamento de veículos elétricos da EV Charge Platform.
+Você está implementando o sistema de gerenciamento de veículos elétricos da ConectoVolt.
 
 Este módulo conecta usuários aos seus veículos e prepara integrações futuras com fabricantes automotivos.
 

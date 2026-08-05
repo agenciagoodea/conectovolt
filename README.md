@@ -1,4 +1,4 @@
-# EV CHARGE PLATFORM
+# ConectoVolt
 
 ## SaaS de Gestão e Pagamento para Postos de Recarga de Veículos Elétricos
 
@@ -10,7 +10,7 @@ Status: Em desenvolvimento
 
 # Visão Geral
 
-A EV Charge Platform é uma plataforma SaaS criada para conectar operadores de postos de recarga elétrica e motoristas de veículos elétricos.
+A ConectoVolt é uma plataforma SaaS criada para conectar operadores de postos de recarga elétrica e motoristas de veículos elétricos.
 
 O sistema permite:
 

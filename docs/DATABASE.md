@@ -1,4 +1,4 @@
-# DATABASE - EV CHARGE PLATFORM
+# DATABASE - ConectoVolt
 
 Versão: MVP 1.0
 
@@ -12,7 +12,7 @@ Prisma
 
 # Objetivo
 
-Definir a estrutura inicial do banco de dados da plataforma EV Charge.
+Definir a estrutura inicial do banco de dados da plataforma ConectoVolt.
 
 O banco deve suportar:
 

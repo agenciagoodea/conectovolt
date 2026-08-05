@@ -77,3 +77,28 @@ export type Wallet = Prisma.WalletModel
  * 
  */
 export type Transaction = Prisma.TransactionModel
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model Plan
+ * 
+ */
+export type Plan = Prisma.PlanModel
+/**
+ * Model Subscription
+ * 
+ */
+export type Subscription = Prisma.SubscriptionModel
+/**
+ * Model PlatformUsage
+ * 
+ */
+export type PlatformUsage = Prisma.PlatformUsageModel

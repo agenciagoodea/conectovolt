@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de autenticação da EV Charge Platform.
+Você está implementando o módulo de autenticação da ConectoVolt.
 
 Antes de executar:
 

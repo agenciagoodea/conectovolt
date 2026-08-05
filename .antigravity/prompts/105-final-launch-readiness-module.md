@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está realizando a validação final da EV Charge Platform antes do lançamento comercial.
+Você está realizando a validação final da ConectoVolt antes do lançamento comercial.
 
 O objetivo é garantir que produto, tecnologia, operação e negócio estejam preparados para clientes reais.
 
@@ -22,7 +22,7 @@ Leia:
 
 # Objetivo
 
-Criar um checklist completo de lançamento comercial da EV Charge Platform.
+Criar um checklist completo de lançamento comercial da ConectoVolt.
 
 ---
 

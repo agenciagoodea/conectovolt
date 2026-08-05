@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de integração com fabricantes automotivos da EV Charge Platform.
+Você está implementando o módulo de integração com fabricantes automotivos da ConectoVolt.
 
 Antes de iniciar:
 
@@ -32,7 +32,7 @@ API automotiva
 
 ↓
 
-EV Charge Platform
+ConectoVolt
 
 ↓
 

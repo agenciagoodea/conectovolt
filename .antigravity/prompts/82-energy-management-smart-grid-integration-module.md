@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o sistema avançado de gerenciamento energético da EV Charge Platform.
+Você está implementando o sistema avançado de gerenciamento energético da ConectoVolt.
 
 Este módulo conecta a plataforma ao ecossistema energético, permitindo otimização de consumo e integração futura com smart grids.
 

@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o frontend web da EV Charge Platform.
+Você está implementando o frontend web da ConectoVolt.
 
 Antes de iniciar:
 

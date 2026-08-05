@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a integração OCPP da EV Charge Platform.
+Você está implementando a integração OCPP da ConectoVolt.
 
 Antes de iniciar:
 

@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de contratos empresariais, SLA e governança da EV Charge Platform.
+Você está implementando o módulo de contratos empresariais, SLA e governança da ConectoVolt.
 
 Antes de iniciar:
 

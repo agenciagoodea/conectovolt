@@ -228,6 +228,7 @@ export type ConnectorOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   charger?: Prisma.ChargerOrderByWithRelationInput
   chargingSessions?: Prisma.ChargingSessionOrderByRelationAggregateInput
+  _relevance?: Prisma.ConnectorOrderByRelevanceInput
 }
 
 export type ConnectorWhereUniqueInput = Prisma.AtLeast<{
@@ -334,6 +335,12 @@ export type ConnectorListRelationFilter = {
 
 export type ConnectorOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type ConnectorOrderByRelevanceInput = {
+  fields: Prisma.ConnectorOrderByRelevanceFieldEnum | Prisma.ConnectorOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type ConnectorCountOrderByAggregateInput = {
@@ -454,6 +461,7 @@ export type ConnectorCreateOrConnectWithoutChargerInput = {
 
 export type ConnectorCreateManyChargerInputEnvelope = {
   data: Prisma.ConnectorCreateManyChargerInput | Prisma.ConnectorCreateManyChargerInput[]
+  skipDuplicates?: boolean
 }
 
 export type ConnectorUpsertWithWhereUniqueWithoutChargerInput = {
@@ -603,23 +611,7 @@ export type ConnectorSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   _count?: boolean | Prisma.ConnectorCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["connector"]>
 
-export type ConnectorSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  chargerId?: boolean
-  type?: boolean
-  powerKw?: boolean
-  status?: boolean
-  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["connector"]>
 
-export type ConnectorSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  chargerId?: boolean
-  type?: boolean
-  powerKw?: boolean
-  status?: boolean
-  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["connector"]>
 
 export type ConnectorSelectScalar = {
   id?: boolean
@@ -634,12 +626,6 @@ export type ConnectorInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
   chargingSessions?: boolean | Prisma.Connector$chargingSessionsArgs<ExtArgs>
   _count?: boolean | Prisma.ConnectorCountOutputTypeDefaultArgs<ExtArgs>
-}
-export type ConnectorIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
-}
-export type ConnectorIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
 }
 
 export type $ConnectorPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -772,30 +758,6 @@ export interface ConnectorDelegate<ExtArgs extends runtime.Types.Extensions.Inte
   createMany<T extends ConnectorCreateManyArgs>(args?: Prisma.SelectSubset<T, ConnectorCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many Connectors and returns the data saved in the database.
-   * @param {ConnectorCreateManyAndReturnArgs} args - Arguments to create many Connectors.
-   * @example
-   * // Create many Connectors
-   * const connector = await prisma.connector.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many Connectors and only return the `id`
-   * const connectorWithIdOnly = await prisma.connector.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends ConnectorCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, ConnectorCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConnectorPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a Connector.
    * @param {ConnectorDeleteArgs} args - Arguments to delete one Connector.
    * @example
@@ -858,36 +820,6 @@ export interface ConnectorDelegate<ExtArgs extends runtime.Types.Extensions.Inte
    * 
    */
   updateMany<T extends ConnectorUpdateManyArgs>(args: Prisma.SelectSubset<T, ConnectorUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more Connectors and returns the data updated in the database.
-   * @param {ConnectorUpdateManyAndReturnArgs} args - Arguments to update many Connectors.
-   * @example
-   * // Update many Connectors
-   * const connector = await prisma.connector.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more Connectors and only return the `id`
-   * const connectorWithIdOnly = await prisma.connector.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends ConnectorUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, ConnectorUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConnectorPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Connector.
@@ -1318,28 +1250,7 @@ export type ConnectorCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * The data used to create many Connectors.
    */
   data: Prisma.ConnectorCreateManyInput | Prisma.ConnectorCreateManyInput[]
-}
-
-/**
- * Connector createManyAndReturn
- */
-export type ConnectorCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Connector
-   */
-  select?: Prisma.ConnectorSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Connector
-   */
-  omit?: Prisma.ConnectorOmit<ExtArgs> | null
-  /**
-   * The data used to create many Connectors.
-   */
-  data: Prisma.ConnectorCreateManyInput | Prisma.ConnectorCreateManyInput[]
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ConnectorIncludeCreateManyAndReturn<ExtArgs> | null
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1384,36 +1295,6 @@ export type ConnectorUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Limit how many Connectors to update.
    */
   limit?: number
-}
-
-/**
- * Connector updateManyAndReturn
- */
-export type ConnectorUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Connector
-   */
-  select?: Prisma.ConnectorSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Connector
-   */
-  omit?: Prisma.ConnectorOmit<ExtArgs> | null
-  /**
-   * The data used to update Connectors.
-   */
-  data: Prisma.XOR<Prisma.ConnectorUpdateManyMutationInput, Prisma.ConnectorUncheckedUpdateManyInput>
-  /**
-   * Filter which Connectors to update
-   */
-  where?: Prisma.ConnectorWhereInput
-  /**
-   * Limit how many Connectors to update.
-   */
-  limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ConnectorIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a camada de segurança avançada da EV Charge Platform.
+Você está implementando a camada de segurança avançada da ConectoVolt.
 
 Antes de iniciar:
 

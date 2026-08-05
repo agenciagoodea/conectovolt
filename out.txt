@@ -103,5 +103,5 @@
 [32m[Nest] 36592  - [39m04/08/2026, 14:44:52 [32m    LOG[39m [38;5;3m[OcppServer] [39m[32mOCPP WebSocket server listening on port 3001[39m
 [32m[Nest] 36592  - [39m04/08/2026, 14:44:52 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +4ms[39m
 [32m[Nest] 36592  - [39m04/08/2026, 14:44:52 [32m    LOG[39m [38;5;3m[Bootstrap] [39m[32mApplication running on port 3000[39m
-[32m[Nest] 36592  - [39m04/08/2026, 14:45:00 [32m    LOG[39m [38;5;3m[AuthService] [39m[32mUser logged in: admin@evcharge.com[39m
+[32m[Nest] 36592  - [39m04/08/2026, 14:45:00 [32m    LOG[39m [38;5;3m[AuthService] [39m[32mUser logged in: admin@conectovolt.com.br[39m
 [32m[Nest] 36592  - [39m04/08/2026, 14:45:00 [32m    LOG[39m [38;5;3m[HTTP] [39m[32mPOST /api/v1/auth/login 200 - 480ms[39m

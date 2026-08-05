@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a plataforma de APIs públicas e ecossistema de desenvolvedores da EV Charge Platform.
+Você está implementando a plataforma de APIs públicas e ecossistema de desenvolvedores da ConectoVolt.
 
 Antes de iniciar:
 
@@ -32,7 +32,7 @@ API Gateway
 
 ↓
 
-Serviços EV Charge
+Serviços ConectoVolt
 
 ↓
 

@@ -1,6 +1,6 @@
 # API DOCUMENTATION
 
-Projeto: EV Charge Platform
+Projeto: ConectoVolt
 
 Versão: MVP 1.0
 

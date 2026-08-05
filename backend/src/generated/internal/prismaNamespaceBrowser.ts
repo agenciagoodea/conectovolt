@@ -62,7 +62,12 @@ export const ModelName = {
   Payment: 'Payment',
   Commission: 'Commission',
   Wallet: 'Wallet',
-  Transaction: 'Transaction'
+  Transaction: 'Transaction',
+  Notification: 'Notification',
+  AuditLog: 'AuditLog',
+  Plan: 'Plan',
+  Subscription: 'Subscription',
+  PlatformUsage: 'PlatformUsage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -72,6 +77,9 @@ export type ModelName = (typeof ModelName)[keyof typeof ModelName]
  */
 
 export const TransactionIsolationLevel = runtime.makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 } as const)
 
@@ -249,6 +257,80 @@ export const TransactionScalarFieldEnum = {
 export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
 
 
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  isRead: 'isRead',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
+export const AuditLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  action: 'action',
+  entity: 'entity',
+  entityId: 'entityId',
+  oldValue: 'oldValue',
+  newValue: 'newValue',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const PlanScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  price: 'price',
+  maxStations: 'maxStations',
+  maxChargers: 'maxChargers',
+  maxUsers: 'maxUsers',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
+
+
+export const SubscriptionScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  planId: 'planId',
+  status: 'status',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
+
+
+export const PlatformUsageScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  month: 'month',
+  stations: 'stations',
+  chargers: 'chargers',
+  sessions: 'sessions',
+  revenue: 'revenue',
+  commission: 'commission',
+  createdAt: 'createdAt'
+} as const
+
+export type PlatformUsageScalarFieldEnum = (typeof PlatformUsageScalarFieldEnum)[keyof typeof PlatformUsageScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -263,4 +345,193 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const UserOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  passwordHash: 'passwordHash',
+  role: 'role',
+  companyId: 'companyId'
+} as const
+
+export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
+
+
+export const CompanyOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  document: 'document',
+  email: 'email',
+  phone: 'phone',
+  status: 'status'
+} as const
+
+export type CompanyOrderByRelevanceFieldEnum = (typeof CompanyOrderByRelevanceFieldEnum)[keyof typeof CompanyOrderByRelevanceFieldEnum]
+
+
+export const StationOrderByRelevanceFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  tariffId: 'tariffId',
+  name: 'name',
+  description: 'description',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  status: 'status'
+} as const
+
+export type StationOrderByRelevanceFieldEnum = (typeof StationOrderByRelevanceFieldEnum)[keyof typeof StationOrderByRelevanceFieldEnum]
+
+
+export const ChargerOrderByRelevanceFieldEnum = {
+  id: 'id',
+  stationId: 'stationId',
+  serialNumber: 'serialNumber',
+  model: 'model',
+  manufacturer: 'manufacturer',
+  ocppId: 'ocppId',
+  status: 'status'
+} as const
+
+export type ChargerOrderByRelevanceFieldEnum = (typeof ChargerOrderByRelevanceFieldEnum)[keyof typeof ChargerOrderByRelevanceFieldEnum]
+
+
+export const ConnectorOrderByRelevanceFieldEnum = {
+  id: 'id',
+  chargerId: 'chargerId',
+  type: 'type',
+  status: 'status'
+} as const
+
+export type ConnectorOrderByRelevanceFieldEnum = (typeof ConnectorOrderByRelevanceFieldEnum)[keyof typeof ConnectorOrderByRelevanceFieldEnum]
+
+
+export const VehicleOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  brand: 'brand',
+  model: 'model',
+  plate: 'plate'
+} as const
+
+export type VehicleOrderByRelevanceFieldEnum = (typeof VehicleOrderByRelevanceFieldEnum)[keyof typeof VehicleOrderByRelevanceFieldEnum]
+
+
+export const TariffOrderByRelevanceFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  name: 'name'
+} as const
+
+export type TariffOrderByRelevanceFieldEnum = (typeof TariffOrderByRelevanceFieldEnum)[keyof typeof TariffOrderByRelevanceFieldEnum]
+
+
+export const ChargingSessionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  vehicleId: 'vehicleId',
+  stationId: 'stationId',
+  chargerId: 'chargerId',
+  connectorId: 'connectorId',
+  tariffId: 'tariffId',
+  status: 'status'
+} as const
+
+export type ChargingSessionOrderByRelevanceFieldEnum = (typeof ChargingSessionOrderByRelevanceFieldEnum)[keyof typeof ChargingSessionOrderByRelevanceFieldEnum]
+
+
+export const PaymentOrderByRelevanceFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  gateway: 'gateway',
+  externalId: 'externalId',
+  status: 'status'
+} as const
+
+export type PaymentOrderByRelevanceFieldEnum = (typeof PaymentOrderByRelevanceFieldEnum)[keyof typeof PaymentOrderByRelevanceFieldEnum]
+
+
+export const CommissionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  companyId: 'companyId'
+} as const
+
+export type CommissionOrderByRelevanceFieldEnum = (typeof CommissionOrderByRelevanceFieldEnum)[keyof typeof CommissionOrderByRelevanceFieldEnum]
+
+
+export const WalletOrderByRelevanceFieldEnum = {
+  id: 'id',
+  companyId: 'companyId'
+} as const
+
+export type WalletOrderByRelevanceFieldEnum = (typeof WalletOrderByRelevanceFieldEnum)[keyof typeof WalletOrderByRelevanceFieldEnum]
+
+
+export const TransactionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  walletId: 'walletId',
+  type: 'type',
+  description: 'description'
+} as const
+
+export type TransactionOrderByRelevanceFieldEnum = (typeof TransactionOrderByRelevanceFieldEnum)[keyof typeof TransactionOrderByRelevanceFieldEnum]
+
+
+export const NotificationOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  title: 'title',
+  message: 'message'
+} as const
+
+export type NotificationOrderByRelevanceFieldEnum = (typeof NotificationOrderByRelevanceFieldEnum)[keyof typeof NotificationOrderByRelevanceFieldEnum]
+
+
+export const AuditLogOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  action: 'action',
+  entity: 'entity',
+  entityId: 'entityId',
+  oldValue: 'oldValue',
+  newValue: 'newValue',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent'
+} as const
+
+export type AuditLogOrderByRelevanceFieldEnum = (typeof AuditLogOrderByRelevanceFieldEnum)[keyof typeof AuditLogOrderByRelevanceFieldEnum]
+
+
+export const PlanOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description'
+} as const
+
+export type PlanOrderByRelevanceFieldEnum = (typeof PlanOrderByRelevanceFieldEnum)[keyof typeof PlanOrderByRelevanceFieldEnum]
+
+
+export const SubscriptionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  planId: 'planId',
+  status: 'status'
+} as const
+
+export type SubscriptionOrderByRelevanceFieldEnum = (typeof SubscriptionOrderByRelevanceFieldEnum)[keyof typeof SubscriptionOrderByRelevanceFieldEnum]
+
+
+export const PlatformUsageOrderByRelevanceFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  month: 'month'
+} as const
+
+export type PlatformUsageOrderByRelevanceFieldEnum = (typeof PlatformUsageOrderByRelevanceFieldEnum)[keyof typeof PlatformUsageOrderByRelevanceFieldEnum]
 

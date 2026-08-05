@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de gerenciamento inteligente de energia da EV Charge Platform.
+Você está implementando o módulo de gerenciamento inteligente de energia da ConectoVolt.
 
 Antes de iniciar:
 

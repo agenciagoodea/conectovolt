@@ -19,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET') || 'evcharge-jwt-secret-change-in-production',
+      secretOrKey: configService.get<string>('JWT_SECRET') || 'conectovolt-jwt-secret-change-in-production',
     });
   }
 

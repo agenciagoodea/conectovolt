@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está preparando o aplicativo mobile da EV Charge Platform para produção.
+Você está preparando o aplicativo mobile da ConectoVolt para produção.
 
 Antes de iniciar:
 

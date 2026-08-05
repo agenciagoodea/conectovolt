@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o processo de implantação e ativação de clientes da EV Charge Platform.
+Você está implementando o processo de implantação e ativação de clientes da ConectoVolt.
 
 Antes de iniciar:
 

@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está preparando a EV Charge Platform para lançamento comercial.
+Você está preparando a ConectoVolt para lançamento comercial.
 
 O objetivo agora é transformar o sistema desenvolvido em uma aplicação estável, segura e pronta para receber clientes reais.
 
@@ -20,7 +20,7 @@ Leia:
 
 # Objetivo
 
-Preparar a EV Charge Platform para ambiente de produção e primeiros clientes pagantes.
+Preparar a ConectoVolt para ambiente de produção e primeiros clientes pagantes.
 
 ---
 

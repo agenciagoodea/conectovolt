@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a camada de inteligência artificial e análise preditiva da EV Charge Platform.
+Você está implementando a camada de inteligência artificial e análise preditiva da ConectoVolt.
 
 Este módulo utiliza dados operacionais para criar previsões, recomendações e automações inteligentes.
 

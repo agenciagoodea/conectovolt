@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a camada de Business Intelligence, Data Warehouse e Analytics corporativo da EV Charge Platform.
+Você está implementando a camada de Business Intelligence, Data Warehouse e Analytics corporativo da ConectoVolt.
 
 Antes de iniciar:
 

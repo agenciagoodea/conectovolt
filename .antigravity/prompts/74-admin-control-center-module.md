@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o painel administrativo central da EV Charge Platform.
+Você está implementando o painel administrativo central da ConectoVolt.
 
 Este módulo será utilizado pela equipe interna da plataforma para controlar toda a operação.
 

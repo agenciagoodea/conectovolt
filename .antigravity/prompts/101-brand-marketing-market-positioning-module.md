@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está criando a estratégia de marca, marketing e posicionamento da EV Charge Platform.
+Você está criando a estratégia de marca, marketing e posicionamento da ConectoVolt.
 
 O objetivo é transformar a empresa em uma referência no mercado de mobilidade elétrica.
 
@@ -49,7 +49,7 @@ Market Positioning
 
 Definir:
 
-A EV Charge é:
+A ConectoVolt é:
 
 - Plataforma de mobilidade elétrica.
 - Infraestrutura inteligente.

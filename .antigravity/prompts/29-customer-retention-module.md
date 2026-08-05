@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando melhorias de experiência e retenção no aplicativo motorista da EV Charge Platform.
+Você está implementando melhorias de experiência e retenção no aplicativo motorista da ConectoVolt.
 
 Antes de iniciar:
 

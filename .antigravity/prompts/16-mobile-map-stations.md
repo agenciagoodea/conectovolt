@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de mapa e localização do aplicativo motorista da EV Charge Platform.
+Você está implementando o módulo de mapa e localização do aplicativo motorista da ConectoVolt.
 
 Antes de iniciar:
 

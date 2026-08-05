@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de gestão de redes, franquias e grupos empresariais da EV Charge Platform.
+Você está implementando o módulo de gestão de redes, franquias e grupos empresariais da ConectoVolt.
 
 Antes de iniciar:
 

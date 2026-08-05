@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está preparando a EV Charge Platform para operar em múltiplos países.
+Você está preparando a ConectoVolt para operar em múltiplos países.
 
 Antes de iniciar:
 

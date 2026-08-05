@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o núcleo operacional inicial da EV Charge Platform.
+Você está implementando o núcleo operacional inicial da ConectoVolt.
 
 Este é o primeiro módulo conectado diretamente à infraestrutura de carregamento.
 

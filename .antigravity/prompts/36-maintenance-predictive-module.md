@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de manutenção e gestão preditiva da EV Charge Platform.
+Você está implementando o módulo de manutenção e gestão preditiva da ConectoVolt.
 
 Antes de iniciar:
 

@@ -13,7 +13,7 @@ import { JwtStrategy } from './jwt.strategy';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET') || 'evcharge-jwt-secret-change-in-production',
+        secret: configService.get<string>('JWT_SECRET') || 'conectovolt-jwt-secret-change-in-production',
         signOptions: {
           expiresIn: '15m' as const,
         },

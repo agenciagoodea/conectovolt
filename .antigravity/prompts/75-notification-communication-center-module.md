@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o centro de comunicação e notificações da EV Charge Platform.
+Você está implementando o centro de comunicação e notificações da ConectoVolt.
 
 Este módulo será responsável por enviar mensagens automáticas para usuários, operadores e administradores.
 

@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a arquitetura global e multi-tenant da EV Charge Platform.
+Você está implementando a arquitetura global e multi-tenant da ConectoVolt.
 
 Este módulo permite que a plataforma opere em diferentes países, regiões e organizações mantendo isolamento e escalabilidade.
 

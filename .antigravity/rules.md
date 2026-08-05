@@ -1,4 +1,4 @@
-# EV CHARGE PLATFORM - ENGINEERING RULES
+# ConectoVolt - ENGINEERING RULES
 
 Versão: MVP 1.0
 
@@ -6,7 +6,7 @@ Versão: MVP 1.0
 
 # OBJETIVO
 
-Este documento define as regras obrigatórias para desenvolvimento utilizando IA no projeto EV Charge Platform.
+Este documento define as regras obrigatórias para desenvolvimento utilizando IA no projeto ConectoVolt.
 
 Toda implementação deve respeitar estas regras.
 

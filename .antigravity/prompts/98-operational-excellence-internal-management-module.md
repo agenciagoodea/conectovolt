@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está criando a estrutura operacional interna da EV Charge Platform para suportar crescimento sustentável.
+Você está criando a estrutura operacional interna da ConectoVolt para suportar crescimento sustentável.
 
 O objetivo é organizar processos, equipes e indicadores internos.
 

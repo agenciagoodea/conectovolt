@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está criando a estrutura comercial enterprise da EV Charge Platform.
+Você está criando a estrutura comercial enterprise da ConectoVolt.
 
 O objetivo é conquistar grandes clientes corporativos, redes de infraestrutura, governos e parceiros estratégicos.
 

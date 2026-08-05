@@ -55,4 +55,9 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
   get wallet() { return this._client?.wallet; }
   get transaction() { return this._client?.transaction; }
   get tariff() { return this._client?.tariff; }
+  get notification() { return this._client?.notification; }
+  get auditLog() { return this._client?.auditLog; }
+  get plan() { return this._client?.plan; }
+  get subscription() { return this._client?.subscription; }
+  get platformUsage() { return this._client?.platformUsage; }
 }

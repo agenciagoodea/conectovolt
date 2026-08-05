@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de notificações da EV Charge Platform.
+Você está implementando o módulo de notificações da ConectoVolt.
 
 Antes de iniciar:
 

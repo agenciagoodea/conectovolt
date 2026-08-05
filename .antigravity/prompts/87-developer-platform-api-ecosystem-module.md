@@ -2,9 +2,9 @@
 
 ## Contexto
 
-Você está implementando a plataforma de desenvolvedores e ecossistema de APIs da EV Charge Platform.
+Você está implementando a plataforma de desenvolvedores e ecossistema de APIs da ConectoVolt.
 
-Este módulo permite que empresas externas integrem seus sistemas com a infraestrutura EV Charge.
+Este módulo permite que empresas externas integrem seus sistemas com a infraestrutura ConectoVolt.
 
 Antes de iniciar:
 
@@ -34,7 +34,7 @@ API Gateway
 
 ↓
 
-Serviços EV Charge
+Serviços ConectoVolt
 
 ↓
 

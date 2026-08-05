@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o ecossistema de parceiros e marketplace da EV Charge Platform.
+Você está implementando o ecossistema de parceiros e marketplace da ConectoVolt.
 
 Este módulo permite conectar empresas externas aos usuários da plataforma.
 

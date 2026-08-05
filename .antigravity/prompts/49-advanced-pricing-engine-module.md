@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o motor avançado de preços da EV Charge Platform.
+Você está implementando o motor avançado de preços da ConectoVolt.
 
 Antes de iniciar:
 

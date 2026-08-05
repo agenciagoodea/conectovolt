@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está criando a camada de integração entre a EV Charge Platform e os equipamentos físicos de carregamento elétrico.
+Você está criando a camada de integração entre a ConectoVolt e os equipamentos físicos de carregamento elétrico.
 
 O objetivo é permitir comunicação, monitoramento, controle remoto e gestão inteligente de carregadores de diferentes fabricantes.
 
@@ -36,7 +36,7 @@ Comunicação
 
 ↓
 
-Plataforma EV Charge
+Plataforma ConectoVolt
 
 ↓
 

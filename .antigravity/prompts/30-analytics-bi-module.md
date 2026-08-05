@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de inteligência de negócios da EV Charge Platform.
+Você está implementando o módulo de inteligência de negócios da ConectoVolt.
 
 Antes de iniciar:
 

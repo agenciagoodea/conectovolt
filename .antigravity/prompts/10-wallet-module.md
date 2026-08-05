@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo financeiro de carteira da EV Charge Platform.
+Você está implementando o módulo financeiro de carteira da ConectoVolt.
 
 Antes de iniciar:
 

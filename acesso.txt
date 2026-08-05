@@ -9,6 +9,17 @@ endereço ao GitHub: https://github.com/agenciagoodea/conectovolt.git
 SSH: git@github.com:agenciagoodea/conectovolt.git
 Token de acesso: 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
 
+Configuração de Email:
+Login: contato@conectovolt.com.br
+Senha: contato@2026#
+Secure SSL/TLS Settings (Recomendado)
+Nome de usuário:	contato@conectovolt.com.br
+Senha:	Use a senha da conta de email.
+Servidor de entrada:	pro122.dnspro.com.br
+IMAP Port: 993 POP3 Port: 995
+Servidor de saída:	pro122.dnspro.com.br
+SMTP Port: 465
+IMAP, POP3 e SMTP require authentication.
 
 acesso ao banco de dados:
 Login: kryontecnologic_root

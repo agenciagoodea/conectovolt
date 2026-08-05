@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a arquitetura White Label e Multi-Tenant da EV Charge Platform.
+Você está implementando a arquitetura White Label e Multi-Tenant da ConectoVolt.
 
 Antes de iniciar:
 

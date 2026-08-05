@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de auditoria e segurança da EV Charge Platform.
+Você está implementando o módulo de auditoria e segurança da ConectoVolt.
 
 Antes de iniciar:
 

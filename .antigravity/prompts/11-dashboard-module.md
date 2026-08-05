@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de dashboards da EV Charge Platform.
+Você está implementando o módulo de dashboards da ConectoVolt.
 
 Antes de iniciar:
 

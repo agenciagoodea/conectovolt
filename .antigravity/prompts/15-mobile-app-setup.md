@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o aplicativo mobile da EV Charge Platform.
+Você está implementando o aplicativo mobile da ConectoVolt.
 
 Antes de iniciar:
 

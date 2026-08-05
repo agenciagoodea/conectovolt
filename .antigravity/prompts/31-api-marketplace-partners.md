@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando a camada de integrações externas da EV Charge Platform.
+Você está implementando a camada de integrações externas da ConectoVolt.
 
 Antes de iniciar:
 
@@ -40,7 +40,7 @@ Dados autorizados
 
 ↓
 
-Serviços EV Charge
+Serviços ConectoVolt
 
 ---
 

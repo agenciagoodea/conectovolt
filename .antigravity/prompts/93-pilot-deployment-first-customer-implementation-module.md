@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o primeiro piloto comercial da EV Charge Platform.
+Você está implementando o primeiro piloto comercial da ConectoVolt.
 
 O objetivo é colocar a plataforma em operação com clientes reais, validar processos e gerar o primeiro caso de sucesso.
 

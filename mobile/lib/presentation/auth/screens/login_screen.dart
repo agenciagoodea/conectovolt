@@ -55,7 +55,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: const Icon(Icons.electric_bolt, color: AppTheme.primary, size: 36),
                 ),
                 const SizedBox(height: 20),
-                const Text('EV Charge', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+                const Text('ConectoVolt', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
                 const SizedBox(height: 4),
                 Text(_isRegister ? 'Crie sua conta' : 'Encontre postos proximos', style: const TextStyle(color: AppTheme.textSecondary)),
                 const SizedBox(height: 32),

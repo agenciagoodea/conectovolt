@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de carregadores da EV Charge Platform.
+Você está implementando o módulo de carregadores da ConectoVolt.
 
 Antes de iniciar:
 

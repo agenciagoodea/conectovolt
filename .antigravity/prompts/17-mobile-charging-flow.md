@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o fluxo de recarga no aplicativo motorista da EV Charge Platform.
+Você está implementando o fluxo de recarga no aplicativo motorista da ConectoVolt.
 
 Antes de iniciar:
 

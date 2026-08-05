@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está criando a estrutura financeira completa da EV Charge Platform.
+Você está criando a estrutura financeira completa da ConectoVolt.
 
 O objetivo é controlar receitas, custos, faturamento, margens e previsões financeiras.
 
@@ -20,7 +20,7 @@ Leia:
 
 # Objetivo
 
-Criar um sistema financeiro empresarial para acompanhar a saúde econômica da EV Charge.
+Criar um sistema financeiro empresarial para acompanhar a saúde econômica da ConectoVolt.
 
 ---
 

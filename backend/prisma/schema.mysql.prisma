@@ -21,6 +21,7 @@ model User {
   company          Company?          @relation(fields: [companyId], references: [id])
   vehicles         Vehicle[]
   chargingSessions ChargingSession[]
+  notifications    Notification[]
 
   @@map("users")
 }
@@ -35,11 +36,12 @@ model Company {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  users       User[]
-  stations    Station[]
-  tariffs     Tariff[]
-  wallet      Wallet?
-  commissions Commission[]
+  users        User[]
+  stations     Station[]
+  tariffs      Tariff[]
+  wallet       Wallet?
+  commissions  Commission[]
+  subscription Subscription?
 
   @@map("companies")
 }
@@ -49,7 +51,7 @@ model Station {
   companyId   String   @map("company_id")
   tariffId    String?  @map("tariff_id")
   name        String
-  description String?
+  description String?  @db.Text
   address     String
   city        String
   state       String
@@ -59,10 +61,10 @@ model Station {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  company           Company            @relation(fields: [companyId], references: [id])
-  tariff            Tariff?            @relation(fields: [tariffId], references: [id])
-  chargers          Charger[]
-  chargingSessions  ChargingSession[]
+  company          Company           @relation(fields: [companyId], references: [id])
+  tariff           Tariff?           @relation(fields: [tariffId], references: [id])
+  chargers         Charger[]
+  chargingSessions ChargingSession[]
 
   @@index([companyId])
   @@index([tariffId])
@@ -81,9 +83,9 @@ model Charger {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  station           Station            @relation(fields: [stationId], references: [id])
-  connectors        Connector[]
-  chargingSessions  ChargingSession[]
+  station          Station           @relation(fields: [stationId], references: [id])
+  connectors       Connector[]
+  chargingSessions ChargingSession[]
 
   @@index([stationId])
   @@index([ocppId])
@@ -97,8 +99,8 @@ model Connector {
   powerKw   Float  @default(0) @map("power_kw")
   status    String @default("AVAILABLE")
 
-  charger           Charger            @relation(fields: [chargerId], references: [id])
-  chargingSessions  ChargingSession[]
+  charger          Charger           @relation(fields: [chargerId], references: [id])
+  chargingSessions ChargingSession[]
 
   @@index([chargerId])
   @@map("connectors")
@@ -112,8 +114,8 @@ model Vehicle {
   plate           String
   batteryCapacity Float  @default(0) @map("battery_capacity")
 
-  user              User               @relation(fields: [userId], references: [id])
-  chargingSessions  ChargingSession[]
+  user             User              @relation(fields: [userId], references: [id])
+  chargingSessions ChargingSession[]
 
   @@index([userId])
   @@map("vehicles")
@@ -128,29 +130,29 @@ model Tariff {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  company           Company             @relation(fields: [companyId], references: [id])
-  stations          Station[]
-  chargingSessions  ChargingSession[]
+  company          Company           @relation(fields: [companyId], references: [id])
+  stations         Station[]
+  chargingSessions ChargingSession[]
 
   @@index([companyId])
   @@map("tariffs")
 }
 
 model ChargingSession {
-  id           String    @id @default(cuid())
-  userId       String    @map("user_id")
-  vehicleId    String?   @map("vehicle_id")
-  stationId    String    @map("station_id")
-  chargerId    String    @map("charger_id")
-  connectorId  String?   @map("connector_id")
-  tariffId     String?   @map("tariff_id")
-  startTime    DateTime  @default(now()) @map("start_time")
-  endTime      DateTime? @map("end_time")
-  energyKwh    Float     @default(0) @map("energy_kwh")
-  amount       Float     @default(0)
-  status       String    @default("PENDING")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
+  id          String    @id @default(cuid())
+  userId      String    @map("user_id")
+  vehicleId   String?   @map("vehicle_id")
+  stationId   String    @map("station_id")
+  chargerId   String    @map("charger_id")
+  connectorId String?   @map("connector_id")
+  tariffId    String?   @map("tariff_id")
+  startTime   DateTime  @default(now()) @map("start_time")
+  endTime     DateTime? @map("end_time")
+  energyKwh   Float     @default(0) @map("energy_kwh")
+  amount      Float     @default(0)
+  status      String    @default("PENDING")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
   user      User       @relation(fields: [userId], references: [id])
   vehicle   Vehicle?   @relation(fields: [vehicleId], references: [id])
@@ -185,13 +187,13 @@ model Payment {
 }
 
 model Commission {
-  id              String   @id @default(cuid())
-  paymentId       String   @unique @map("payment_id")
-  companyId       String   @map("company_id")
-  percentage      Float    @default(5.00)
-  platformAmount  Float    @default(0) @map("platform_amount")
-  operatorAmount  Float    @default(0) @map("operator_amount")
-  createdAt       DateTime @default(now()) @map("created_at")
+  id             String   @id @default(cuid())
+  paymentId      String   @unique @map("payment_id")
+  companyId      String   @map("company_id")
+  percentage     Float    @default(5.00)
+  platformAmount Float    @default(0) @map("platform_amount")
+  operatorAmount Float    @default(0) @map("operator_amount")
+  createdAt      DateTime @default(now()) @map("created_at")
 
   payment Payment @relation(fields: [paymentId], references: [id])
   company Company @relation(fields: [companyId], references: [id])
@@ -225,4 +227,89 @@ model Transaction {
 
   @@index([walletId])
   @@map("transactions")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  type      String
+  title     String
+  message   String
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?  @map("user_id")
+  action    String
+  entity    String
+  entityId  String?  @map("entity_id")
+  oldValue  String?  @db.Text @map("old_value")
+  newValue  String?  @db.Text @map("new_value")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model Plan {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  price       Float    @default(0)
+  maxStations Int      @default(1) @map("max_stations")
+  maxChargers Int      @default(1) @map("max_chargers")
+  maxUsers    Int      @default(1) @map("max_users")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  subscriptions Subscription[]
+  @@map("plans")
+}
+
+model Subscription {
+  id        String    @id @default(cuid())
+  companyId String    @unique @map("company_id")
+  planId    String    @map("plan_id")
+  status    String    @default("ACTIVE")
+  startDate DateTime  @default(now()) @map("start_date")
+  endDate   DateTime? @map("end_date")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id])
+  plan    Plan    @relation(fields: [planId], references: [id])
+
+  @@index([companyId])
+  @@index([planId])
+  @@map("subscriptions")
+}
+
+model PlatformUsage {
+  id         String   @id @default(cuid())
+  companyId  String   @map("company_id")
+  month      String
+  stations   Int      @default(0)
+  chargers   Int      @default(0)
+  sessions   Int      @default(0)
+  revenue    Float    @default(0)
+  commission Float    @default(0)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@unique([companyId, month])
+  @@index([companyId])
+  @@map("platform_usage")
 }

@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o núcleo financeiro da EV Charge Platform.
+Você está implementando o núcleo financeiro da ConectoVolt.
 
 Este módulo será responsável por pagamentos, faturamento, cobranças e repasses financeiros.
 

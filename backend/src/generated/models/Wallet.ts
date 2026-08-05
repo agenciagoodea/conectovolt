@@ -228,6 +228,7 @@ export type WalletOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   company?: Prisma.CompanyOrderByWithRelationInput
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
+  _relevance?: Prisma.WalletOrderByRelevanceInput
 }
 
 export type WalletWhereUniqueInput = Prisma.AtLeast<{
@@ -329,6 +330,12 @@ export type WalletUncheckedUpdateManyInput = {
 export type WalletNullableScalarRelationFilter = {
   is?: Prisma.WalletWhereInput | null
   isNot?: Prisma.WalletWhereInput | null
+}
+
+export type WalletOrderByRelevanceInput = {
+  fields: Prisma.WalletOrderByRelevanceFieldEnum | Prisma.WalletOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type WalletCountOrderByAggregateInput = {
@@ -552,23 +559,7 @@ export type WalletSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   _count?: boolean | Prisma.WalletCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["wallet"]>
 
-export type WalletSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  companyId?: boolean
-  balance?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["wallet"]>
 
-export type WalletSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  companyId?: boolean
-  balance?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["wallet"]>
 
 export type WalletSelectScalar = {
   id?: boolean
@@ -583,12 +574,6 @@ export type WalletInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   transactions?: boolean | Prisma.Wallet$transactionsArgs<ExtArgs>
   _count?: boolean | Prisma.WalletCountOutputTypeDefaultArgs<ExtArgs>
-}
-export type WalletIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
-}
-export type WalletIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
 }
 
 export type $WalletPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -721,30 +706,6 @@ export interface WalletDelegate<ExtArgs extends runtime.Types.Extensions.Interna
   createMany<T extends WalletCreateManyArgs>(args?: Prisma.SelectSubset<T, WalletCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many Wallets and returns the data saved in the database.
-   * @param {WalletCreateManyAndReturnArgs} args - Arguments to create many Wallets.
-   * @example
-   * // Create many Wallets
-   * const wallet = await prisma.wallet.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many Wallets and only return the `id`
-   * const walletWithIdOnly = await prisma.wallet.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends WalletCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, WalletCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WalletPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a Wallet.
    * @param {WalletDeleteArgs} args - Arguments to delete one Wallet.
    * @example
@@ -807,36 +768,6 @@ export interface WalletDelegate<ExtArgs extends runtime.Types.Extensions.Interna
    * 
    */
   updateMany<T extends WalletUpdateManyArgs>(args: Prisma.SelectSubset<T, WalletUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more Wallets and returns the data updated in the database.
-   * @param {WalletUpdateManyAndReturnArgs} args - Arguments to update many Wallets.
-   * @example
-   * // Update many Wallets
-   * const wallet = await prisma.wallet.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more Wallets and only return the `id`
-   * const walletWithIdOnly = await prisma.wallet.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends WalletUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, WalletUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WalletPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Wallet.
@@ -1267,28 +1198,7 @@ export type WalletCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * The data used to create many Wallets.
    */
   data: Prisma.WalletCreateManyInput | Prisma.WalletCreateManyInput[]
-}
-
-/**
- * Wallet createManyAndReturn
- */
-export type WalletCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Wallet
-   */
-  select?: Prisma.WalletSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Wallet
-   */
-  omit?: Prisma.WalletOmit<ExtArgs> | null
-  /**
-   * The data used to create many Wallets.
-   */
-  data: Prisma.WalletCreateManyInput | Prisma.WalletCreateManyInput[]
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.WalletIncludeCreateManyAndReturn<ExtArgs> | null
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1333,36 +1243,6 @@ export type WalletUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Limit how many Wallets to update.
    */
   limit?: number
-}
-
-/**
- * Wallet updateManyAndReturn
- */
-export type WalletUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Wallet
-   */
-  select?: Prisma.WalletSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Wallet
-   */
-  omit?: Prisma.WalletOmit<ExtArgs> | null
-  /**
-   * The data used to update Wallets.
-   */
-  data: Prisma.XOR<Prisma.WalletUpdateManyMutationInput, Prisma.WalletUncheckedUpdateManyInput>
-  /**
-   * Filter which Wallets to update
-   */
-  where?: Prisma.WalletWhereInput
-  /**
-   * Limit how many Wallets to update.
-   */
-  limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.WalletIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

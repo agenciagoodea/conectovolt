@@ -1,8 +1,8 @@
 #!/bin/bash
-# EV Charge Platform - Deploy Script
+# ConectoVolt - Deploy Script
 set -e
 
-echo "=== EV Charge Platform Deploy ==="
+echo "=== ConectoVolt Deploy ==="
 
 # Load env
 if [ -f .env.production ]; then
@@ -21,7 +21,7 @@ if [ ! -f ssl/cert.pem ]; then
   mkdir -p ssl
   openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -keyout ssl/key.pem -out ssl/cert.pem \
-    -subj "/C=BR/ST=SP/L=Sao Paulo/O=EVCharge/CN=localhost"
+    -subj "/C=BR/ST=SP/L=Sao Paulo/O=ConectoVolt/CN=localhost"
 fi
 
 # Pull latest changes

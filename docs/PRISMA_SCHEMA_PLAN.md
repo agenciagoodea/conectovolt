@@ -1,6 +1,6 @@
 # PRISMA SCHEMA PLAN
 
-Projeto: EV Charge Platform
+Projeto: ConectoVolt
 
 Versão: MVP 1.0
 

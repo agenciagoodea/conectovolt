@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de sustentabilidade, métricas ESG e créditos ambientais da EV Charge Platform.
+Você está implementando o módulo de sustentabilidade, métricas ESG e créditos ambientais da ConectoVolt.
 
 Antes de iniciar:
 

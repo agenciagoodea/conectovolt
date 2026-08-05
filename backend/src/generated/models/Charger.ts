@@ -275,6 +275,7 @@ export type ChargerOrderByWithRelationInput = {
   station?: Prisma.StationOrderByWithRelationInput
   connectors?: Prisma.ConnectorOrderByRelationAggregateInput
   chargingSessions?: Prisma.ChargingSessionOrderByRelationAggregateInput
+  _relevance?: Prisma.ChargerOrderByRelevanceInput
 }
 
 export type ChargerWhereUniqueInput = Prisma.AtLeast<{
@@ -438,6 +439,12 @@ export type ChargerOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type ChargerOrderByRelevanceInput = {
+  fields: Prisma.ChargerOrderByRelevanceFieldEnum | Prisma.ChargerOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
+}
+
 export type ChargerCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   stationId?: Prisma.SortOrder
@@ -595,6 +602,7 @@ export type ChargerCreateOrConnectWithoutStationInput = {
 
 export type ChargerCreateManyStationInputEnvelope = {
   data: Prisma.ChargerCreateManyStationInput | Prisma.ChargerCreateManyStationInput[]
+  skipDuplicates?: boolean
 }
 
 export type ChargerUpsertWithWhereUniqueWithoutStationInput = {
@@ -882,33 +890,7 @@ export type ChargerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   _count?: boolean | Prisma.ChargerCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["charger"]>
 
-export type ChargerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  stationId?: boolean
-  serialNumber?: boolean
-  model?: boolean
-  manufacturer?: boolean
-  powerKw?: boolean
-  ocppId?: boolean
-  status?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["charger"]>
 
-export type ChargerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  stationId?: boolean
-  serialNumber?: boolean
-  model?: boolean
-  manufacturer?: boolean
-  powerKw?: boolean
-  ocppId?: boolean
-  status?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["charger"]>
 
 export type ChargerSelectScalar = {
   id?: boolean
@@ -929,12 +911,6 @@ export type ChargerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   connectors?: boolean | Prisma.Charger$connectorsArgs<ExtArgs>
   chargingSessions?: boolean | Prisma.Charger$chargingSessionsArgs<ExtArgs>
   _count?: boolean | Prisma.ChargerCountOutputTypeDefaultArgs<ExtArgs>
-}
-export type ChargerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
-}
-export type ChargerIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
 }
 
 export type $ChargerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1073,30 +1049,6 @@ export interface ChargerDelegate<ExtArgs extends runtime.Types.Extensions.Intern
   createMany<T extends ChargerCreateManyArgs>(args?: Prisma.SelectSubset<T, ChargerCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many Chargers and returns the data saved in the database.
-   * @param {ChargerCreateManyAndReturnArgs} args - Arguments to create many Chargers.
-   * @example
-   * // Create many Chargers
-   * const charger = await prisma.charger.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many Chargers and only return the `id`
-   * const chargerWithIdOnly = await prisma.charger.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends ChargerCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, ChargerCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChargerPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a Charger.
    * @param {ChargerDeleteArgs} args - Arguments to delete one Charger.
    * @example
@@ -1159,36 +1111,6 @@ export interface ChargerDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    * 
    */
   updateMany<T extends ChargerUpdateManyArgs>(args: Prisma.SelectSubset<T, ChargerUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more Chargers and returns the data updated in the database.
-   * @param {ChargerUpdateManyAndReturnArgs} args - Arguments to update many Chargers.
-   * @example
-   * // Update many Chargers
-   * const charger = await prisma.charger.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more Chargers and only return the `id`
-   * const chargerWithIdOnly = await prisma.charger.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends ChargerUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, ChargerUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChargerPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Charger.
@@ -1625,28 +1547,7 @@ export type ChargerCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data used to create many Chargers.
    */
   data: Prisma.ChargerCreateManyInput | Prisma.ChargerCreateManyInput[]
-}
-
-/**
- * Charger createManyAndReturn
- */
-export type ChargerCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Charger
-   */
-  select?: Prisma.ChargerSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Charger
-   */
-  omit?: Prisma.ChargerOmit<ExtArgs> | null
-  /**
-   * The data used to create many Chargers.
-   */
-  data: Prisma.ChargerCreateManyInput | Prisma.ChargerCreateManyInput[]
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ChargerIncludeCreateManyAndReturn<ExtArgs> | null
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1691,36 +1592,6 @@ export type ChargerUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Chargers to update.
    */
   limit?: number
-}
-
-/**
- * Charger updateManyAndReturn
- */
-export type ChargerUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Charger
-   */
-  select?: Prisma.ChargerSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Charger
-   */
-  omit?: Prisma.ChargerOmit<ExtArgs> | null
-  /**
-   * The data used to update Chargers.
-   */
-  data: Prisma.XOR<Prisma.ChargerUpdateManyMutationInput, Prisma.ChargerUncheckedUpdateManyInput>
-  /**
-   * Filter which Chargers to update
-   */
-  where?: Prisma.ChargerWhereInput
-  /**
-   * Limit how many Chargers to update.
-   */
-  limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ChargerIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

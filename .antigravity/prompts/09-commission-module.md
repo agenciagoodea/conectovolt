@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de comissão da EV Charge Platform.
+Você está implementando o módulo de comissão da ConectoVolt.
 
 Antes de iniciar:
 

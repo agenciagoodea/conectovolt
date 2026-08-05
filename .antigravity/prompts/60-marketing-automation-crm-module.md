@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o sistema de CRM, marketing automation e relacionamento da EV Charge Platform.
+Você está implementando o sistema de CRM, marketing automation e relacionamento da ConectoVolt.
 
 Antes de iniciar:
 

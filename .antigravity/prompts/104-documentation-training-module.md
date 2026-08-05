@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está criando a documentação oficial e estrutura de treinamento da EV Charge Platform.
+Você está criando a documentação oficial e estrutura de treinamento da ConectoVolt.
 
 O objetivo é preparar a plataforma para vendas, implantação de clientes e operação em escala.
 

@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o motor de preços e tarifas da EV Charge Platform.
+Você está implementando o motor de preços e tarifas da ConectoVolt.
 
 Este módulo será responsável por calcular o valor final das sessões de carregamento.
 

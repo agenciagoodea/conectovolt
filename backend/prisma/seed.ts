@@ -1,19 +1,28 @@
 const bcrypt = require('bcrypt');
+const dotenv = require('dotenv');
+dotenv.config();
 
 async function main() {
-  const [{ PrismaClient }, { PrismaLibSql }] = await Promise.all([
-    import('../src/generated/client.js'),
-    import('@prisma/adapter-libsql'),
-  ]);
+  const { PrismaClient } = await import('../src/generated/client.js');
+  const provider = process.env.DB_PROVIDER || 'sqlite';
+  let prisma;
 
-  const adapter = new PrismaLibSql({ url: 'file:./prisma/dev.db' });
-  const prisma = new PrismaClient({ adapter });
+  if (provider === 'sqlite') {
+    const { PrismaLibSql } = await import('@prisma/adapter-libsql');
+    const adapter = new PrismaLibSql({
+      url: process.env.DATABASE_URL || 'file:./prisma/dev.db',
+    });
+    prisma = new PrismaClient({ adapter });
+  } else {
+    prisma = new PrismaClient();
+  }
 
-  console.log('Seeding database (SQLite)...');
+  console.log(`Seeding database (${provider})...`);
 
   const passwordHash = await bcrypt.hash('Admin@123', 12);
+  const goodeaPasswordHash = await bcrypt.hash('04039866@AAs', 12);
 
-  const superAdmin = await prisma.user.upsert({
+  const superAdmin1 = await prisma.user.upsert({
     where: { email: 'admin@evcharge.com' },
     update: {},
     create: {
@@ -24,8 +33,20 @@ async function main() {
       role: 'SUPER_ADMIN',
     },
   });
+  console.log(`Super Admin 1: ${superAdmin1.email}`);
 
-  console.log(`Super Admin: ${superAdmin.email}`);
+  const superAdmin2 = await prisma.user.upsert({
+    where: { email: 'contato@agenciagoodea.com' },
+    update: {},
+    create: {
+      name: 'Adriano Amorim Souza',
+      email: 'contato@agenciagoodea.com',
+      phone: '+5511988888888',
+      passwordHash: goodeaPasswordHash,
+      role: 'SUPER_ADMIN',
+    },
+  });
+  console.log(`Super Admin 2: ${superAdmin2.email}`);
 
   const testCompany = await prisma.company.upsert({
     where: { document: '00000000000000' },
@@ -38,7 +59,6 @@ async function main() {
       status: 'ACTIVE',
     },
   });
-
   console.log(`Company: ${testCompany.name}`);
 
   await prisma.wallet.upsert({
@@ -46,7 +66,6 @@ async function main() {
     update: {},
     create: { companyId: testCompany.id, balance: 0 },
   });
-
   console.log('Wallet created');
 
   await prisma.tariff.upsert({
@@ -60,9 +79,9 @@ async function main() {
       isActive: true,
     },
   });
-
   console.log('Tariff: R$ 2.50/kWh');
-  console.log('Seed completed!');
+
+  console.log('Seed completed successfully!');
   await prisma.$disconnect();
 }
 

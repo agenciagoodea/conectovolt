@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o sistema de localização, busca e otimização de rotas da EV Charge Platform.
+Você está implementando o sistema de localização, busca e otimização de rotas da ConectoVolt.
 
 Este módulo conecta motoristas às estações de carregamento disponíveis.
 

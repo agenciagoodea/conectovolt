@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o sistema de fidelidade, recompensas e engajamento da EV Charge Platform.
+Você está implementando o sistema de fidelidade, recompensas e engajamento da ConectoVolt.
 
 Antes de iniciar:
 

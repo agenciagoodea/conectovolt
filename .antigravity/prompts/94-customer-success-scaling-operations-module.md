@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está criando a operação de Customer Success da EV Charge Platform.
+Você está criando a operação de Customer Success da ConectoVolt.
 
 O objetivo é garantir satisfação dos clientes, retenção, expansão e crescimento sustentável.
 
@@ -225,7 +225,7 @@ Coletar:
 
 Criar:
 
-EV Charge Community
+ConectoVolt Community
 
 
 Permitir:

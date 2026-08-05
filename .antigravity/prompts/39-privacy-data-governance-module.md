@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Você está implementando o módulo de privacidade, proteção de dados e governança da EV Charge Platform.
+Você está implementando o módulo de privacidade, proteção de dados e governança da ConectoVolt.
 
 Antes de iniciar:
 
