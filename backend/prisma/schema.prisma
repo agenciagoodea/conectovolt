@@ -1,0 +1,228 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  phone        String?
+  passwordHash String   @map("password_hash")
+  role         String   @default("CUSTOMER")
+  companyId    String?  @map("company_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  company          Company?          @relation(fields: [companyId], references: [id])
+  vehicles         Vehicle[]
+  chargingSessions ChargingSession[]
+
+  @@map("users")
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  document  String   @unique
+  email     String?
+  phone     String?
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users       User[]
+  stations    Station[]
+  tariffs     Tariff[]
+  wallet      Wallet?
+  commissions Commission[]
+
+  @@map("companies")
+}
+
+model Station {
+  id          String   @id @default(cuid())
+  companyId   String   @map("company_id")
+  tariffId    String?  @map("tariff_id")
+  name        String
+  description String?
+  address     String
+  city        String
+  state       String
+  latitude    Float    @default(0)
+  longitude   Float    @default(0)
+  status      String   @default("ACTIVE")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  company           Company            @relation(fields: [companyId], references: [id])
+  tariff            Tariff?            @relation(fields: [tariffId], references: [id])
+  chargers          Charger[]
+  chargingSessions  ChargingSession[]
+
+  @@index([companyId])
+  @@index([tariffId])
+  @@map("stations")
+}
+
+model Charger {
+  id           String   @id @default(cuid())
+  stationId    String   @map("station_id")
+  serialNumber String   @unique @map("serial_number")
+  model        String?
+  manufacturer String?
+  powerKw      Float    @default(0) @map("power_kw")
+  ocppId       String?  @unique @map("ocpp_id")
+  status       String   @default("OFFLINE")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  station           Station            @relation(fields: [stationId], references: [id])
+  connectors        Connector[]
+  chargingSessions  ChargingSession[]
+
+  @@index([stationId])
+  @@index([ocppId])
+  @@map("chargers")
+}
+
+model Connector {
+  id        String @id @default(cuid())
+  chargerId String @map("charger_id")
+  type      String
+  powerKw   Float  @default(0) @map("power_kw")
+  status    String @default("AVAILABLE")
+
+  charger           Charger            @relation(fields: [chargerId], references: [id])
+  chargingSessions  ChargingSession[]
+
+  @@index([chargerId])
+  @@map("connectors")
+}
+
+model Vehicle {
+  id              String @id @default(cuid())
+  userId          String @map("user_id")
+  brand           String
+  model           String
+  plate           String
+  batteryCapacity Float  @default(0) @map("battery_capacity")
+
+  user              User               @relation(fields: [userId], references: [id])
+  chargingSessions  ChargingSession[]
+
+  @@index([userId])
+  @@map("vehicles")
+}
+
+model Tariff {
+  id          String   @id @default(cuid())
+  companyId   String   @map("company_id")
+  name        String
+  pricePerKwh Float    @map("price_per_kwh")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  company           Company             @relation(fields: [companyId], references: [id])
+  stations          Station[]
+  chargingSessions  ChargingSession[]
+
+  @@index([companyId])
+  @@map("tariffs")
+}
+
+model ChargingSession {
+  id           String    @id @default(cuid())
+  userId       String    @map("user_id")
+  vehicleId    String?   @map("vehicle_id")
+  stationId    String    @map("station_id")
+  chargerId    String    @map("charger_id")
+  connectorId  String?   @map("connector_id")
+  tariffId     String?   @map("tariff_id")
+  startTime    DateTime  @default(now()) @map("start_time")
+  endTime      DateTime? @map("end_time")
+  energyKwh    Float     @default(0) @map("energy_kwh")
+  amount       Float     @default(0)
+  status       String    @default("PENDING")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  user      User       @relation(fields: [userId], references: [id])
+  vehicle   Vehicle?   @relation(fields: [vehicleId], references: [id])
+  station   Station    @relation(fields: [stationId], references: [id])
+  charger   Charger    @relation(fields: [chargerId], references: [id])
+  connector Connector? @relation(fields: [connectorId], references: [id])
+  tariff    Tariff?    @relation(fields: [tariffId], references: [id])
+  payment   Payment?
+
+  @@index([userId])
+  @@index([stationId])
+  @@index([status])
+  @@map("charging_sessions")
+}
+
+model Payment {
+  id         String    @id @default(cuid())
+  sessionId  String    @unique @map("session_id")
+  gateway    String
+  externalId String?   @unique @map("external_id")
+  amount     Float     @default(0)
+  status     String    @default("PENDING")
+  paidAt     DateTime? @map("paid_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  session    ChargingSession @relation(fields: [sessionId], references: [id])
+  commission Commission?
+
+  @@index([externalId])
+  @@map("payments")
+}
+
+model Commission {
+  id              String   @id @default(cuid())
+  paymentId       String   @unique @map("payment_id")
+  companyId       String   @map("company_id")
+  percentage      Float    @default(5.00)
+  platformAmount  Float    @default(0) @map("platform_amount")
+  operatorAmount  Float    @default(0) @map("operator_amount")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  payment Payment @relation(fields: [paymentId], references: [id])
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+  @@map("commissions")
+}
+
+model Wallet {
+  id        String   @id @default(cuid())
+  companyId String   @unique @map("company_id")
+  balance   Float    @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  company      Company       @relation(fields: [companyId], references: [id])
+  transactions Transaction[]
+
+  @@map("wallets")
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  walletId    String   @map("wallet_id")
+  type        String
+  amount      Float    @default(0)
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  wallet Wallet @relation(fields: [walletId], references: [id])
+
+  @@index([walletId])
+  @@map("transactions")
+}

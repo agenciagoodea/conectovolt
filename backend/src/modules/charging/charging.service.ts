@@ -1,0 +1,303 @@
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  ConflictException,
+  Logger,
+} from '@nestjs/common';
+import { PrismaService } from '../../database/prisma.service';
+import { StartChargingDto, UpdateEnergyDto, StopChargingDto } from './dto/charging.dto';
+import { ChargingGateway } from './gateways/charging.gateway';
+
+@Injectable()
+export class ChargingService {
+  private readonly logger = new Logger(ChargingService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly chargingGateway: ChargingGateway,
+  ) {}
+
+  async start(userId: string, dto: StartChargingDto) {
+    const charger = await this.prisma.charger.findUnique({
+      where: { id: dto.chargerId },
+      include: { station: { include: { tariff: true } } },
+    });
+
+    if (!charger) {
+      throw new NotFoundException('Charger not found');
+    }
+
+    if (charger.status !== 'ONLINE') {
+      throw new BadRequestException('Charger is not online');
+    }
+
+    const activeSession = await this.prisma.chargingSession.findFirst({
+      where: { userId, status: 'ACTIVE' },
+    });
+
+    if (activeSession) {
+      throw new ConflictException('User already has an active charging session');
+    }
+
+    const activeChargerSession = await this.prisma.chargingSession.findFirst({
+      where: { chargerId: dto.chargerId, status: 'ACTIVE' },
+    });
+
+    if (activeChargerSession) {
+      throw new ConflictException('Charger is already in use');
+    }
+
+    if (dto.connectorId) {
+      const connector = await this.prisma.connector.findUnique({
+        where: { id: dto.connectorId },
+      });
+
+      if (!connector || connector.chargerId !== dto.chargerId) {
+        throw new BadRequestException('Connector does not belong to this charger');
+      }
+
+      if (connector.status !== 'AVAILABLE') {
+        throw new BadRequestException('Connector is not available');
+      }
+
+      await this.prisma.connector.update({
+        where: { id: dto.connectorId },
+        data: { status: 'CHARGING' },
+      });
+    }
+
+    const session = await this.prisma.chargingSession.create({
+      data: {
+        userId,
+        chargerId: dto.chargerId,
+        connectorId: dto.connectorId,
+        vehicleId: dto.vehicleId,
+        stationId: dto.stationId || charger.stationId,
+        tariffId: charger.station.tariff?.id,
+        status: 'ACTIVE',
+        startTime: new Date(),
+        energyKwh: 0,
+        amount: 0,
+      },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        station: { select: { id: true, name: true } },
+        charger: { select: { id: true, serialNumber: true, model: true } },
+      },
+    });
+
+    this.chargingGateway.emitSessionStarted({
+      sessionId: session.id,
+      userId: session.userId,
+      chargerId: session.chargerId,
+      status: session.status,
+      energyKwh: Number(session.energyKwh),
+      startTime: session.startTime,
+    });
+
+    this.logger.log(`Charging started: session=${session.id}, user=${userId}, charger=${dto.chargerId}`);
+
+    return session;
+  }
+
+  async updateEnergy(sessionId: string, dto: UpdateEnergyDto) {
+    const session = await this.prisma.chargingSession.findUnique({
+      where: { id: sessionId },
+    });
+
+    if (!session) {
+      throw new NotFoundException('Session not found');
+    }
+
+    if (session.status !== 'ACTIVE') {
+      throw new BadRequestException('Session is not active');
+    }
+
+    const updated = await this.prisma.chargingSession.update({
+      where: { id: sessionId },
+      data: { energyKwh: dto.energyKwh },
+    });
+
+    const tariff = await this.getSessionTariff(sessionId);
+    const currentAmount = dto.energyKwh * Number(tariff.pricePerKwh);
+
+    this.chargingGateway.emitSessionUpdate({
+      sessionId: updated.id,
+      userId: updated.userId,
+      chargerId: updated.chargerId,
+      status: updated.status,
+      energyKwh: Number(updated.energyKwh),
+      amount: currentAmount,
+      startTime: updated.startTime,
+    });
+
+    return {
+      ...updated,
+      currentAmount,
+      tariff: tariff.name,
+      pricePerKwh: Number(tariff.pricePerKwh),
+    };
+  }
+
+  async stop(sessionId: string, dto: StopChargingDto) {
+    const session = await this.prisma.chargingSession.findUnique({
+      where: { id: sessionId },
+    });
+
+    if (!session) {
+      throw new NotFoundException('Session not found');
+    }
+
+    if (session.status !== 'ACTIVE') {
+      throw new BadRequestException('Session is not active');
+    }
+
+    const tariff = await this.getSessionTariff(sessionId);
+    const amount = dto.energyKwh * Number(tariff.pricePerKwh);
+
+    const updated = await this.prisma.chargingSession.update({
+      where: { id: sessionId },
+      data: {
+        status: 'COMPLETED',
+        endTime: new Date(),
+        energyKwh: dto.energyKwh,
+        amount,
+      },
+      include: {
+        user: { select: { id: true, name: true } },
+        station: { select: { id: true, name: true } },
+        charger: { select: { id: true, serialNumber: true } },
+        connector: true,
+      },
+    });
+
+    if (session.connectorId) {
+      await this.prisma.connector.update({
+        where: { id: session.connectorId },
+        data: { status: 'AVAILABLE' },
+      });
+    }
+
+    this.chargingGateway.emitSessionCompleted({
+      sessionId: updated.id,
+      userId: updated.userId,
+      chargerId: updated.chargerId,
+      status: updated.status,
+      energyKwh: Number(updated.energyKwh),
+      amount: Number(updated.amount),
+      startTime: updated.startTime,
+      endTime: updated.endTime!,
+    });
+
+    this.logger.log(
+      `Charging completed: session=${session.id}, energy=${dto.energyKwh}kWh, amount=R$${amount}`,
+    );
+
+    return {
+      ...updated,
+      tariff: tariff.name,
+      pricePerKwh: Number(tariff.pricePerKwh),
+      durationMinutes: updated.endTime
+        ? Math.round((updated.endTime.getTime() - updated.startTime.getTime()) / 60000)
+        : 0,
+    };
+  }
+
+  async getSessionById(id: string) {
+    const session = await this.prisma.chargingSession.findUnique({
+      where: { id },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        station: { select: { id: true, name: true, address: true } },
+        charger: { select: { id: true, serialNumber: true, model: true, manufacturer: true } },
+        connector: { select: { id: true, type: true } },
+        vehicle: { select: { id: true, brand: true, model: true, plate: true } },
+        payment: true,
+        tariff: { select: { id: true, name: true, pricePerKwh: true } },
+      },
+    });
+
+    if (!session) {
+      throw new NotFoundException('Session not found');
+    }
+
+    const durationMinutes = session.endTime
+      ? Math.round((session.endTime.getTime() - session.startTime.getTime()) / 60000)
+      : session.status === 'ACTIVE'
+        ? Math.round((Date.now() - session.startTime.getTime()) / 60000)
+        : 0;
+
+    return { ...session, durationMinutes };
+  }
+
+  async getUserHistory(userId: string, page = 1, limit = 20) {
+    const skip = (page - 1) * limit;
+
+    const [sessions, total] = await Promise.all([
+      this.prisma.chargingSession.findMany({
+        where: { userId },
+        orderBy: { startTime: 'desc' },
+        skip,
+        take: limit,
+        include: {
+          station: { select: { id: true, name: true, address: true } },
+          charger: { select: { id: true, serialNumber: true, model: true } },
+          payment: { select: { id: true, status: true, amount: true, gateway: true } },
+          tariff: { select: { name: true, pricePerKwh: true } },
+        },
+      }),
+      this.prisma.chargingSession.count({ where: { userId } }),
+    ]);
+
+    return {
+      data: sessions,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async getActiveSession(userId: string) {
+    const session = await this.prisma.chargingSession.findFirst({
+      where: { userId, status: 'ACTIVE' },
+      include: {
+        station: { select: { id: true, name: true, address: true } },
+        charger: { select: { id: true, serialNumber: true, model: true } },
+        connector: { select: { id: true, type: true } },
+        tariff: { select: { name: true, pricePerKwh: true } },
+      },
+    });
+
+    if (!session) return null;
+
+    const currentAmount = Number(session.energyKwh) * Number(session.tariff?.pricePerKwh || 0);
+    const durationMinutes = Math.round((Date.now() - session.startTime.getTime()) / 60000);
+
+    return { ...session, currentAmount, durationMinutes };
+  }
+
+  private async getSessionTariff(sessionId: string) {
+    const session = await this.prisma.chargingSession.findUnique({
+      where: { id: sessionId },
+      include: { station: { include: { tariff: true } } },
+    });
+
+    if (session?.station?.tariff?.isActive) {
+      return session.station.tariff;
+    }
+
+    const companyTariff = await this.prisma.tariff.findFirst({
+      where: {
+        companyId: session?.station?.companyId,
+        isActive: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return companyTariff || { name: 'Default', pricePerKwh: 2.50 };
+  }
+}
