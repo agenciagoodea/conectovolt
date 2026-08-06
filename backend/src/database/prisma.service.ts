@@ -35,6 +35,7 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
       this.logger.log(`Database connected (${provider})`);
     } catch (error) {
       this.logger.error(`Database connection failed: ${error.message}`);
+      throw error;
     }
   }
 

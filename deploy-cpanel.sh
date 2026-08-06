@@ -7,7 +7,8 @@ cd $BASE_DIR || exit 1
 echo "1. Puxando as atualizações mais recentes do GitHub..."
 git pull origin master
 
-echo "2. Instalando dependências e compilando o Backend (NestJS)..."
+echo "2. Configurando ambiente e compilando o Backend (NestJS)..."
+cp $BASE_DIR/backend.env.production $BASE_DIR/backend/.env
 cd $BASE_DIR/backend
 npm install
 npx prisma generate --schema=prisma/schema.mysql.prisma
