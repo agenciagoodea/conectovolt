@@ -1,10 +1,13 @@
-name: Deploy Backend
+name: Deploy
 
 on:
   push:
     branches: [master]
     paths:
       - 'backend/**'
+      - 'frontend/**'
+      - 'deploy-cpanel.sh'
+      - 'deploy.php'
 
 jobs:
   build-and-deploy:
@@ -16,16 +19,22 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install & Build
+      - name: Install & Build Backend
         working-directory: backend
         run: |
           npm ci
           DB_PROVIDER=mysql npx prisma generate --schema=prisma/schema.mysql.prisma
           npm run build
 
-      - name: Run Tests
+      - name: Run Backend Tests
         working-directory: backend
         run: npm test
+
+      - name: Build Frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          NEXT_PUBLIC_API_URL=/api/v1 npm run build
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
@@ -36,8 +45,14 @@ jobs:
           script: |
             cd /home/kryontecnologic/conectovolt
             git pull origin master
+            cp backend.env.production backend/.env
             cd backend
             npm ci --production
             DB_PROVIDER=mysql npx prisma generate --schema=prisma/schema.mysql.prisma
-            npx prisma migrate deploy --schema=prisma/schema.mysql.prisma
-            pm2 restart conectovolt-api || pm2 start dist/src/main.js --name conectovolt-api
+            npx prisma db push --schema=prisma/schema.mysql.prisma
+            npm run build
+            cd ../frontend
+            npm ci
+            NEXT_PUBLIC_API_URL=/api/v1 npm run build
+            cd ../backend
+            pm2 restart conectovolt-api || pm2 start dist/main.js --name conectovolt-api
