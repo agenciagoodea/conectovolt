@@ -15,34 +15,42 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   onModuleInit() {
-    const port = this.configService.get<number>('OCPP_PORT') || 3001;
-    this.wss = new WebSocketServer({ port });
+    try {
+      if (process.env.ENABLE_OCPP_PORT === 'true') {
+        const port = this.configService.get<number>('OCPP_PORT') || 3001;
+        this.wss = new WebSocketServer({ port });
 
-    this.wss.on('connection', (ws: WebSocket, req) => {
-      const ocppId = this.extractOcppId(req);
-      this.logger.log(`OCPP charger connected: ${ocppId}`);
+        this.wss.on('connection', (ws: WebSocket, req) => {
+          const ocppId = this.extractOcppId(req);
+          this.logger.log(`OCPP charger connected: ${ocppId}`);
 
-      this.ocppService.trackConnection(ocppId, ws);
+          this.ocppService.trackConnection(ocppId, ws);
 
-      ws.on('message', (data: RawData) => {
-        this.handleMessage(ocppId, ws, data);
-      });
+          ws.on('message', (data: RawData) => {
+            this.handleMessage(ocppId, ws, data);
+          });
 
-      ws.on('close', () => {
-        this.logger.log(`OCPP charger disconnected: ${ocppId}`);
-        this.ocppService.removeConnection(ocppId);
-      });
+          ws.on('close', () => {
+            this.logger.log(`OCPP charger disconnected: ${ocppId}`);
+            this.ocppService.removeConnection(ocppId);
+          });
 
-      ws.on('error', (error) => {
-        this.logger.error(`WebSocket error for ${ocppId}: ${error.message}`);
-      });
+          ws.on('error', (error) => {
+            this.logger.error(`WebSocket error for ${ocppId}: ${error.message}`);
+          });
 
-      ws.on('pong', () => {
-        // Keep-alive
-      });
-    });
+          ws.on('pong', () => {
+            // Keep-alive
+          });
+        });
 
-    this.logger.log(`OCPP WebSocket server listening on port ${port}`);
+        this.logger.log(`OCPP WebSocket server listening on port ${port}`);
+      } else {
+        this.logger.log('OCPP standalone port disabled for Passenger environment');
+      }
+    } catch (error) {
+      this.logger.error(`Failed to start OCPP WebSocket server: ${error.message}`);
+    }
   }
 
   onModuleDestroy() {
