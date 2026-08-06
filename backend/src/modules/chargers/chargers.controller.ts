@@ -54,4 +54,18 @@ export class ChargersController {
   remove(@Param('id') id: string) {
     return this.chargersService.remove(id);
   }
+
+  @Get('connections')
+  @Roles('SUPER_ADMIN', 'OPERATOR')
+  @ApiOperation({ summary: 'Listar carregadores conectados (WebSocket ativo)' })
+  getConnected() {
+    return this.chargersService.getConnectedChargers();
+  }
+
+  @Get(':id/test-connection')
+  @Roles('SUPER_ADMIN', 'OPERATOR')
+  @ApiOperation({ summary: 'Testar conectividade do carregador via WebSocket OCPP' })
+  testConnection(@Param('id') id: string) {
+    return this.chargersService.testConnection(id);
+  }
 }
