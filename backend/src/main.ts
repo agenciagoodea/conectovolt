@@ -49,6 +49,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-
-// trigger deploy
-
