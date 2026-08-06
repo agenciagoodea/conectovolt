@@ -21,6 +21,6 @@ node dist/prisma/seed.js
 echo "4. Instalando dependências e compilando o Frontend (Next.js)..."
 cd $BASE_DIR/frontend
 npm install
-npm run build
+NEXT_PUBLIC_API_URL=/api/v1 npm run build
 
 echo "=== ✅ Deploy Automatizado Concluído com Sucesso! ==="
