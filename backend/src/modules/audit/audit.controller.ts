@@ -24,6 +24,14 @@ export class AuditController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
   ) {
-    return this.auditService.getLogs({ userId, action, entity, startDate, endDate, page, limit });
+    return this.auditService.getLogs({
+      userId,
+      action,
+      entity,
+      startDate,
+      endDate,
+      page,
+      limit,
+    });
   }
 }

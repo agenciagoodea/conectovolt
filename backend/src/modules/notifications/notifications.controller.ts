@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Patch, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -42,8 +50,14 @@ export class NotificationsController {
 
   @Post('broadcast')
   @Roles('SUPER_ADMIN')
-  @ApiOperation({ summary: 'Enviar notificacao para todos usuarios de um perfil' })
-  broadcast(@Query('role') role: string, @Query('title') title: string, @Query('message') message: string) {
+  @ApiOperation({
+    summary: 'Enviar notificacao para todos usuarios de um perfil',
+  })
+  broadcast(
+    @Query('role') role: string,
+    @Query('title') title: string,
+    @Query('message') message: string,
+  ) {
     return this.notificationsService.broadcastToRole(role, title, message);
   }
 }

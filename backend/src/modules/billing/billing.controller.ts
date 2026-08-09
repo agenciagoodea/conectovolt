@@ -1,6 +1,15 @@
-import { Controller, Get, Post, Patch, Param, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Param,
+  Body,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { BillingService } from './billing.service';
+import { CreatePlanDto, UpdatePlanDto } from './dto/plan.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -24,14 +33,14 @@ export class BillingController {
   @Post('plans')
   @Roles('SUPER_ADMIN')
   @ApiOperation({ summary: 'Criar plano' })
-  createPlan(@Body() body: { name: string; description?: string; price: number; maxStations: number; maxChargers: number; maxUsers: number }) {
+  createPlan(@Body() body: CreatePlanDto) {
     return this.billingService.createPlan(body);
   }
 
   @Patch('plans/:id')
   @Roles('SUPER_ADMIN')
   @ApiOperation({ summary: 'Atualizar plano' })
-  updatePlan(@Param('id') id: string, @Body() body: any) {
+  updatePlan(@Param('id') id: string, @Body() body: UpdatePlanDto) {
     return this.billingService.updatePlan(id, body);
   }
 
@@ -46,7 +55,10 @@ export class BillingController {
   @Post('subscribe')
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Assinar/alterar plano' })
-  subscribe(@CurrentUser('companyId') companyId: string, @Body() body: { planId: string }) {
+  subscribe(
+    @CurrentUser('companyId') companyId: string,
+    @Body() body: { planId: string },
+  ) {
     return this.billingService.subscribe(companyId, body.planId);
   }
 

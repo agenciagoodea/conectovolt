@@ -7,7 +7,11 @@ import { AuditModule } from '../audit/audit.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [forwardRef(() => CommissionsModule), AuditModule, NotificationsModule],
+  imports: [
+    forwardRef(() => CommissionsModule),
+    AuditModule,
+    NotificationsModule,
+  ],
   controllers: [PaymentsController, WebhooksController],
   providers: [PaymentsService, MercadoPagoService],
   exports: [PaymentsService],

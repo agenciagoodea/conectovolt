@@ -3,10 +3,15 @@ import {
   BadRequestException,
   NotFoundException,
   ConflictException,
+  ForbiddenException,
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
-import { StartChargingDto, UpdateEnergyDto, StopChargingDto } from './dto/charging.dto';
+import {
+  StartChargingDto,
+  UpdateEnergyDto,
+  StopChargingDto,
+} from './dto/charging.dto';
 import { ChargingGateway } from './gateways/charging.gateway';
 
 @Injectable()
@@ -32,12 +37,23 @@ export class ChargingService {
       throw new BadRequestException('Charger is not online');
     }
 
+    if (dto.vehicleId) {
+      const vehicle = await this.prisma.vehicle.findUnique({
+        where: { id: dto.vehicleId },
+      });
+      if (!vehicle || vehicle.userId !== userId) {
+        throw new ForbiddenException('Vehicle does not belong to user');
+      }
+    }
+
     const activeSession = await this.prisma.chargingSession.findFirst({
       where: { userId, status: 'ACTIVE' },
     });
 
     if (activeSession) {
-      throw new ConflictException('User already has an active charging session');
+      throw new ConflictException(
+        'User already has an active charging session',
+      );
     }
 
     const activeChargerSession = await this.prisma.chargingSession.findFirst({
@@ -54,7 +70,9 @@ export class ChargingService {
       });
 
       if (!connector || connector.chargerId !== dto.chargerId) {
-        throw new BadRequestException('Connector does not belong to this charger');
+        throw new BadRequestException(
+          'Connector does not belong to this charger',
+        );
       }
 
       if (connector.status !== 'AVAILABLE') {
@@ -96,19 +114,28 @@ export class ChargingService {
       startTime: session.startTime,
     });
 
-    this.logger.log(`Charging started: session=${session.id}, user=${userId}, charger=${dto.chargerId}`);
+    this.logger.log(
+      `Charging started: session=${session.id}, user=${userId}, charger=${dto.chargerId}`,
+    );
 
     return session;
   }
 
-  async updateEnergy(sessionId: string, dto: UpdateEnergyDto) {
+  private async assertSessionOwner(sessionId: string, userId: string) {
     const session = await this.prisma.chargingSession.findUnique({
       where: { id: sessionId },
     });
-
     if (!session) {
       throw new NotFoundException('Session not found');
     }
+    if (session.userId !== userId) {
+      throw new ForbiddenException('You do not own this session');
+    }
+    return session;
+  }
+
+  async updateEnergy(sessionId: string, userId: string, dto: UpdateEnergyDto) {
+    const session = await this.assertSessionOwner(sessionId, userId);
 
     if (session.status !== 'ACTIVE') {
       throw new BadRequestException('Session is not active');
@@ -140,14 +167,8 @@ export class ChargingService {
     };
   }
 
-  async stop(sessionId: string, dto: StopChargingDto) {
-    const session = await this.prisma.chargingSession.findUnique({
-      where: { id: sessionId },
-    });
-
-    if (!session) {
-      throw new NotFoundException('Session not found');
-    }
+  async stop(sessionId: string, userId: string, dto: StopChargingDto) {
+    const session = await this.assertSessionOwner(sessionId, userId);
 
     if (session.status !== 'ACTIVE') {
       throw new BadRequestException('Session is not active');
@@ -199,20 +220,31 @@ export class ChargingService {
       tariff: tariff.name,
       pricePerKwh: Number(tariff.pricePerKwh),
       durationMinutes: updated.endTime
-        ? Math.round((updated.endTime.getTime() - updated.startTime.getTime()) / 60000)
+        ? Math.round(
+            (updated.endTime.getTime() - updated.startTime.getTime()) / 60000,
+          )
         : 0,
     };
   }
 
-  async getSessionById(id: string) {
+  async getSessionById(id: string, userId: string) {
     const session = await this.prisma.chargingSession.findUnique({
       where: { id },
       include: {
         user: { select: { id: true, name: true, email: true } },
         station: { select: { id: true, name: true, address: true } },
-        charger: { select: { id: true, serialNumber: true, model: true, manufacturer: true } },
+        charger: {
+          select: {
+            id: true,
+            serialNumber: true,
+            model: true,
+            manufacturer: true,
+          },
+        },
         connector: { select: { id: true, type: true } },
-        vehicle: { select: { id: true, brand: true, model: true, plate: true } },
+        vehicle: {
+          select: { id: true, brand: true, model: true, plate: true },
+        },
         payment: true,
         tariff: { select: { id: true, name: true, pricePerKwh: true } },
       },
@@ -222,8 +254,14 @@ export class ChargingService {
       throw new NotFoundException('Session not found');
     }
 
+    if (session.userId !== userId) {
+      throw new ForbiddenException('You do not own this session');
+    }
+
     const durationMinutes = session.endTime
-      ? Math.round((session.endTime.getTime() - session.startTime.getTime()) / 60000)
+      ? Math.round(
+          (session.endTime.getTime() - session.startTime.getTime()) / 60000,
+        )
       : session.status === 'ACTIVE'
         ? Math.round((Date.now() - session.startTime.getTime()) / 60000)
         : 0;
@@ -243,7 +281,9 @@ export class ChargingService {
         include: {
           station: { select: { id: true, name: true, address: true } },
           charger: { select: { id: true, serialNumber: true, model: true } },
-          payment: { select: { id: true, status: true, amount: true, gateway: true } },
+          payment: {
+            select: { id: true, status: true, amount: true, gateway: true },
+          },
           tariff: { select: { name: true, pricePerKwh: true } },
         },
       }),
@@ -274,8 +314,11 @@ export class ChargingService {
 
     if (!session) return null;
 
-    const currentAmount = Number(session.energyKwh) * Number(session.tariff?.pricePerKwh || 0);
-    const durationMinutes = Math.round((Date.now() - session.startTime.getTime()) / 60000);
+    const currentAmount =
+      Number(session.energyKwh) * Number(session.tariff?.pricePerKwh || 0);
+    const durationMinutes = Math.round(
+      (Date.now() - session.startTime.getTime()) / 60000,
+    );
 
     return { ...session, currentAmount, durationMinutes };
   }
@@ -298,6 +341,6 @@ export class ChargingService {
       orderBy: { createdAt: 'desc' },
     });
 
-    return companyTariff || { name: 'Default', pricePerKwh: 2.50 };
+    return companyTariff || { name: 'Default', pricePerKwh: 2.5 };
   }
 }

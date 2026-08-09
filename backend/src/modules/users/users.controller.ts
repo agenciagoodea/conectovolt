@@ -1,7 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
-import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
+import { CreateUserDto, AdminUpdateUserDto } from './dto/user.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -38,8 +47,12 @@ export class UsersController {
   @Patch(':id')
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Atualizar usuario' })
-  update(@Param('id') id: string, @Body() dto: UpdateUserDto, @CurrentUser('id') userId: string) {
-    return this.usersService.update(id, dto);
+  update(
+    @Param('id') id: string,
+    @Body() dto: AdminUpdateUserDto,
+    @CurrentUser('id') userId: string,
+  ) {
+    return this.usersService.update(id, dto, userId);
   }
 
   @Delete(':id')

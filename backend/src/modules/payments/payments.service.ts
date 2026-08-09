@@ -1,10 +1,19 @@
-import { Injectable, BadRequestException, NotFoundException, Logger, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  ForbiddenException,
+  Logger,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { CreatePaymentDto } from './dto/payment.dto';
 import { MercadoPagoService } from './mercadopago.service';
 import { CommissionsService } from '../commissions/commissions.service';
 import { AuditService } from '../audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { PaymentGateway, PaymentStatus } from '../../common/enums';
 
 @Injectable()
 export class PaymentsService {
@@ -21,17 +30,24 @@ export class PaymentsService {
     private readonly notificationsService: NotificationsService,
   ) {}
 
-  async create(dto: CreatePaymentDto, userEmail?: string) {
+  async create(
+    dto: CreatePaymentDto,
+    user: { id: string; email: string; role: string },
+  ) {
     const session = await this.prisma.chargingSession.findUnique({
       where: { id: dto.sessionId },
       include: {
-        user: { select: { email: true } },
+        user: { select: { id: true, email: true } },
         station: { select: { name: true } },
       },
     });
 
     if (!session) {
       throw new NotFoundException('Charging session not found');
+    }
+
+    if (session.userId !== user.id) {
+      throw new ForbiddenException('You do not own this session');
     }
 
     if (session.status !== 'COMPLETED') {
@@ -51,17 +67,17 @@ export class PaymentsService {
     }
 
     const description = `Recarga - ${session.station.name}`;
-    const payerEmail = userEmail || session.user.email;
+    const payerEmail = user.email || session.user.email;
 
-    let gatewayResult: any;
+    let gatewayResult: Record<string, unknown>;
 
-    if (dto.gateway === 'PIX') {
+    if (dto.gateway === PaymentGateway.PIX) {
       gatewayResult = await this.mercadoPagoService.createPixPayment(
         Number(session.amount),
         description,
         payerEmail,
       );
-    } else if (dto.gateway === 'CREDIT_CARD') {
+    } else if (dto.gateway === PaymentGateway.CREDIT_CARD) {
       gatewayResult = await this.mercadoPagoService.createCreditCardPayment(
         Number(session.amount),
         description,
@@ -83,7 +99,9 @@ export class PaymentsService {
       include: { session: { include: { station: true } } },
     });
 
-    this.logger.log(`Payment created: ${payment.id} (${dto.gateway}) - R$${session.amount}`);
+    this.logger.log(
+      `Payment created: ${payment.id} (${dto.gateway}) - R$${session.amount}`,
+    );
 
     return {
       payment: {
@@ -100,7 +118,7 @@ export class PaymentsService {
     };
   }
 
-  async findById(id: string) {
+  async findById(id: string, user?: { id: string; role: string }) {
     const payment = await this.prisma.payment.findUnique({
       where: { id },
       include: {
@@ -117,6 +135,14 @@ export class PaymentsService {
 
     if (!payment) {
       throw new NotFoundException('Payment not found');
+    }
+
+    if (
+      user &&
+      user.role === 'CUSTOMER' &&
+      payment.session?.userId !== user.id
+    ) {
+      throw new ForbiddenException('You do not own this payment');
     }
 
     return payment;
@@ -157,7 +183,10 @@ export class PaymentsService {
     try {
       await this.commissionsService.calculate(paymentId);
     } catch (error) {
-      this.logger.error(`Failed to calculate commission for payment ${paymentId}: ${error.message}`);
+      const err = error as { message?: string };
+      this.logger.error(
+        `Failed to calculate commission for payment ${paymentId}: ${err.message ?? 'unknown error'}`,
+      );
     }
 
     // Audit log
@@ -169,7 +198,9 @@ export class PaymentsService {
         entityId: paymentId,
         newValue: { amount: payment.amount, status: 'APPROVED' },
       });
-    } catch {}
+    } catch {
+      this.logger.warn(`Failed to write audit log for payment ${paymentId}`);
+    }
 
     // Send notification
     try {
@@ -178,13 +209,17 @@ export class PaymentsService {
         Number(payment.amount),
       );
       await this.notificationsService.create(notif);
-    } catch {}
+    } catch {
+      this.logger.warn(`Failed to send notification for payment ${paymentId}`);
+    }
 
     return updatedPayment;
   }
 
   async failPayment(paymentId: string) {
-    const payment = await this.prisma.payment.findUnique({ where: { id: paymentId } });
+    const payment = await this.prisma.payment.findUnique({
+      where: { id: paymentId },
+    });
     if (!payment) throw new NotFoundException('Payment not found');
 
     return this.prisma.payment.update({
@@ -194,7 +229,9 @@ export class PaymentsService {
   }
 
   async refundPayment(paymentId: string) {
-    const payment = await this.prisma.payment.findUnique({ where: { id: paymentId } });
+    const payment = await this.prisma.payment.findUnique({
+      where: { id: paymentId },
+    });
     if (!payment) throw new NotFoundException('Payment not found');
 
     if (payment.status !== 'APPROVED') {
@@ -207,23 +244,34 @@ export class PaymentsService {
     });
   }
 
-  async handleWebhook(data: { action?: string; data?: { id?: string }; type?: string }) {
+  async handleWebhook(data: {
+    action?: string;
+    data?: { id?: string | number };
+    type?: string;
+  }) {
     this.logger.log(`Webhook received: ${JSON.stringify(data)}`);
 
     if (data.type === 'payment' && data.data?.id) {
-      const mercadoPagoPaymentId = data.data.id;
+      const mercadoPagoPaymentId = String(data.data.id);
+      const numericId = Number(mercadoPagoPaymentId);
+
+      if (!mercadoPagoPaymentId || Number.isNaN(numericId)) {
+        this.logger.warn('Webhook received invalid payment id');
+        return { received: true };
+      }
 
       try {
-        const mpStatus = await this.mercadoPagoService.getPaymentStatus(
-          parseInt(mercadoPagoPaymentId),
-        );
+        const mpStatus =
+          await this.mercadoPagoService.getPaymentStatus(numericId);
 
         const payment = await this.prisma.payment.findFirst({
           where: { externalId: mercadoPagoPaymentId },
         });
 
         if (!payment) {
-          this.logger.warn(`Payment not found for external ID: ${mercadoPagoPaymentId}`);
+          this.logger.warn(
+            `Payment not found for external ID: ${mercadoPagoPaymentId}`,
+          );
           return { received: true };
         }
 
@@ -238,8 +286,9 @@ export class PaymentsService {
           default:
             this.logger.log(`Payment ${payment.id} status: ${mpStatus.status}`);
         }
-      } catch (error) {
-        this.logger.error(`Error processing webhook: ${error.message}`);
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        this.logger.error(`Error processing webhook: ${message}`);
       }
     }
 
@@ -248,8 +297,16 @@ export class PaymentsService {
 
   async getPaymentsByStatus(status: string) {
     return this.prisma.payment.findMany({
-      where: { status: status as any },
-      include: { session: { include: { user: true } }, commission: true },
+      where: { status: status as PaymentStatus },
+      include: {
+        session: {
+          include: {
+            user: { select: { id: true, name: true, email: true } },
+            station: { select: { id: true, name: true } },
+          },
+        },
+        commission: true,
+      },
       orderBy: { createdAt: 'desc' },
     });
   }

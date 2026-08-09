@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { VehiclesService } from './vehicles.service';
 import { CreateVehicleDto, UpdateVehicleDto } from './dto/vehicle.dto';
@@ -26,19 +35,23 @@ export class VehiclesController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Buscar veiculo por ID' })
-  findOne(@Param('id') id: string) {
-    return this.vehiclesService.findById(id);
+  findOne(@Param('id') id: string, @CurrentUser('id') userId: string) {
+    return this.vehiclesService.findById(id, userId);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Atualizar veiculo' })
-  update(@Param('id') id: string, @Body() dto: UpdateVehicleDto) {
-    return this.vehiclesService.update(id, dto);
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateVehicleDto,
+    @CurrentUser('id') userId: string,
+  ) {
+    return this.vehiclesService.update(id, userId, dto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Remover veiculo' })
-  remove(@Param('id') id: string) {
-    return this.vehiclesService.remove(id);
+  remove(@Param('id') id: string, @CurrentUser('id') userId: string) {
+    return this.vehiclesService.remove(id, userId);
   }
 }

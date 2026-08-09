@@ -84,7 +84,7 @@ class _SessionCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(dateFormat.format(session.startTime), style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
-                Text('R\$ ${session.amount.toStringAsFixed(2)}', style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w600, fontSize: 16)),
+                Text('R\$ ${session.amount.toStringAsFixed(2)}', style: const TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w600, fontSize: 16)),
               ],
             ),
           ],

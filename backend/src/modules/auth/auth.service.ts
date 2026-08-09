@@ -8,8 +8,21 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../database/prisma.service';
-import { RegisterDto, LoginDto, RefreshTokenDto, ResetPasswordDto, ForgotPasswordDto } from './dto/auth.dto';
-import { hashPassword, comparePassword } from '../../common/utils/password.utils';
+import {
+  RegisterDto,
+  LoginDto,
+  RefreshTokenDto,
+  ResetPasswordDto,
+  ForgotPasswordDto,
+} from './dto/auth.dto';
+import {
+  hashPassword,
+  comparePassword,
+} from '../../common/utils/password.utils';
+import {
+  getJwtSecret,
+  getJwtRefreshSecret,
+} from '../../common/utils/config.utils';
 
 @Injectable()
 export class AuthService {
@@ -42,7 +55,7 @@ export class AuthService {
       },
     });
 
-    const tokens = await this.generateTokens(user.id, user.email, user.role);
+    const tokens = this.generateTokens(user.id, user.email, user.role);
 
     this.logger.log(`User registered: ${user.email}`);
 
@@ -66,12 +79,15 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid = await comparePassword(dto.password, user.passwordHash);
+    const isPasswordValid = await comparePassword(
+      dto.password,
+      user.passwordHash,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const tokens = await this.generateTokens(user.id, user.email, user.role);
+    const tokens = this.generateTokens(user.id, user.email, user.role);
 
     this.logger.log(`User logged in: ${user.email}`);
 
@@ -89,9 +105,10 @@ export class AuthService {
 
   async refreshToken(dto: RefreshTokenDto) {
     try {
-      const payload = this.jwtService.verify(dto.refresh_token, {
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET') || 'conectovolt-refresh-secret-change-in-production',
-      });
+      const decoded = this.jwtService.verify(dto.refresh_token, {
+        secret: getJwtRefreshSecret(this.configService),
+      }) as unknown;
+      const payload = decoded as { sub: string };
 
       const user = await this.prisma.user.findUnique({
         where: { id: payload.sub },
@@ -101,7 +118,7 @@ export class AuthService {
         throw new UnauthorizedException('User not found');
       }
 
-      const tokens = await this.generateTokens(user.id, user.email, user.role);
+      const tokens = this.generateTokens(user.id, user.email, user.role);
 
       return tokens;
     } catch {
@@ -142,25 +159,27 @@ export class AuthService {
     const resetToken = this.jwtService.sign(
       { sub: user.id, type: 'password_reset' },
       {
-        secret: this.configService.get<string>('JWT_SECRET'),
+        secret: getJwtSecret(this.configService),
         expiresIn: '1h' as const,
       },
     );
 
     this.logger.log(`Password reset requested for: ${user.email}`);
-    this.logger.log(`Reset token: ${resetToken}`);
+
+    // TODO: Send resetToken via email/SMS. Never return it in the API response.
+    void resetToken;
 
     return {
       message: 'If the email exists, a reset link has been sent',
-      reset_token: resetToken,
     };
   }
 
   async resetPassword(dto: ResetPasswordDto) {
     try {
-      const payload = this.jwtService.verify(dto.token, {
-        secret: this.configService.get<string>('JWT_SECRET'),
-      });
+      const decoded = this.jwtService.verify(dto.token, {
+        secret: getJwtSecret(this.configService),
+      }) as unknown;
+      const payload = decoded as { sub: string; type?: string };
 
       if (payload.type !== 'password_reset') {
         throw new BadRequestException('Invalid reset token');
@@ -179,12 +198,12 @@ export class AuthService {
     }
   }
 
-  private async generateTokens(userId: string, email: string, role: string) {
+  private generateTokens(userId: string, email: string, role: string) {
     const payload = { sub: userId, email, role };
 
     const accessToken = this.jwtService.sign(payload);
     const refreshToken = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_REFRESH_SECRET') || 'conectovolt-refresh-secret-change-in-production',
+      secret: getJwtRefreshSecret(this.configService),
       expiresIn: '7d' as const,
     });
 

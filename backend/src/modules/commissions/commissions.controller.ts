@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Query, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  UseGuards,
+  BadRequestException,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CommissionsService } from './commissions.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -41,9 +49,12 @@ export class WalletController {
   @Post('withdraw')
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Solicitar saque' })
-  withdraw(@CurrentUser('companyId') companyId: string, @Body('amount') amount: number) {
+  withdraw(
+    @CurrentUser('companyId') companyId: string,
+    @Body('amount') amount: number,
+  ) {
     if (!companyId) {
-      throw new Error('No company associated');
+      throw new BadRequestException('No company associated');
     }
     return this.commissionsService.requestWithdrawal(companyId, amount);
   }

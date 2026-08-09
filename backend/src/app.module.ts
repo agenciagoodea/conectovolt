@@ -28,15 +28,18 @@ import { HealthController } from './common/health.controller';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    ThrottlerModule.forRoot([{
-      name: 'short',
-      ttl: 1000,
-      limit: 10,
-    }, {
-      name: 'medium',
-      ttl: 60000,
-      limit: 100,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        name: 'short',
+        ttl: 1000,
+        limit: 10,
+      },
+      {
+        name: 'medium',
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
     PrismaModule,
     AuthModule,
     UsersModule,
@@ -57,9 +60,11 @@ import { HealthController } from './common/health.controller';
     BillingModule,
   ],
   controllers: [HealthController],
-  providers: [{
-    provide: APP_GUARD,
-    useClass: ThrottlerGuard,
-  }],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

@@ -4,7 +4,7 @@ import { PrismaService } from '../../database/prisma.service';
 @Injectable()
 export class CommissionsService {
   private readonly logger = new Logger(CommissionsService.name);
-  private readonly DEFAULT_COMMISSION = 5.00;
+  private readonly DEFAULT_COMMISSION = 5.0;
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -17,7 +17,8 @@ export class CommissionsService {
     if (!payment) throw new Error('Payment not found');
 
     const station = payment.session.station;
-    const platformAmount = (Number(payment.amount) * this.DEFAULT_COMMISSION) / 100;
+    const platformAmount =
+      (Number(payment.amount) * this.DEFAULT_COMMISSION) / 100;
     const operatorAmount = Number(payment.amount) - platformAmount;
 
     const commission = await this.prisma.commission.create({
@@ -44,14 +45,19 @@ export class CommissionsService {
   }
 
   async getWalletBalance(companyId: string) {
-    const wallet = await this.prisma.wallet.findUnique({ where: { companyId } });
+    const wallet = await this.prisma.wallet.findUnique({
+      where: { companyId },
+    });
     return { balance: wallet?.balance || 0 };
   }
 
   async requestWithdrawal(companyId: string, amount: number) {
-    const wallet = await this.prisma.wallet.findUnique({ where: { companyId } });
+    const wallet = await this.prisma.wallet.findUnique({
+      where: { companyId },
+    });
     if (!wallet) throw new BadRequestException('Wallet not found');
-    if (Number(wallet.balance) < amount) throw new BadRequestException('Insufficient balance');
+    if (Number(wallet.balance) < amount)
+      throw new BadRequestException('Insufficient balance');
 
     await this.prisma.transaction.create({
       data: {
@@ -67,13 +73,17 @@ export class CommissionsService {
       data: { balance: { decrement: amount } },
     });
 
-    this.logger.log(`Withdrawal of R$${amount} requested by company ${companyId}`);
+    this.logger.log(
+      `Withdrawal of R$${amount} requested by company ${companyId}`,
+    );
 
     return { message: 'Withdrawal requested successfully', amount };
   }
 
   async getTransactions(companyId: string) {
-    const wallet = await this.prisma.wallet.findUnique({ where: { companyId } });
+    const wallet = await this.prisma.wallet.findUnique({
+      where: { companyId },
+    });
     if (!wallet) return [];
 
     return this.prisma.transaction.findMany({
@@ -83,7 +93,9 @@ export class CommissionsService {
   }
 
   private async creditWallet(companyId: string, amount: number) {
-    const wallet = await this.prisma.wallet.findUnique({ where: { companyId } });
+    const wallet = await this.prisma.wallet.findUnique({
+      where: { companyId },
+    });
     if (!wallet) return;
 
     await this.prisma.transaction.create({
@@ -100,6 +112,8 @@ export class CommissionsService {
       data: { balance: { increment: amount } },
     });
 
-    this.logger.log(`Wallet credited: company=${companyId}, amount=R$${amount}`);
+    this.logger.log(
+      `Wallet credited: company=${companyId}, amount=R$${amount}`,
+    );
   }
 }

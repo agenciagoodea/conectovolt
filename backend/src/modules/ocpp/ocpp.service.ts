@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import WebSocket from 'ws';
 import { PrismaService } from '../../database/prisma.service';
 import {
   BootNotificationPayload,
@@ -6,21 +7,22 @@ import {
   StartTransactionPayload,
   StopTransactionPayload,
   MeterValuesPayload,
-  ChangeConfigurationPayload,
 } from './ocpp.types';
 
 @Injectable()
 export class OcppService {
   private readonly logger = new Logger(OcppService.name);
 
-  private chargerConnections = new Map<string, any>();
+  private chargerConnections = new Map<string, WebSocket>();
   private chargerConfigs = new Map<string, Map<string, string>>();
 
   constructor(private readonly prisma: PrismaService) {}
 
-  get connections() { return this.chargerConnections; }
+  get connections() {
+    return this.chargerConnections;
+  }
 
-  trackConnection(ocppId: string, ws: any) {
+  trackConnection(ocppId: string, ws: WebSocket) {
     this.chargerConnections.set(ocppId, ws);
     this.logger.log(`Charger connected: ${ocppId}`);
   }
@@ -30,22 +32,30 @@ export class OcppService {
     this.logger.log(`Charger disconnected: ${ocppId}`);
   }
 
-  getConnection(ocppId: string) {
+  getConnection(ocppId: string): WebSocket | undefined {
     return this.chargerConnections.get(ocppId);
   }
 
-  async handleBootNotification(ocppId: string, payload: BootNotificationPayload) {
-    this.logger.log(`BootNotification from ${payload.chargePointVendor} ${payload.chargePointModel} (${ocppId})`);
+  async handleBootNotification(
+    ocppId: string,
+    payload: Record<string, unknown>,
+  ) {
+    const p = payload as unknown as BootNotificationPayload;
+    this.logger.log(
+      `BootNotification from ${p.chargePointVendor} ${p.chargePointModel} (${ocppId})`,
+    );
 
-    const existing = await this.prisma.charger.findUnique({ where: { ocppId } });
+    const existing = await this.prisma.charger.findUnique({
+      where: { ocppId },
+    });
 
     if (existing) {
       await this.prisma.charger.update({
         where: { ocppId },
         data: {
-          model: payload.chargePointModel || existing.model,
-          manufacturer: payload.chargePointVendor || existing.manufacturer,
-          serialNumber: payload.chargePointSerialNumber || existing.serialNumber,
+          model: p.chargePointModel || existing.model,
+          manufacturer: p.chargePointVendor || existing.manufacturer,
+          serialNumber: p.chargePointSerialNumber || existing.serialNumber,
           status: 'ONLINE',
         },
       });
@@ -54,9 +64,9 @@ export class OcppService {
       await this.prisma.charger.create({
         data: {
           stationId: defaultStation.id,
-          serialNumber: payload.chargePointSerialNumber || `OCPP-${ocppId}`,
-          model: payload.chargePointModel || 'Unknown',
-          manufacturer: payload.chargePointVendor || 'Unknown',
+          serialNumber: p.chargePointSerialNumber || `OCPP-${ocppId}`,
+          model: p.chargePointModel || 'Unknown',
+          manufacturer: p.chargePointVendor || 'Unknown',
           ocppId,
           status: 'ONLINE',
           powerKw: 0,
@@ -64,67 +74,116 @@ export class OcppService {
       });
     }
 
-    return { status: 'Accepted', currentTime: new Date().toISOString(), interval: 300 };
+    return {
+      status: 'Accepted',
+      currentTime: new Date().toISOString(),
+      interval: 300,
+    };
   }
 
   async handleHeartbeat(ocppId: string) {
     const charger = await this.prisma.charger.findUnique({ where: { ocppId } });
     if (charger) {
-      await this.prisma.charger.update({ where: { ocppId }, data: { updatedAt: new Date() } });
+      await this.prisma.charger.update({
+        where: { ocppId },
+        data: { updatedAt: new Date() },
+      });
     }
     return { currentTime: new Date().toISOString() };
   }
 
-  async handleAuthorize(ocppId: string, payload: { idTag: string }) {
-    // Look up user by idTag (can be mapped to RFID/badge later)
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  handleAuthorize(
+    _ocppId: string,
+    _payload: Record<string, unknown>,
+  ): Record<string, unknown> {
     return { idTagInfo: { status: 'Accepted' } };
   }
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 
-  async handleStatusNotification(ocppId: string, payload: StatusNotificationPayload) {
-    this.logger.log(`StatusNotification from ${ocppId} connector ${payload.connectorId}: ${payload.status}`);
+  async handleStatusNotification(
+    ocppId: string,
+    payload: Record<string, unknown>,
+  ) {
+    const p = payload as unknown as StatusNotificationPayload;
+    this.logger.log(
+      `StatusNotification from ${ocppId} connector ${p.connectorId}: ${p.status}`,
+    );
 
-    const charger = await this.prisma.charger.findUnique({ where: { ocppId }, include: { connectors: true } });
+    const charger = await this.prisma.charger.findUnique({
+      where: { ocppId },
+      include: { connectors: true },
+    });
     if (!charger) return {};
 
     const chargerStatusMap: Record<string, string> = {
-      Available: 'ONLINE', Preparing: 'ONLINE', Charging: 'ONLINE',
-      SuspendedEVSE: 'ONLINE', SuspendedEV: 'ONLINE', Finishing: 'ONLINE',
-      Reserved: 'ONLINE', Unavailable: 'OFFLINE', Faulted: 'ERROR',
+      Available: 'ONLINE',
+      Preparing: 'ONLINE',
+      Charging: 'ONLINE',
+      SuspendedEVSE: 'ONLINE',
+      SuspendedEV: 'ONLINE',
+      Finishing: 'ONLINE',
+      Reserved: 'ONLINE',
+      Unavailable: 'OFFLINE',
+      Faulted: 'ERROR',
     };
 
     await this.prisma.charger.update({
       where: { ocppId },
-      data: { status: (chargerStatusMap[payload.status] || 'ONLINE') as any },
+      data: { status: chargerStatusMap[p.status] ?? 'ONLINE' },
     });
 
-    const connector = charger.connectors.find(c => c.id === `${charger.id}-connector-${payload.connectorId}`);
+    const connector = charger.connectors.find(
+      (c) => c.id === `${charger.id}-connector-${p.connectorId}`,
+    );
 
     const connectorStatusMap: Record<string, string> = {
-      Available: 'AVAILABLE', Preparing: 'CHARGING', Charging: 'CHARGING',
-      SuspendedEVSE: 'CHARGING', SuspendedEV: 'CHARGING', Finishing: 'CHARGING',
-      Reserved: 'UNAVAILABLE', Unavailable: 'UNAVAILABLE', Faulted: 'FAULT',
+      Available: 'AVAILABLE',
+      Preparing: 'CHARGING',
+      Charging: 'CHARGING',
+      SuspendedEVSE: 'CHARGING',
+      SuspendedEV: 'CHARGING',
+      Finishing: 'CHARGING',
+      Reserved: 'UNAVAILABLE',
+      Unavailable: 'UNAVAILABLE',
+      Faulted: 'FAULT',
     };
 
-    const status = connectorStatusMap[payload.status] || 'AVAILABLE';
+    const status = connectorStatusMap[p.status] ?? 'AVAILABLE';
 
     if (connector) {
-      await this.prisma.connector.update({ where: { id: connector.id }, data: { status: status as any } });
+      await this.prisma.connector.update({
+        where: { id: connector.id },
+        data: {
+          status: status as 'AVAILABLE' | 'CHARGING' | 'FAULT' | 'UNAVAILABLE',
+        },
+      });
     } else {
       await this.prisma.connector.create({
-        data: { id: `${charger.id}-connector-${payload.connectorId}`, chargerId: charger.id, type: 'TYPE2', status: status as any, powerKw: 0 },
+        data: {
+          id: `${charger.id}-connector-${p.connectorId}`,
+          chargerId: charger.id,
+          type: 'TYPE2',
+          status: status as 'AVAILABLE' | 'CHARGING' | 'FAULT' | 'UNAVAILABLE',
+          powerKw: 0,
+        },
       });
     }
 
     return {};
   }
 
-  async handleMeterValues(ocppId: string, payload: MeterValuesPayload) {
+  async handleMeterValues(ocppId: string, payload: Record<string, unknown>) {
+    const p = payload as unknown as MeterValuesPayload;
     const charger = await this.prisma.charger.findUnique({ where: { ocppId } });
     if (!charger) return {};
 
-    for (const mv of payload.meterValue) {
+    for (const mv of p.meterValue) {
       for (const sv of mv.sampledValue) {
-        if (sv.measurand === 'Energy.Active.Import.Register' || sv.measurand === 'Energy.Active.Import.Interval') {
+        if (
+          sv.measurand === 'Energy.Active.Import.Register' ||
+          sv.measurand === 'Energy.Active.Import.Interval'
+        ) {
           const energyKwh = parseFloat(sv.value) / 1000;
           const activeSession = await this.prisma.chargingSession.findFirst({
             where: { chargerId: charger.id, status: 'ACTIVE' },
@@ -143,105 +202,174 @@ export class OcppService {
     return {};
   }
 
-  async handleStartTransaction(ocppId: string, payload: StartTransactionPayload) {
-    this.logger.log(`StartTransaction from ${ocppId} connector ${payload.connectorId}`);
+  async handleStartTransaction(
+    ocppId: string,
+    payload: Record<string, unknown>,
+  ) {
+    const p = payload as unknown as StartTransactionPayload;
+    this.logger.log(
+      `StartTransaction from ${ocppId} connector ${p.connectorId}`,
+    );
 
-    const charger = await this.prisma.charger.findUnique({ where: { ocppId }, include: { station: true } });
+    const charger = await this.prisma.charger.findUnique({
+      where: { ocppId },
+      include: { station: true },
+    });
     if (!charger) return { transactionId: 0, idTagInfo: { status: 'Invalid' } };
 
-    const connector = await this.prisma.connector.findFirst({ where: { chargerId: charger.id } });
+    const connector = await this.prisma.connector.findFirst({
+      where: { chargerId: charger.id },
+    });
 
     const session = await this.prisma.chargingSession.create({
       data: {
-        userId: payload.idTag,
+        userId: p.idTag,
         chargerId: charger.id,
         connectorId: connector?.id,
         stationId: charger.stationId,
         status: 'ACTIVE',
-        startTime: new Date(payload.timestamp),
-        energyKwh: payload.meterStart / 1000,
+        startTime: new Date(p.timestamp),
+        energyKwh: p.meterStart / 1000,
         amount: 0,
       },
     });
 
     if (connector) {
-      await this.prisma.connector.update({ where: { id: connector.id }, data: { status: 'CHARGING' } });
+      await this.prisma.connector.update({
+        where: { id: connector.id },
+        data: { status: 'CHARGING' },
+      });
     }
 
     return { transactionId: session.id, idTagInfo: { status: 'Accepted' } };
   }
 
-  async handleStopTransaction(ocppId: string, payload: StopTransactionPayload) {
-    this.logger.log(`StopTransaction from ${ocppId}: meterStop=${payload.meterStop}`);
+  async handleStopTransaction(
+    ocppId: string,
+    payload: Record<string, unknown>,
+  ) {
+    const p = payload as unknown as StopTransactionPayload;
+    this.logger.log(`StopTransaction from ${ocppId}: meterStop=${p.meterStop}`);
 
-    const charger = await this.prisma.charger.findUnique({ where: { ocppId }, include: { station: { include: { tariff: true } } } });
+    const charger = await this.prisma.charger.findUnique({
+      where: { ocppId },
+      include: { station: { include: { tariff: true } } },
+    });
     if (!charger) return { idTagInfo: { status: 'Invalid' } };
 
-    const session = await this.prisma.chargingSession.findFirst({ where: { chargerId: charger.id, status: 'ACTIVE' }, orderBy: { startTime: 'desc' } });
+    const session = await this.prisma.chargingSession.findFirst({
+      where: { chargerId: charger.id, status: 'ACTIVE' },
+      orderBy: { startTime: 'desc' },
+    });
     if (!session) return { idTagInfo: { status: 'Invalid' } };
 
-    const energyKwh = payload.meterStop / 1000;
+    const energyKwh = p.meterStop / 1000;
     const tariff = charger.station?.tariff;
-    const pricePerKwh = tariff?.isActive ? Number(tariff.pricePerKwh) : 2.50;
+    const pricePerKwh = tariff?.isActive ? Number(tariff.pricePerKwh) : 2.5;
 
     await this.prisma.chargingSession.update({
       where: { id: session.id },
-      data: { status: 'COMPLETED', endTime: new Date(payload.timestamp), energyKwh, amount: energyKwh * pricePerKwh },
+      data: {
+        status: 'COMPLETED',
+        endTime: new Date(p.timestamp),
+        energyKwh,
+        amount: energyKwh * pricePerKwh,
+      },
     });
 
     if (session.connectorId) {
-      await this.prisma.connector.update({ where: { id: session.connectorId }, data: { status: 'AVAILABLE' } });
+      await this.prisma.connector.update({
+        where: { id: session.connectorId },
+        data: { status: 'AVAILABLE' },
+      });
     }
 
     return { idTagInfo: { status: 'Accepted' } };
   }
 
-  async handleDataTransfer(ocppId: string, payload: any) {
-    this.logger.log(`DataTransfer from ${ocppId}: ${payload?.vendorId}/${payload?.messageId}`);
+  handleDataTransfer(ocppId: string, payload: Record<string, unknown>) {
+    const vendorId =
+      typeof payload.vendorId === 'string' ? payload.vendorId : '';
+    const messageId =
+      typeof payload.messageId === 'string' ? payload.messageId : '';
+    this.logger.log(`DataTransfer from ${ocppId}: ${vendorId}/${messageId}`);
     return { status: 'Accepted' };
   }
 
-  async handleDiagnosticsStatusNotification(ocppId: string, payload: any) {
-    this.logger.log(`DiagnosticsStatusNotification from ${ocppId}: ${payload?.status}`);
+  handleDiagnosticsStatusNotification(
+    ocppId: string,
+    payload: Record<string, unknown>,
+  ) {
+    const status = typeof payload.status === 'string' ? payload.status : '';
+    this.logger.log(`DiagnosticsStatusNotification from ${ocppId}: ${status}`);
     return {};
   }
 
-  async handleFirmwareStatusNotification(ocppId: string, payload: any) {
-    this.logger.log(`FirmwareStatusNotification from ${ocppId}: ${payload?.status}`);
+  handleFirmwareStatusNotification(
+    ocppId: string,
+    payload: Record<string, unknown>,
+  ) {
+    const status = typeof payload.status === 'string' ? payload.status : '';
+    this.logger.log(`FirmwareStatusNotification from ${ocppId}: ${status}`);
     return {};
   }
 
-  async handleGetConfiguration(ocppId: string, payload: { key?: string[] }) {
-    const configs = this.chargerConfigs.get(ocppId) || new Map();
-    const keys = payload.key || Array.from(configs.keys());
-    const configurationKey = keys.map(k => ({
+  handleGetConfiguration(ocppId: string, payload: Record<string, unknown>) {
+    const configs =
+      this.chargerConfigs.get(ocppId) ?? new Map<string, string>();
+    const keys: string[] = Array.isArray(payload.key)
+      ? payload.key.filter((k): k is string => typeof k === 'string')
+      : Array.from(configs.keys());
+    const configurationKey = keys.map((k) => ({
       key: k,
       readonly: false,
-      value: configs.get(k) || '',
+      value: configs.get(k) ?? '',
     }));
     return { configurationKey, unknownKey: [] };
   }
 
-  async handleChangeConfiguration(ocppId: string, payload: ChangeConfigurationPayload) {
-    this.logger.log(`ChangeConfiguration from ${ocppId}: ${payload.key}=${payload.value}`);
+  handleChangeConfiguration(ocppId: string, payload: Record<string, unknown>) {
+    const key = typeof payload.key === 'string' ? payload.key : '';
+    const value = typeof payload.value === 'string' ? payload.value : '';
+    this.logger.log(`ChangeConfiguration from ${ocppId}: ${key}=${value}`);
     let configs = this.chargerConfigs.get(ocppId);
-    if (!configs) { configs = new Map(); this.chargerConfigs.set(ocppId, configs); }
-    configs.set(payload.key, payload.value);
+    if (!configs) {
+      configs = new Map();
+      this.chargerConfigs.set(ocppId, configs);
+    }
+    configs.set(key, value);
     return { status: 'Accepted' };
   }
 
   private async findOrCreateDefaultStation() {
-    let station = await this.prisma.station.findFirst({ include: { company: true } });
+    let station = await this.prisma.station.findFirst({
+      include: { company: true },
+    });
     if (!station) {
       let company = await this.prisma.company.findFirst();
       if (!company) {
         company = await this.prisma.company.create({
-          data: { name: 'Operadora OCPP', document: `OCPP-${Date.now()}`, status: 'ACTIVE' },
+          data: {
+            name: 'Operadora OCPP',
+            document: `OCPP-${Date.now()}`,
+            status: 'ACTIVE',
+          },
         });
-        await this.prisma.wallet.create({ data: { companyId: company.id, balance: 0 } });
+        await this.prisma.wallet.create({
+          data: { companyId: company.id, balance: 0 },
+        });
       }
       station = await this.prisma.station.create({
-        data: { companyId: company.id, name: 'Posto OCPP', address: 'Auto-registered via OCPP', city: 'Sao Paulo', state: 'SP', latitude: 0, longitude: 0, status: 'ACTIVE' },
+        data: {
+          companyId: company.id,
+          name: 'Posto OCPP',
+          address: 'Auto-registered via OCPP',
+          city: 'Sao Paulo',
+          state: 'SP',
+          latitude: 0,
+          longitude: 0,
+          status: 'ACTIVE',
+        },
         include: { company: true },
       });
     }

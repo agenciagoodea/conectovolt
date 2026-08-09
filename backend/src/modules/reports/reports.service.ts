@@ -5,11 +5,17 @@ import { PrismaService } from '../../database/prisma.service';
 export class ReportsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getChargingReport(params: { startDate?: string; endDate?: string; companyId?: string }) {
+  async getChargingReport(params: {
+    startDate?: string;
+    endDate?: string;
+    companyId?: string;
+  }) {
     const start = params.startDate ? new Date(params.startDate) : new Date(0);
     const end = params.endDate ? new Date(params.endDate) : new Date();
 
-    const stationFilter = params.companyId ? { station: { companyId: params.companyId } } : {};
+    const stationFilter = params.companyId
+      ? { station: { companyId: params.companyId } }
+      : {};
 
     const sessions = await this.prisma.chargingSession.findMany({
       where: {
@@ -19,7 +25,9 @@ export class ReportsService {
       },
       include: {
         user: { select: { id: true, name: true, email: true } },
-        station: { select: { id: true, name: true, company: { select: { name: true } } } },
+        station: {
+          select: { id: true, name: true, company: { select: { name: true } } },
+        },
         charger: { select: { id: true, serialNumber: true } },
         payment: { select: { id: true, status: true, gateway: true } },
       },
@@ -30,10 +38,17 @@ export class ReportsService {
     const totalEnergy = sessions.reduce((s, x) => s + Number(x.energyKwh), 0);
     const totalAmount = sessions.reduce((s, x) => s + Number(x.amount), 0);
 
-    return { summary: { total, totalEnergy, totalAmount, period: { start, end } }, sessions };
+    return {
+      summary: { total, totalEnergy, totalAmount, period: { start, end } },
+      sessions,
+    };
   }
 
-  async getFinancialReport(params: { startDate?: string; endDate?: string; companyId?: string }) {
+  async getFinancialReport(params: {
+    startDate?: string;
+    endDate?: string;
+    companyId?: string;
+  }) {
     const start = params.startDate ? new Date(params.startDate) : new Date(0);
     const end = params.endDate ? new Date(params.endDate) : new Date();
 
@@ -51,7 +66,9 @@ export class ReportsService {
         session: {
           include: {
             user: { select: { name: true } },
-            station: { select: { name: true, company: { select: { name: true } } } },
+            station: {
+              select: { name: true, company: { select: { name: true } } },
+            },
           },
         },
         commission: true,
@@ -60,21 +77,48 @@ export class ReportsService {
     });
 
     const totalGross = payments.reduce((s, x) => s + Number(x.amount), 0);
-    const totalCommissions = payments.reduce((s, x) => s + Number(x.commission?.platformAmount || 0), 0);
+    const totalCommissions = payments.reduce(
+      (s, x) => s + Number(x.commission?.platformAmount || 0),
+      0,
+    );
     const totalOperator = totalGross - totalCommissions;
 
-    return { summary: { totalGross, totalCommissions, totalOperator, count: payments.length, period: { start, end } }, payments };
+    return {
+      summary: {
+        totalGross,
+        totalCommissions,
+        totalOperator,
+        count: payments.length,
+        period: { start, end },
+      },
+      payments,
+    };
   }
 
-  async getEnergyReport(params: { startDate?: string; endDate?: string; companyId?: string }) {
+  async getEnergyReport(params: {
+    startDate?: string;
+    endDate?: string;
+    companyId?: string;
+  }) {
     const start = params.startDate ? new Date(params.startDate) : new Date(0);
     const end = params.endDate ? new Date(params.endDate) : new Date();
 
-    const stationFilter = params.companyId ? { station: { companyId: params.companyId } } : {};
+    const stationFilter = params.companyId
+      ? { station: { companyId: params.companyId } }
+      : {};
 
     const sessions = await this.prisma.chargingSession.findMany({
-      where: { ...stationFilter, startTime: { gte: start, lte: end }, status: 'COMPLETED' },
-      select: { id: true, energyKwh: true, startTime: true, station: { select: { name: true } } },
+      where: {
+        ...stationFilter,
+        startTime: { gte: start, lte: end },
+        status: 'COMPLETED',
+      },
+      select: {
+        id: true,
+        energyKwh: true,
+        startTime: true,
+        station: { select: { name: true } },
+      },
       orderBy: { startTime: 'desc' },
     });
 
@@ -93,11 +137,20 @@ export class ReportsService {
       monthly.push({ label, energy: data.energy, sessions: data.sessions });
     }
 
-    return { summary: { totalEnergy, totalSessions: sessions.length, period: { start, end } }, monthly };
+    return {
+      summary: {
+        totalEnergy,
+        totalSessions: sessions.length,
+        period: { start, end },
+      },
+      monthly,
+    };
   }
 
   async getEquipmentReport(params: { companyId?: string }) {
-    const stationFilter = params.companyId ? { station: { companyId: params.companyId } } : {};
+    const stationFilter = params.companyId
+      ? { station: { companyId: params.companyId } }
+      : {};
 
     const chargers = await this.prisma.charger.findMany({
       where: stationFilter,
@@ -112,14 +165,23 @@ export class ReportsService {
     const online = chargers.filter((c) => c.status === 'ONLINE').length;
     const offline = chargers.filter((c) => c.status === 'OFFLINE').length;
     const error = chargers.filter((c) => c.status === 'ERROR').length;
-    const totalConnectors = chargers.reduce((s, c) => s + c.connectors.length, 0);
+    const totalConnectors = chargers.reduce(
+      (s, c) => s + c.connectors.length,
+      0,
+    );
 
-    return { summary: { total, online, offline, error, totalConnectors }, chargers };
+    return {
+      summary: { total, online, offline, error, totalConnectors },
+      chargers,
+    };
   }
 
   // CSV/Excel export helpers
   generateCsv(headers: string[], rows: string[][]): string {
     const escape = (v: string) => `"${String(v).replace(/"/g, '""')}"`;
-    return [headers.map(escape).join(','), ...rows.map((r) => r.map(escape).join(','))].join('\n');
+    return [
+      headers.map(escape).join(','),
+      ...rows.map((r) => r.map(escape).join(',')),
+    ].join('\n');
   }
 }

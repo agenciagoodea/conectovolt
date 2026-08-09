@@ -36,7 +36,9 @@ describe('RolesGuard', () => {
   });
 
   it('should allow access if user has one of multiple required roles', () => {
-    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(['SUPER_ADMIN', 'OPERATOR']);
+    jest
+      .spyOn(reflector, 'getAllAndOverride')
+      .mockReturnValue(['SUPER_ADMIN', 'OPERATOR']);
     const context = createContext({ role: 'OPERATOR' });
 
     expect(guard.canActivate(context)).toBe(true);

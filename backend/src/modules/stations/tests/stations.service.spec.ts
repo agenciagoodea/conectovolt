@@ -42,8 +42,20 @@ describe('StationsService', () => {
   });
 
   it('should create station', async () => {
-    mockPrisma.station.create.mockResolvedValue({ id: 's1', name: 'Posto 1', status: 'ACTIVE' });
-    const result = await service.create({ name: 'Posto 1', address: 'Rua A', city: 'SP', state: 'SP', companyId: 'c1', latitude: 0, longitude: 0 });
+    mockPrisma.station.create.mockResolvedValue({
+      id: 's1',
+      name: 'Posto 1',
+      status: 'ACTIVE',
+    });
+    const result = await service.create({
+      name: 'Posto 1',
+      address: 'Rua A',
+      city: 'SP',
+      state: 'SP',
+      companyId: 'c1',
+      latitude: 0,
+      longitude: 0,
+    });
     expect(result.name).toBe('Posto 1');
   });
 });

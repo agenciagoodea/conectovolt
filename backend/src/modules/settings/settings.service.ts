@@ -6,14 +6,25 @@ export class SettingsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getSettings() {
-    const [companies, stations, chargers, users, sessions, payments, commissions] = await Promise.all([
+    const [
+      companies,
+      stations,
+      chargers,
+      users,
+      sessions,
+      payments,
+      commissions,
+    ] = await Promise.all([
       this.prisma.company.count(),
       this.prisma.station.count(),
       this.prisma.charger.count(),
       this.prisma.user.count(),
       this.prisma.chargingSession.count(),
       this.prisma.payment.count(),
-      this.prisma.commission.findFirst({ orderBy: { createdAt: 'desc' }, select: { percentage: true } }),
+      this.prisma.commission.findFirst({
+        orderBy: { createdAt: 'desc' },
+        select: { percentage: true },
+      }),
     ]);
 
     const totalRevenue = await this.prisma.payment.aggregate({
@@ -37,8 +48,14 @@ export class SettingsService {
   }
 
   async updateSettings(body: { commissionPercent?: number }) {
-    if (body.commissionPercent != null && body.commissionPercent > 0 && body.commissionPercent <= 100) {
-      const latest = await this.prisma.commission.findFirst({ orderBy: { createdAt: 'desc' } });
+    if (
+      body.commissionPercent != null &&
+      body.commissionPercent > 0 &&
+      body.commissionPercent <= 100
+    ) {
+      const latest = await this.prisma.commission.findFirst({
+        orderBy: { createdAt: 'desc' },
+      });
       if (latest) {
         await this.prisma.commission.upsert({
           where: { paymentId: latest.paymentId },

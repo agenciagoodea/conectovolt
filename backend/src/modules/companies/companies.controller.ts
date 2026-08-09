@@ -1,10 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CompaniesService } from './companies.service';
-import { CreateCompanyDto, UpdateCompanyDto } from './dto/company.dto';
+import { CreateCompanyDto, AdminUpdateCompanyDto } from './dto/company.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Companies')
 @ApiBearerAuth()
@@ -23,38 +36,54 @@ export class CompaniesController {
   @Get()
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Listar empresas' })
-  findAll(@Query('status') status?: string) {
-    return this.companiesService.findAll(status);
+  findAll(
+    @Query('status') status?: string,
+    @CurrentUser() user?: { role: string; companyId?: string },
+  ) {
+    return this.companiesService.findAll(status, user);
   }
 
   @Get(':id')
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Buscar empresa por ID' })
-  findOne(@Param('id') id: string) {
-    return this.companiesService.findById(id);
+  findOne(
+    @Param('id') id: string,
+    @CurrentUser() user?: { role: string; companyId?: string },
+  ) {
+    return this.companiesService.findById(id, user);
   }
 
   @Patch(':id')
   @Roles('SUPER_ADMIN')
   @ApiOperation({ summary: 'Atualizar empresa (Super Admin)' })
-  update(@Param('id') id: string, @Body() dto: UpdateCompanyDto) {
-    return this.companiesService.update(id, dto);
+  update(
+    @Param('id') id: string,
+    @Body() dto: AdminUpdateCompanyDto,
+    @CurrentUser() user?: { role: string; companyId?: string },
+  ) {
+    return this.companiesService.update(id, dto, user);
   }
 
   @Post(':id/approve')
   @Roles('SUPER_ADMIN')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Aprovar empresa (Super Admin)' })
-  approve(@Param('id') id: string) {
-    return this.companiesService.approve(id);
+  approve(
+    @Param('id') id: string,
+    @CurrentUser() user?: { role: string; companyId?: string },
+  ) {
+    return this.companiesService.approve(id, user);
   }
 
   @Post(':id/reject')
   @Roles('SUPER_ADMIN')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Rejeitar empresa (Super Admin)' })
-  reject(@Param('id') id: string) {
-    return this.companiesService.reject(id);
+  reject(
+    @Param('id') id: string,
+    @CurrentUser() user?: { role: string; companyId?: string },
+  ) {
+    return this.companiesService.reject(id, user);
   }
 
   @Delete(':id')

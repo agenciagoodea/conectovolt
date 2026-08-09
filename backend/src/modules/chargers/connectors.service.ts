@@ -21,7 +21,9 @@ export class ConnectorsService {
   }
 
   async create(chargerId: string, dto: CreateConnectorDto) {
-    const charger = await this.prisma.charger.findUnique({ where: { id: chargerId } });
+    const charger = await this.prisma.charger.findUnique({
+      where: { id: chargerId },
+    });
     if (!charger) throw new BadRequestException('Charger not found');
 
     return this.prisma.connector.create({
@@ -35,7 +37,7 @@ export class ConnectorsService {
   }
 
   async update(id: string, dto: UpdateConnectorDto) {
-    return this.prisma.connector.update({ where: { id }, data: dto as any });
+    return this.prisma.connector.update({ where: { id }, data: dto });
   }
 
   async remove(id: string) {

@@ -1,14 +1,22 @@
-import { IsString, IsOptional, IsEnum, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsNumber,
+  IsUUID,
+  MinLength,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ChargerStatus } from '../../../common/enums';
 
 export class CreateChargerDto {
   @ApiProperty()
-  @IsString()
+  @IsUUID()
   stationId: string;
 
   @ApiProperty({ example: 'SN-ABC123' })
   @IsString()
+  @MinLength(3)
   serialNumber: string;
 
   @ApiPropertyOptional({ example: 'Wallbox Pro' })
@@ -35,12 +43,13 @@ export class CreateChargerDto {
 export class UpdateChargerDto {
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
+  @IsUUID()
   stationId?: string;
 
   @ApiPropertyOptional({ example: 'SN-ABC123' })
   @IsOptional()
   @IsString()
+  @MinLength(3)
   serialNumber?: string;
 
   @ApiPropertyOptional({ example: 'Wallbox Pro' })

@@ -7,7 +7,12 @@ export class NotificationsService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: { userId: string; type: string; title: string; message: string }) {
+  async create(data: {
+    userId: string;
+    type: string;
+    title: string;
+    message: string;
+  }) {
     return this.prisma.notification.create({ data });
   }
 
@@ -38,13 +43,23 @@ export class NotificationsService {
   }
 
   // Send notification to all users with a given role
-  async broadcastToRole(role: string, title: string, message: string, type = 'system') {
-    const users = await this.prisma.user.findMany({ where: { role }, select: { id: true } });
-    const results: any[] = [];
+  async broadcastToRole(
+    role: string,
+    title: string,
+    message: string,
+    type = 'system',
+  ) {
+    const users = await this.prisma.user.findMany({
+      where: { role },
+      select: { id: true },
+    });
+    const results: Record<string, unknown>[] = [];
     for (const u of users) {
       results.push(await this.create({ userId: u.id, type, title, message }));
     }
-    this.logger.log(`Broadcast ${type} notification to ${users.length} ${role} users`);
+    this.logger.log(
+      `Broadcast ${type} notification to ${users.length} ${role} users`,
+    );
     return results;
   }
 }

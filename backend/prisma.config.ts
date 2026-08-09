@@ -8,6 +8,7 @@ export default defineConfig({
   schema: schemaPath,
   migrations: {
     path: isMySQL ? "prisma/migrations_mysql" : "prisma/migrations",
+    seed: "npx tsx prisma/seed.ts",
   },
   datasource: {
     url: process.env["DATABASE_URL"] || "file:./prisma/dev.db",

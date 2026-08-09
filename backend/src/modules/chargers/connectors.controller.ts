@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ConnectorsService } from './connectors.service';
 import { CreateConnectorDto, UpdateConnectorDto } from './dto/connector.dto';
@@ -28,7 +37,10 @@ export class ConnectorsController {
   @Post('charger/:chargerId')
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Adicionar conector ao carregador' })
-  create(@Param('chargerId') chargerId: string, @Body() dto: CreateConnectorDto) {
+  create(
+    @Param('chargerId') chargerId: string,
+    @Body() dto: CreateConnectorDto,
+  ) {
     return this.connectorsService.create(chargerId, dto);
   }
 

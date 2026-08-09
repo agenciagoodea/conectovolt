@@ -1,4 +1,13 @@
-import { IsString, IsOptional, IsEnum, IsNumber, MinLength } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsNumber,
+  IsUUID,
+  MinLength,
+  Max,
+  Min,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StationStatus } from '../../../common/enums';
 
@@ -9,7 +18,7 @@ export class CreateStationDto {
   name: string;
 
   @ApiProperty()
-  @IsString()
+  @IsUUID()
   companyId: string;
 
   @ApiProperty({ example: 'Rua A, 123' })
@@ -27,11 +36,15 @@ export class CreateStationDto {
   @ApiPropertyOptional({ example: -23.5505 })
   @IsOptional()
   @IsNumber()
+  @Min(-90)
+  @Max(90)
   latitude?: number;
 
   @ApiPropertyOptional({ example: -46.6333 })
   @IsOptional()
   @IsNumber()
+  @Min(-180)
+  @Max(180)
   longitude?: number;
 
   @ApiPropertyOptional()
@@ -41,7 +54,7 @@ export class CreateStationDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
+  @IsUUID()
   tariffId?: string;
 }
 
@@ -69,11 +82,15 @@ export class UpdateStationDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
+  @Min(-90)
+  @Max(90)
   latitude?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
+  @Min(-180)
+  @Max(180)
   longitude?: number;
 
   @ApiPropertyOptional()

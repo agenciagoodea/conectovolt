@@ -1,8 +1,22 @@
-import { Controller, Get, Post, Body, Param, Patch, UseGuards, Query, Headers, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  UseGuards,
+  Query,
+  Headers,
+  Logger,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
+import * as crypto from 'crypto';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { PaymentsService } from './payments.service';
-import { CreatePaymentDto } from './dto/payment.dto';
+import { CreatePaymentDto, PaymentWebhookDto } from './dto/payment.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -17,8 +31,14 @@ export class PaymentsController {
 
   @Post()
   @ApiOperation({ summary: 'Criar pagamento (PIX ou Cartao)' })
-  create(@Body() dto: CreatePaymentDto, @CurrentUser('email') email?: string) {
-    return this.paymentsService.create(dto, email);
+  create(
+    @Body() dto: CreatePaymentDto,
+    @CurrentUser() user: { id: string; email: string; role: string },
+  ) {
+    if (!user?.id) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+    return this.paymentsService.create(dto, user);
   }
 
   @Get()
@@ -33,8 +53,14 @@ export class PaymentsController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Consultar pagamento por ID' })
-  findOne(@Param('id') id: string) {
-    return this.paymentsService.findById(id);
+  findOne(
+    @Param('id') id: string,
+    @CurrentUser() user: { id: string; role: string },
+  ) {
+    if (!user?.id) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+    return this.paymentsService.findById(id, user);
   }
 
   @Patch(':id/approve')
@@ -71,16 +97,35 @@ export class WebhooksController {
 
   @Post('payment')
   @ApiOperation({ summary: 'Webhook do Mercado Pago' })
-  handlePaymentWebhook(@Body() data: any, @Headers('x-signature') signature?: string) {
-    const secret = this.configService.get<string>('MERCADO_PAGO_WEBHOOK_SECRET');
-    if (secret && signature) {
-      const crypto = require('crypto');
-      const computed = crypto.createHmac('sha256', secret).update(JSON.stringify(data)).digest('hex');
-      if (computed !== signature) {
-        this.logger.warn('Webhook signature mismatch');
-        return { received: true };
-      }
+  handlePaymentWebhook(
+    @Body() data: PaymentWebhookDto,
+    @Headers('x-signature') signature?: string,
+    @Headers('x-request-id') requestId?: string,
+  ) {
+    const secret = this.configService.get<string>(
+      'MERCADO_PAGO_WEBHOOK_SECRET',
+    );
+
+    if (!secret) {
+      this.logger.error('Webhook secret not configured');
+      throw new BadRequestException('Webhook not configured');
     }
+
+    if (!signature) {
+      this.logger.warn(`Webhook missing signature (request ${requestId})`);
+      throw new BadRequestException('Missing signature');
+    }
+
+    const computed = crypto
+      .createHmac('sha256', secret)
+      .update(JSON.stringify(data))
+      .digest('hex');
+
+    if (computed !== signature) {
+      this.logger.warn('Webhook signature mismatch');
+      throw new BadRequestException('Invalid signature');
+    }
+
     return this.paymentsService.handleWebhook(data);
   }
 }

@@ -1,9 +1,22 @@
-import { Controller, Get, Post, Body, Param, Patch, UseGuards, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { ChargingService } from './charging.service';
-import { StartChargingDto, UpdateEnergyDto, StopChargingDto } from './dto/charging.dto';
+import {
+  StartChargingDto,
+  UpdateEnergyDto,
+  StopChargingDto,
+} from './dto/charging.dto';
 
 @ApiTags('Charging')
 @ApiBearerAuth()
@@ -20,14 +33,22 @@ export class ChargingController {
 
   @Patch(':id/energy')
   @ApiOperation({ summary: 'Atualizar consumo de energia em tempo real' })
-  updateEnergy(@Param('id') id: string, @Body() dto: UpdateEnergyDto) {
-    return this.chargingService.updateEnergy(id, dto);
+  updateEnergy(
+    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+    @Body() dto: UpdateEnergyDto,
+  ) {
+    return this.chargingService.updateEnergy(id, userId, dto);
   }
 
   @Post(':id/stop')
   @ApiOperation({ summary: 'Finalizar sessao de recarga' })
-  stop(@Param('id') id: string, @Body() dto: StopChargingDto) {
-    return this.chargingService.stop(id, dto);
+  stop(
+    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+    @Body() dto: StopChargingDto,
+  ) {
+    return this.chargingService.stop(id, userId, dto);
   }
 
   @Get('active')
@@ -48,7 +69,7 @@ export class ChargingController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Buscar sessao detalhada por ID' })
-  findOne(@Param('id') id: string) {
-    return this.chargingService.getSessionById(id);
+  findOne(@Param('id') id: string, @CurrentUser('id') userId: string) {
+    return this.chargingService.getSessionById(id, userId);
   }
 }

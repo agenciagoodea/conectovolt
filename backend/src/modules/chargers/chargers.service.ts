@@ -1,6 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
-import { CreateChargerDto, UpdateChargerDto, UpdateChargerStatusDto } from './dto/charger.dto';
+import {
+  CreateChargerDto,
+  UpdateChargerDto,
+  UpdateChargerStatusDto,
+} from './dto/charger.dto';
 import { OcppService } from '../ocpp/ocpp.service';
 
 @Injectable()
@@ -10,40 +18,107 @@ export class ChargersService {
     private readonly ocppService: OcppService,
   ) {}
 
-  async findAll(stationId?: string) {
+  private async assertCompanyAccess(
+    chargerId: string,
+    user?: { role: string; companyId?: string },
+  ) {
+    const charger = await this.prisma.charger.findUnique({
+      where: { id: chargerId },
+      include: { station: true },
+    });
+
+    if (!charger) {
+      throw new NotFoundException('Charger not found');
+    }
+
+    if (
+      user?.role === 'OPERATOR' &&
+      user.companyId &&
+      charger.station?.companyId !== user.companyId
+    ) {
+      throw new ForbiddenException('You do not have access to this charger');
+    }
+
+    return charger;
+  }
+
+  async findAll(
+    stationId?: string,
+    user?: { role: string; companyId?: string },
+  ) {
+    const where: { stationId?: string; station?: { companyId: string } } = {};
+    if (stationId) where.stationId = stationId;
+    if (user?.role === 'OPERATOR' && user.companyId) {
+      where.station = { companyId: user.companyId };
+    }
+
     return this.prisma.charger.findMany({
-      where: stationId ? { stationId } : undefined,
+      where,
       include: { connectors: true, station: true },
     });
   }
 
-  async findById(id: string) {
-    return this.prisma.charger.findUnique({
+  async findById(id: string, user?: { role: string; companyId?: string }) {
+    return this.assertCompanyAccess(id, user);
+  }
+
+  async create(
+    dto: CreateChargerDto,
+    user?: { role: string; companyId?: string },
+  ) {
+    const station = await this.prisma.station.findUnique({
+      where: { id: dto.stationId },
+    });
+
+    if (!station) {
+      throw new NotFoundException('Station not found');
+    }
+
+    if (
+      user?.role === 'OPERATOR' &&
+      user.companyId &&
+      station.companyId !== user.companyId
+    ) {
+      throw new ForbiddenException('You do not have access to this station');
+    }
+
+    return this.prisma.charger.create({ data: dto });
+  }
+
+  async update(
+    id: string,
+    dto: UpdateChargerDto,
+    user?: { role: string; companyId?: string },
+  ) {
+    await this.assertCompanyAccess(id, user);
+    return this.prisma.charger.update({ where: { id }, data: dto });
+  }
+
+  async updateStatus(
+    id: string,
+    dto: UpdateChargerStatusDto,
+    user?: { role: string; companyId?: string },
+  ) {
+    await this.assertCompanyAccess(id, user);
+    return this.prisma.charger.update({
       where: { id },
-      include: { connectors: true, station: true },
+      data: { status: dto.status },
     });
   }
 
-  async create(dto: CreateChargerDto) {
-    return this.prisma.charger.create({ data: dto as any });
-  }
-
-  async update(id: string, dto: UpdateChargerDto) {
-    return this.prisma.charger.update({ where: { id }, data: dto as any });
-  }
-
-  async updateStatus(id: string, dto: UpdateChargerStatusDto) {
-    return this.prisma.charger.update({ where: { id }, data: { status: dto.status } });
-  }
-
-  async remove(id: string) {
+  async remove(id: string, user?: { role: string; companyId?: string }) {
+    await this.assertCompanyAccess(id, user);
     return this.prisma.charger.delete({ where: { id } });
   }
 
   async testConnection(id: string) {
     const charger = await this.prisma.charger.findUnique({ where: { id } });
     if (!charger || !charger.ocppId) {
-      return { connected: false, ocppId: null, reason: 'Charger not found or no OCPP ID' };
+      return {
+        connected: false,
+        ocppId: null,
+        reason: 'Charger not found or no OCPP ID',
+      };
     }
 
     const ws = this.ocppService.getConnection(charger.ocppId);
@@ -83,7 +158,14 @@ export class ChargersService {
 
     const chargers = await this.prisma.charger.findMany({
       where: { ocppId: { in: connectedOcppIds } },
-      select: { id: true, ocppId: true, serialNumber: true, model: true, status: true, station: { select: { name: true } } },
+      select: {
+        id: true,
+        ocppId: true,
+        serialNumber: true,
+        model: true,
+        status: true,
+        station: { select: { name: true } },
+      },
     });
 
     return chargers.map((c) => ({

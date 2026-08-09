@@ -1,59 +1,77 @@
-const bcrypt = require('bcrypt');
-const dotenv = require('dotenv');
+import * as bcrypt from 'bcrypt';
+import * as dotenv from 'dotenv';
+import { PrismaClient } from '../src/generated/client';
+
 dotenv.config();
 
 async function main() {
-  const { PrismaClient } = await import('../src/generated/client');
   const provider = process.env.DB_PROVIDER || 'sqlite';
-  let prisma;
+  let prisma: PrismaClient;
 
   if (provider === 'sqlite') {
     const { PrismaLibSql } = await import('@prisma/adapter-libsql');
     const adapter = new PrismaLibSql({
       url: process.env.DATABASE_URL || 'file:./prisma/dev.db',
     });
-    prisma = new (PrismaClient as any)({ adapter });
+    prisma = new PrismaClient({ adapter });
   } else {
     const { PrismaMariaDb } = await import('@prisma/adapter-mariadb');
     const adapter = new PrismaMariaDb(process.env.DATABASE_URL!);
-    prisma = new (PrismaClient as any)({ adapter });
+    prisma = new PrismaClient({ adapter });
   }
 
-  console.log(`Seeding database (${provider})...`);
+  console.log(`\n=== ConectoVolt Seed ===`);
+  console.log(`Provider: ${provider}\n`);
 
-  const passwordHash = await bcrypt.hash('Admin@123', 12);
-  const goodeaPasswordHash = await bcrypt.hash('04039866@AAs', 12);
+  // ============================================================
+  // 1. WIPE ALL DATA (respecting FK constraints)
+  // ============================================================
+  console.log('Wiping all existing data...');
 
-  const superAdmin1 = await prisma.user.upsert({
-    where: { email: 'admin@evcharge.com' },
-    update: { passwordHash },
-    create: {
+  await prisma.$executeRaw`DELETE FROM platform_usage`;
+  await prisma.$executeRaw`DELETE FROM subscriptions`;
+  await prisma.$executeRaw`DELETE FROM plans`;
+  await prisma.$executeRaw`DELETE FROM audit_logs`;
+  await prisma.$executeRaw`DELETE FROM notifications`;
+  await prisma.$executeRaw`DELETE FROM payments`;
+  await prisma.$executeRaw`DELETE FROM commissions`;
+  await prisma.$executeRaw`DELETE FROM transactions`;
+  await prisma.$executeRaw`DELETE FROM wallets`;
+  await prisma.$executeRaw`DELETE FROM charging_sessions`;
+  await prisma.$executeRaw`DELETE FROM connectors`;
+  await prisma.$executeRaw`DELETE FROM chargers`;
+  await prisma.$executeRaw`DELETE FROM stations`;
+  await prisma.$executeRaw`DELETE FROM tariffs`;
+  await prisma.$executeRaw`DELETE FROM vehicles`;
+  await prisma.$executeRaw`DELETE FROM users`;
+  await prisma.$executeRaw`DELETE FROM companies`;
+
+  console.log('All data wiped.\n');
+
+  // ============================================================
+  // 2. PASSWORD HASH
+  // ============================================================
+  const defaultPassword = 'Admin@123';
+  const passwordHash = await bcrypt.hash(defaultPassword, 12);
+
+  // ============================================================
+  // 3. USERS
+  // ============================================================
+  console.log('Creating users...');
+
+  const superAdmin = await prisma.user.create({
+    data: {
       name: 'Super Admin',
-      email: 'admin@evcharge.com',
+      email: 'admin@conectovolt.com.br',
       phone: '+5511999999999',
       passwordHash,
       role: 'SUPER_ADMIN',
     },
   });
-  console.log(`Super Admin 1: ${superAdmin1.email}`);
+  console.log(`  [SUPER_ADMIN] ${superAdmin.email} / ${defaultPassword}`);
 
-  const superAdmin2 = await prisma.user.upsert({
-    where: { email: 'contato@agenciagoodea.com' },
-    update: { passwordHash: goodeaPasswordHash },
-    create: {
-      name: 'Adriano Amorim Souza',
-      email: 'contato@agenciagoodea.com',
-      phone: '+5511988888888',
-      passwordHash: goodeaPasswordHash,
-      role: 'SUPER_ADMIN',
-    },
-  });
-  console.log(`Super Admin 2: ${superAdmin2.email}`);
-
-  const testCompany = await prisma.company.upsert({
-    where: { document: '00000000000000' },
-    update: {},
-    create: {
+  const testCompany = await prisma.company.create({
+    data: {
       name: 'Operadora Teste',
       document: '00000000000000',
       email: 'contato@operadorateste.com',
@@ -61,30 +79,124 @@ async function main() {
       status: 'ACTIVE',
     },
   });
-  console.log(`Company: ${testCompany.name}`);
+  console.log(`  [COMPANY] ${testCompany.name}`);
 
-  await prisma.wallet.upsert({
-    where: { companyId: testCompany.id },
-    update: {},
-    create: { companyId: testCompany.id, balance: 0 },
+  const operator = await prisma.user.create({
+    data: {
+      name: 'Operador Teste',
+      email: 'operador@conectovolt.com.br',
+      phone: '+5511777777777',
+      passwordHash,
+      role: 'OPERATOR',
+      companyId: testCompany.id,
+    },
   });
-  console.log('Wallet created');
+  console.log(`  [OPERATOR] ${operator.email} / ${defaultPassword}`);
 
-  await prisma.tariff.upsert({
-    where: { id: 'default-tariff' },
-    update: {},
-    create: {
-      id: 'default-tariff',
+  const customer = await prisma.user.create({
+    data: {
+      name: 'Cliente Teste',
+      email: 'cliente@conectovolt.com.br',
+      phone: '+5511666666666',
+      passwordHash,
+      role: 'CUSTOMER',
+    },
+  });
+  console.log(`  [CUSTOMER] ${customer.email} / ${defaultPassword}`);
+
+  // ============================================================
+  // 4. WALLET
+  // ============================================================
+  await prisma.wallet.create({
+    data: { companyId: testCompany.id, balance: 0 },
+  });
+  console.log('\nWallet created');
+
+  // ============================================================
+  // 5. TARIFF
+  // ============================================================
+  const tariff = await prisma.tariff.create({
+    data: {
       companyId: testCompany.id,
       name: 'Tarifa Padrao',
-      pricePerKwh: 2.50,
+      pricePerKwh: 2.5,
       isActive: true,
     },
   });
-  console.log('Tariff: R$ 2.50/kWh');
+  console.log(`Tariff: ${tariff.name} (R$ ${tariff.pricePerKwh}/kWh)`);
 
-  console.log('Seed completed successfully!');
+  // ============================================================
+  // 6. PLANS
+  // ============================================================
+  const starterPlan = await prisma.plan.create({
+    data: {
+      name: 'Starter',
+      description: 'Para pequenos operadores',
+      price: 0,
+      maxStations: 3,
+      maxChargers: 5,
+      maxUsers: 3,
+    },
+  });
+
+  const professionalPlan = await prisma.plan.create({
+    data: {
+      name: 'Professional',
+      description: 'Para operadores em crescimento',
+      price: 299,
+      maxStations: 20,
+      maxChargers: 50,
+      maxUsers: 20,
+    },
+  });
+
+  const enterprisePlan = await prisma.plan.create({
+    data: {
+      name: 'Enterprise',
+      description: 'Para grandes redes',
+      price: 999,
+      maxStations: 100,
+      maxChargers: 500,
+      maxUsers: 100,
+    },
+  });
+  console.log(`Plans: Starter, Professional, Enterprise`);
+
+  // ============================================================
+  // 7. SUBSCRIPTION (Starter for test company)
+  // ============================================================
+  await prisma.subscription.create({
+    data: {
+      companyId: testCompany.id,
+      planId: starterPlan.id,
+      status: 'ACTIVE',
+    },
+  });
+  console.log(`Subscription: Starter -> ${testCompany.name}`);
+
+  // ============================================================
+  // SUMMARY
+  // ============================================================
+  const userCount = await prisma.user.count();
+  const companyCount = await prisma.company.count();
+  const tariffCount = await prisma.tariff.count();
+  const planCount = await prisma.plan.count();
+
+  console.log(`\n=== Seed Completed ===`);
+  console.log(`  Users:    ${userCount}`);
+  console.log(`  Companies: ${companyCount}`);
+  console.log(`  Tariffs:  ${tariffCount}`);
+  console.log(`  Plans:    ${planCount}`);
+  console.log(`\nDefault credentials:`);
+  console.log(`  admin@conectovolt.com.br    / Admin@123  (SUPER_ADMIN)`);
+  console.log(`  operador@conectovolt.com.br / Admin@123  (OPERATOR)`);
+  console.log(`  cliente@conectovolt.com.br  / Admin@123  (CUSTOMER)`);
+  console.log('');
+
   await prisma.$disconnect();
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

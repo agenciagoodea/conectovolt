@@ -1,4 +1,10 @@
-import { IsString, IsOptional, IsEnum, MinLength } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsEmail,
+  MinLength,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CompanyStatus } from '../../../common/enums';
 
@@ -14,7 +20,7 @@ export class CreateCompanyDto {
 
   @ApiPropertyOptional({ example: 'contato@empresa.com' })
   @IsOptional()
-  @IsString()
+  @IsEmail()
   email?: string;
 
   @ApiPropertyOptional({ example: '+5511888888888' })
@@ -32,14 +38,16 @@ export class UpdateCompanyDto {
 
   @ApiPropertyOptional({ example: 'contato@empresa.com' })
   @IsOptional()
-  @IsString()
+  @IsEmail()
   email?: string;
 
   @ApiPropertyOptional({ example: '+5511888888888' })
   @IsOptional()
   @IsString()
   phone?: string;
+}
 
+export class AdminUpdateCompanyDto extends UpdateCompanyDto {
   @ApiPropertyOptional({ enum: CompanyStatus })
   @IsOptional()
   @IsEnum(CompanyStatus)

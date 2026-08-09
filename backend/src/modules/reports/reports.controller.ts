@@ -22,7 +22,11 @@ export class ReportsController {
     @Query('end_date') endDate?: string,
     @CurrentUser('companyId') companyId?: string,
   ) {
-    return this.reportsService.getChargingReport({ startDate, endDate, companyId });
+    return this.reportsService.getChargingReport({
+      startDate,
+      endDate,
+      companyId,
+    });
   }
 
   @Get('charging/export')
@@ -34,21 +38,36 @@ export class ReportsController {
     @Query('end_date') endDate?: string,
     @CurrentUser('companyId') companyId?: string,
   ) {
-    const report = await this.reportsService.getChargingReport({ startDate, endDate, companyId });
+    const report = await this.reportsService.getChargingReport({
+      startDate,
+      endDate,
+      companyId,
+    });
     const csv = this.reportsService.generateCsv(
-      ['Data', 'Usuario', 'Posto', 'Carregador', 'Energia (kWh)', 'Valor (R$)', 'Status'],
+      [
+        'Data',
+        'Usuario',
+        'Posto',
+        'Carregador',
+        'Energia (kWh)',
+        'Valor (R$)',
+        'Status',
+      ],
       report.sessions.map((s) => [
         new Date(s.startTime).toISOString(),
-        (s.user as any)?.name || '',
-        (s.station as any)?.name || '',
-        (s.charger as any)?.serialNumber || '',
+        s.user?.name || '',
+        s.station?.name || '',
+        s.charger?.serialNumber || '',
         String(Number(s.energyKwh).toFixed(2)),
         String(Number(s.amount).toFixed(2)),
         s.status,
       ]),
     );
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', 'attachment; filename=relatorio-recargas.csv');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=relatorio-recargas.csv',
+    );
     res.send(csv);
   }
 
@@ -70,21 +89,35 @@ export class ReportsController {
     @Query('start_date') startDate?: string,
     @Query('end_date') endDate?: string,
   ) {
-    const report = await this.reportsService.getFinancialReport({ startDate, endDate });
+    const report = await this.reportsService.getFinancialReport({
+      startDate,
+      endDate,
+    });
     const csv = this.reportsService.generateCsv(
-      ['Data', 'Usuario', 'Posto', 'Empresa', 'Valor Bruto', 'Comissao', 'Repasse'],
+      [
+        'Data',
+        'Usuario',
+        'Posto',
+        'Empresa',
+        'Valor Bruto',
+        'Comissao',
+        'Repasse',
+      ],
       report.payments.map((p) => [
         new Date(p.createdAt).toISOString(),
-        (p.session as any)?.user?.name || '',
-        (p.session as any)?.station?.name || '',
-        (p.session as any)?.station?.company?.name || '',
+        p.session?.user?.name || '',
+        p.session?.station?.name || '',
+        p.session?.station?.company?.name || '',
         String(Number(p.amount).toFixed(2)),
         String(Number(p.commission?.platformAmount || 0).toFixed(2)),
         String(Number(p.commission?.operatorAmount || 0).toFixed(2)),
       ]),
     );
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', 'attachment; filename=relatorio-financeiro.csv');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=relatorio-financeiro.csv',
+    );
     res.send(csv);
   }
 
@@ -96,7 +129,11 @@ export class ReportsController {
     @Query('end_date') endDate?: string,
     @CurrentUser('companyId') companyId?: string,
   ) {
-    return this.reportsService.getEnergyReport({ startDate, endDate, companyId });
+    return this.reportsService.getEnergyReport({
+      startDate,
+      endDate,
+      companyId,
+    });
   }
 
   @Get('equipment')

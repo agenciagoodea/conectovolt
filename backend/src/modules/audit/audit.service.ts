@@ -12,8 +12,8 @@ export class AuditService {
     action: string;
     entity: string;
     entityId?: string;
-    oldValue?: any;
-    newValue?: any;
+    oldValue?: unknown;
+    newValue?: unknown;
     ipAddress?: string;
     userAgent?: string;
   }) {
@@ -31,7 +31,10 @@ export class AuditService {
         },
       });
     } catch (error) {
-      this.logger.error(`Failed to create audit log: ${error.message}`);
+      const err = error as { message?: string };
+      this.logger.error(
+        `Failed to create audit log: ${err.message ?? 'unknown error'}`,
+      );
     }
   }
 
@@ -44,14 +47,20 @@ export class AuditService {
     page?: number;
     limit?: number;
   }) {
-    const where: any = {};
+    const where: Record<string, unknown> = {};
     if (params.userId) where.userId = params.userId;
     if (params.action) where.action = params.action;
     if (params.entity) where.entity = params.entity;
     if (params.startDate || params.endDate) {
       where.createdAt = {};
-      if (params.startDate) where.createdAt.gte = new Date(params.startDate);
-      if (params.endDate) where.createdAt.lte = new Date(params.endDate);
+      if (params.startDate)
+        (where.createdAt as Record<string, Date>).gte = new Date(
+          params.startDate,
+        );
+      if (params.endDate)
+        (where.createdAt as Record<string, Date>).lte = new Date(
+          params.endDate,
+        );
     }
 
     const page = params.page || 1;
@@ -64,12 +73,14 @@ export class AuditService {
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
-        include: { user: { select: { id: true, name: true, email: true } } },
       }),
       this.prisma.auditLog.count({ where }),
     ]);
 
-    return { data: logs, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    return {
+      data: logs,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   // Trigger notification on important events

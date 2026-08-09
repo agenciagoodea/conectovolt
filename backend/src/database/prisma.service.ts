@@ -1,13 +1,18 @@
-import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  OnModuleInit,
+  OnModuleDestroy,
+  Logger,
+} from '@nestjs/common';
+import { PrismaClient } from '../generated/client';
 
 @Injectable()
 export class PrismaService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrismaService.name);
-  private _client: any = null;
+  private _client: PrismaClient | null = null;
 
   async onModuleInit() {
     try {
-      const { PrismaClient } = await import('../generated/client.js');
       const provider = process.env.DB_PROVIDER || 'sqlite';
 
       if (provider === 'sqlite') {
@@ -17,11 +22,17 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
         });
         this._client = new PrismaClient({
           adapter,
-          log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
+          log:
+            process.env.NODE_ENV === 'development'
+              ? ['warn', 'error']
+              : ['error'],
         });
       } else if (provider === 'mysql') {
         const { PrismaMariaDb } = await import('@prisma/adapter-mariadb');
-        const dbUrl = (process.env.DATABASE_URL || '').replace(/^mysql:\/\//, 'mariadb://');
+        const dbUrl = (process.env.DATABASE_URL || '').replace(
+          /^mysql:\/\//,
+          'mariadb://',
+        );
         const adapter = new PrismaMariaDb(dbUrl);
         this._client = new PrismaClient({
           adapter,
@@ -33,33 +44,80 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
 
       await this._client.$connect();
       this.logger.log(`Database connected (${provider})`);
-    } catch (error) {
-      this.logger.error(`Database connection failed: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Database connection failed: ${message}`);
       throw error;
     }
   }
 
   async onModuleDestroy() {
     if (this._client) {
-      try { await this._client.$disconnect(); } catch {}
+      try {
+        await this._client.$disconnect();
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        this.logger.error(`Database disconnect error: ${message}`);
+      }
     }
   }
 
-  get user() { return this._client?.user; }
-  get company() { return this._client?.company; }
-  get station() { return this._client?.station; }
-  get charger() { return this._client?.charger; }
-  get connector() { return this._client?.connector; }
-  get vehicle() { return this._client?.vehicle; }
-  get chargingSession() { return this._client?.chargingSession; }
-  get payment() { return this._client?.payment; }
-  get commission() { return this._client?.commission; }
-  get wallet() { return this._client?.wallet; }
-  get transaction() { return this._client?.transaction; }
-  get tariff() { return this._client?.tariff; }
-  get notification() { return this._client?.notification; }
-  get auditLog() { return this._client?.auditLog; }
-  get plan() { return this._client?.plan; }
-  get subscription() { return this._client?.subscription; }
-  get platformUsage() { return this._client?.platformUsage; }
+  get client(): PrismaClient {
+    if (!this._client) {
+      throw new Error('PrismaClient has not been initialized');
+    }
+    return this._client;
+  }
+
+  get user() {
+    return this.client.user;
+  }
+  get company() {
+    return this.client.company;
+  }
+  get station() {
+    return this.client.station;
+  }
+  get charger() {
+    return this.client.charger;
+  }
+  get connector() {
+    return this.client.connector;
+  }
+  get vehicle() {
+    return this.client.vehicle;
+  }
+  get chargingSession() {
+    return this.client.chargingSession;
+  }
+  get payment() {
+    return this.client.payment;
+  }
+  get commission() {
+    return this.client.commission;
+  }
+  get wallet() {
+    return this.client.wallet;
+  }
+  get transaction() {
+    return this.client.transaction;
+  }
+  get tariff() {
+    return this.client.tariff;
+  }
+  get notification() {
+    return this.client.notification;
+  }
+  get auditLog() {
+    return this.client.auditLog;
+  }
+  get plan() {
+    return this.client.plan;
+  }
+  get subscription() {
+    return this.client.subscription;
+  }
+  get platformUsage() {
+    return this.client.platformUsage;
+  }
 }

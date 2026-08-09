@@ -15,8 +15,12 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
 
+  const allowedOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
+    : ['http://localhost:3000'];
+
   app.enableCors({
-    origin: true,
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -35,7 +39,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('ConectoVolt API')
-    .setDescription('API para gestao de postos de recarga de veiculos eletricos')
+    .setDescription(
+      'API para gestao de postos de recarga de veiculos eletricos',
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .build();
@@ -44,8 +50,9 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   const port = process.env.PORT || 3000;
-  await app.listen(port);
-  logger.log(`Application running on port ${port}`);
+  const host = process.env.HOST || '127.0.0.1';
+  await app.listen(port, host);
+  logger.log(`Application running on ${host}:${port}`);
 }
 
-bootstrap();
+void bootstrap();

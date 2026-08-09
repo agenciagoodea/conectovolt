@@ -1,10 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ChargersService } from './chargers.service';
-import { CreateChargerDto, UpdateChargerDto, UpdateChargerStatusDto } from './dto/charger.dto';
+import {
+  CreateChargerDto,
+  UpdateChargerDto,
+  UpdateChargerStatusDto,
+} from './dto/charger.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Chargers')
 @ApiBearerAuth()
@@ -16,43 +31,63 @@ export class ChargersController {
   @Post()
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Criar carregador' })
-  create(@Body() dto: CreateChargerDto) {
-    return this.chargersService.create(dto);
+  create(
+    @Body() dto: CreateChargerDto,
+    @CurrentUser() user: { role: string; companyId?: string },
+  ) {
+    return this.chargersService.create(dto, user);
   }
 
   @Get()
   @Roles('SUPER_ADMIN', 'OPERATOR', 'CUSTOMER')
   @ApiOperation({ summary: 'Listar carregadores' })
-  findAll(@Query('station_id') stationId?: string) {
-    return this.chargersService.findAll(stationId);
+  findAll(
+    @Query('station_id') stationId?: string,
+    @CurrentUser() user?: { role: string; companyId?: string },
+  ) {
+    return this.chargersService.findAll(stationId, user);
   }
 
   @Get(':id')
   @Roles('SUPER_ADMIN', 'OPERATOR', 'CUSTOMER')
   @ApiOperation({ summary: 'Buscar carregador por ID' })
-  findOne(@Param('id') id: string) {
-    return this.chargersService.findById(id);
+  findOne(
+    @Param('id') id: string,
+    @CurrentUser() user?: { role: string; companyId?: string },
+  ) {
+    return this.chargersService.findById(id, user);
   }
 
   @Patch(':id')
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Atualizar carregador' })
-  update(@Param('id') id: string, @Body() dto: UpdateChargerDto) {
-    return this.chargersService.update(id, dto);
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateChargerDto,
+    @CurrentUser() user: { role: string; companyId?: string },
+  ) {
+    return this.chargersService.update(id, dto, user);
   }
 
   @Patch(':id/status')
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Atualizar status do carregador' })
-  updateStatus(@Param('id') id: string, @Body() dto: UpdateChargerStatusDto) {
-    return this.chargersService.updateStatus(id, dto);
+  updateStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateChargerStatusDto,
+    @CurrentUser() user: { role: string; companyId?: string },
+  ) {
+    return this.chargersService.updateStatus(id, dto, user);
   }
 
   @Delete(':id')
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Remover carregador' })
-  remove(@Param('id') id: string) {
-    return this.chargersService.remove(id);
+  remove(
+    @Param('id') id: string,
+    @CurrentUser() user: { role: string; companyId?: string },
+  ) {
+    return this.chargersService.remove(id, user);
   }
 
   @Get('connections')
@@ -64,7 +99,9 @@ export class ChargersController {
 
   @Get(':id/test-connection')
   @Roles('SUPER_ADMIN', 'OPERATOR')
-  @ApiOperation({ summary: 'Testar conectividade do carregador via WebSocket OCPP' })
+  @ApiOperation({
+    summary: 'Testar conectividade do carregador via WebSocket OCPP',
+  })
   testConnection(@Param('id') id: string) {
     return this.chargersService.testConnection(id);
   }

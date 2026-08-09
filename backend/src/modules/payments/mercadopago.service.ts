@@ -9,17 +9,25 @@ export class MercadoPagoService {
   private isConfigured = false;
 
   constructor(private readonly configService: ConfigService) {
-    const accessToken = this.configService.get<string>('MERCADO_PAGO_ACCESS_TOKEN');
+    const accessToken = this.configService.get<string>(
+      'MERCADO_PAGO_ACCESS_TOKEN',
+    );
     if (accessToken) {
       this.client = new MercadoPagoConfig({ accessToken });
       this.isConfigured = true;
       this.logger.log('Mercado Pago configured');
     } else {
-      this.logger.warn('Mercado Pago not configured (MERCADO_PAGO_ACCESS_TOKEN missing). Using simulation mode.');
+      this.logger.warn(
+        'Mercado Pago not configured (MERCADO_PAGO_ACCESS_TOKEN missing). Using simulation mode.',
+      );
     }
   }
 
-  async createPixPayment(amount: number, description: string, payerEmail: string) {
+  async createPixPayment(
+    amount: number,
+    description: string,
+    payerEmail: string,
+  ) {
     if (!this.isConfigured) {
       return this.simulatePixPayment(amount, description);
     }
@@ -40,7 +48,8 @@ export class MercadoPagoService {
       id: result.id,
       status: result.status,
       qrCode: result.point_of_interaction?.transaction_data?.qr_code,
-      qrCodeBase64: result.point_of_interaction?.transaction_data?.qr_code_base64,
+      qrCodeBase64:
+        result.point_of_interaction?.transaction_data?.qr_code_base64,
       copyPaste: result.point_of_interaction?.transaction_data?.qr_code,
       amount: result.transaction_amount,
       dateCreated: result.date_created,

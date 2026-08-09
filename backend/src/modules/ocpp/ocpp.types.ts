@@ -35,6 +35,7 @@ export interface BootNotificationPayload {
   meterType?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface HeartbeatPayload {}
 
 export interface AuthorizePayload {
@@ -130,6 +131,7 @@ export interface TriggerMessagePayload {
   connectorId?: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ClearCachePayload {
   // Empty
 }
@@ -158,6 +160,7 @@ export interface SendLocalListPayload {
   }>;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface GetLocalListVersionPayload {
   // Empty
 }

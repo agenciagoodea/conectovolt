@@ -1,4 +1,10 @@
-import { IsString, IsNumber, IsOptional, Min } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateVehicleDto {
@@ -12,6 +18,7 @@ export class CreateVehicleDto {
 
   @ApiProperty({ example: 'ABC1234' })
   @IsString()
+  @MinLength(5)
   plate: string;
 
   @ApiPropertyOptional({ example: 75 })

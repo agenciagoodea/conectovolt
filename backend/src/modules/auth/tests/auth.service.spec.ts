@@ -3,8 +3,16 @@ import { AuthService } from '../auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../../database/prisma.service';
-import { ConflictException, UnauthorizedException, BadRequestException } from '@nestjs/common';
-import { mockPrismaService, mockJwtService, mockConfigService } from '../../../../test/helpers/mocks';
+import {
+  ConflictException,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
+import {
+  mockPrismaService,
+  mockJwtService,
+  mockConfigService,
+} from '../../../../test/helpers/mocks';
 import * as bcrypt from 'bcrypt';
 
 describe('AuthService', () => {
@@ -52,7 +60,11 @@ describe('AuthService', () => {
       prisma.user.findUnique.mockResolvedValue({ id: 'existing' });
 
       await expect(
-        service.register({ name: 'Test', email: 'test@email.com', password: '123456' }),
+        service.register({
+          name: 'Test',
+          email: 'test@email.com',
+          password: '123456',
+        }),
       ).rejects.toThrow(ConflictException);
     });
   });
@@ -69,7 +81,10 @@ describe('AuthService', () => {
         companyId: 'company-1',
       });
 
-      const result = await service.login({ email: 'test@email.com', password: '123456' });
+      const result = await service.login({
+        email: 'test@email.com',
+        password: '123456',
+      });
 
       expect(result.user.email).toBe('test@email.com');
       expect(result.user.role).toBe('SUPER_ADMIN');
@@ -101,16 +116,28 @@ describe('AuthService', () => {
 
   describe('refreshToken', () => {
     it('should refresh token successfully', async () => {
-      mockJwtService.verify.mockReturnValue({ sub: 'user-1', email: 'test@email.com', role: 'CUSTOMER' });
-      prisma.user.findUnique.mockResolvedValue({ id: 'user-1', email: 'test@email.com', role: 'CUSTOMER' });
+      mockJwtService.verify.mockReturnValue({
+        sub: 'user-1',
+        email: 'test@email.com',
+        role: 'CUSTOMER',
+      });
+      prisma.user.findUnique.mockResolvedValue({
+        id: 'user-1',
+        email: 'test@email.com',
+        role: 'CUSTOMER',
+      });
 
-      const result = await service.refreshToken({ refresh_token: 'valid-refresh-token' });
+      const result = await service.refreshToken({
+        refresh_token: 'valid-refresh-token',
+      });
 
       expect(result.access_token).toBeDefined();
     });
 
     it('should throw UnauthorizedException with invalid token', async () => {
-      mockJwtService.verify.mockImplementation(() => { throw new Error('Invalid token'); });
+      mockJwtService.verify.mockImplementation(() => {
+        throw new Error('Invalid token');
+      });
 
       await expect(
         service.refreshToken({ refresh_token: 'invalid' }),
@@ -120,37 +147,51 @@ describe('AuthService', () => {
 
   describe('forgotPassword', () => {
     it('should return success message when email exists', async () => {
-      prisma.user.findUnique.mockResolvedValue({ id: 'user-1', email: 'test@email.com' });
+      prisma.user.findUnique.mockResolvedValue({
+        id: 'user-1',
+        email: 'test@email.com',
+      });
 
       const result = await service.forgotPassword({ email: 'test@email.com' });
 
       expect(result.message).toContain('sent');
-      expect(result.reset_token).toBeDefined();
+      // Reset token must never be returned by the API
+      expect('reset_token' in result).toBe(false);
     });
 
     it('should still return success when email does not exist', async () => {
       prisma.user.findUnique.mockResolvedValue(null);
 
-      const result = await service.forgotPassword({ email: 'nonexistent@email.com' });
+      const result = await service.forgotPassword({
+        email: 'nonexistent@email.com',
+      });
 
       expect(result.message).toContain('sent');
-      expect(result.reset_token).toBeUndefined();
+      expect('reset_token' in result).toBe(false);
     });
   });
 
   describe('resetPassword', () => {
     it('should reset password with valid token', async () => {
-      mockJwtService.verify.mockReturnValue({ sub: 'user-1', type: 'password_reset' });
+      mockJwtService.verify.mockReturnValue({
+        sub: 'user-1',
+        type: 'password_reset',
+      });
       prisma.user.update.mockResolvedValue({ id: 'user-1' });
 
-      const result = await service.resetPassword({ token: 'valid', new_password: 'newpass123' });
+      const result = await service.resetPassword({
+        token: 'valid',
+        new_password: 'newpass123',
+      });
 
       expect(result.message).toContain('reset');
       expect(prisma.user.update).toHaveBeenCalled();
     });
 
     it('should throw BadRequestException with invalid token', async () => {
-      mockJwtService.verify.mockImplementation(() => { throw new Error('Invalid'); });
+      mockJwtService.verify.mockImplementation(() => {
+        throw new Error('Invalid');
+      });
 
       await expect(
         service.resetPassword({ token: 'invalid', new_password: 'newpass' }),

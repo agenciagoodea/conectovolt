@@ -42,14 +42,22 @@ describe('CompaniesService', () => {
   });
 
   it('should create company and wallet', async () => {
-    mockPrisma.company.create.mockResolvedValue({ id: 'c1', name: 'Test', document: '123', status: 'PENDING' });
+    mockPrisma.company.create.mockResolvedValue({
+      id: 'c1',
+      name: 'Test',
+      document: '123',
+      status: 'PENDING',
+    });
     const result = await service.create({ name: 'Test', document: '123' });
     expect(result).toBeDefined();
     expect(mockPrisma.wallet.create).toHaveBeenCalled();
   });
 
   it('should approve company', async () => {
-    mockPrisma.company.findUnique.mockResolvedValue({ id: 'c1', status: 'PENDING' });
+    mockPrisma.company.findUnique.mockResolvedValue({
+      id: 'c1',
+      status: 'PENDING',
+    });
     mockPrisma.company.update.mockResolvedValue({ id: 'c1', status: 'ACTIVE' });
     const result = await service.approve('c1');
     expect(result.status).toBe('ACTIVE');

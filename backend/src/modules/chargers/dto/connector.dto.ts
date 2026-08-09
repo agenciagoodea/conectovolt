@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum, IsNumber } from 'class-validator';
+import { IsOptional, IsEnum, IsNumber } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ConnectorType, ConnectorStatus } from '../../../common/enums';
 

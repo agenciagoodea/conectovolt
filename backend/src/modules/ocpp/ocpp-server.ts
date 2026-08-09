@@ -1,8 +1,16 @@
-import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  OnModuleInit,
+  OnModuleDestroy,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import WebSocket, { WebSocketServer, RawData } from 'ws';
+import { IncomingMessage } from 'http';
 import { OcppService } from './ocpp.service';
-import { OcppCall, OcppCallResult } from './ocpp.types';
+import { OcppCallResult } from './ocpp.types';
+
+type OcppMessage = [number, string, ...unknown[]];
 
 @Injectable()
 export class OcppServer implements OnModuleInit, OnModuleDestroy {
@@ -18,16 +26,17 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
     try {
       if (process.env.ENABLE_OCPP_PORT === 'true') {
         const port = this.configService.get<number>('OCPP_PORT') || 3001;
-        this.wss = new WebSocketServer({ port });
+        // Keep the raw OCPP listener behind Nginx so chargers use TLS on port 443.
+        this.wss = new WebSocketServer({ port, host: '127.0.0.1' });
 
-        this.wss.on('connection', (ws: WebSocket, req) => {
+        this.wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
           const ocppId = this.extractOcppId(req);
           this.logger.log(`OCPP charger connected: ${ocppId}`);
 
           this.ocppService.trackConnection(ocppId, ws);
 
           ws.on('message', (data: RawData) => {
-            this.handleMessage(ocppId, ws, data);
+            void this.handleMessage(ocppId, ws, data);
           });
 
           ws.on('close', () => {
@@ -35,8 +44,10 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
             this.ocppService.removeConnection(ocppId);
           });
 
-          ws.on('error', (error) => {
-            this.logger.error(`WebSocket error for ${ocppId}: ${error.message}`);
+          ws.on('error', (error: Error) => {
+            this.logger.error(
+              `WebSocket error for ${ocppId}: ${error.message}`,
+            );
           });
 
           ws.on('pong', () => {
@@ -46,10 +57,15 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
 
         this.logger.log(`OCPP WebSocket server listening on port ${port}`);
       } else {
-        this.logger.log('OCPP standalone port disabled for Passenger environment');
+        this.logger.log(
+          'OCPP standalone port disabled for Passenger environment',
+        );
       }
     } catch (error) {
-      this.logger.error(`Failed to start OCPP WebSocket server: ${error.message}`);
+      const err = error as { message?: string };
+      this.logger.error(
+        `Failed to start OCPP WebSocket server: ${err.message ?? 'unknown error'}`,
+      );
     }
   }
 
@@ -60,7 +76,7 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  private extractOcppId(req: any): string {
+  private extractOcppId(req: IncomingMessage): string {
     const url = req.url || '';
     const match = url.match(/[?&]identifier=([^&]+)/);
     if (match) return match[1];
@@ -73,27 +89,42 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
     return `charger-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   }
 
-  private async handleMessage(ocppId: string, ws: WebSocket, data: WebSocket.Data) {
+  private async handleMessage(ocppId: string, ws: WebSocket, data: RawData) {
     try {
-      const message = JSON.parse(data.toString()) as any[];
+      const raw =
+        typeof data === 'string'
+          ? data
+          : Buffer.isBuffer(data)
+            ? data.toString('utf-8')
+            : new TextDecoder().decode(new Uint8Array(data as ArrayBuffer));
+      const message = JSON.parse(raw) as unknown;
 
       if (!Array.isArray(message) || message.length < 3) {
-        this.sendError(ws, '', 'FormationViolation', 'Invalid OCPP message format', {});
+        this.sendError(
+          ws,
+          '',
+          'FormationViolation',
+          'Invalid OCPP message format',
+          {},
+        );
         return;
       }
 
-      const messageTypeId = message[0];
-      const uniqueId = message[1];
+      const typed = message as OcppMessage;
+      const messageTypeId = typed[0];
+      const uniqueId = typed[1];
 
       if (messageTypeId === 2) {
-        const action = message[2];
-        const payload = message[3] || {};
+        const action = typed[2] as string;
+        const payload = (typed[3] ?? {}) as Record<string, unknown>;
 
         await this.processCall(ocppId, ws, uniqueId, action, payload);
       }
     } catch (error) {
-      this.logger.error(`Error processing OCPP message: ${error.message}`);
-      this.sendError(ws, '', 'InternalError', error.message, {});
+      const err = error as { message?: string };
+      const msg = err.message ?? 'unknown error';
+      this.logger.error(`Error processing OCPP message: ${msg}`);
+      this.sendError(ws, '', 'InternalError', msg, {});
     }
   }
 
@@ -102,41 +133,59 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
     ws: WebSocket,
     uniqueId: string,
     action: string,
-    payload: any,
+    payload: Record<string, unknown>,
   ) {
     try {
-      let result: any;
+      let result: Record<string, unknown>;
 
       switch (action) {
         case 'BootNotification':
-          result = await this.ocppService.handleBootNotification(ocppId, payload);
+          result = await this.ocppService.handleBootNotification(
+            ocppId,
+            payload,
+          );
           break;
         case 'Heartbeat':
           result = await this.ocppService.handleHeartbeat(ocppId);
           break;
         case 'Authorize':
-          result = await this.ocppService.handleAuthorize(ocppId, payload);
+          result = this.ocppService.handleAuthorize(ocppId, payload);
           break;
         case 'StatusNotification':
-          result = await this.ocppService.handleStatusNotification(ocppId, payload);
+          result = await this.ocppService.handleStatusNotification(
+            ocppId,
+            payload,
+          );
           break;
         case 'StartTransaction':
-          result = await this.ocppService.handleStartTransaction(ocppId, payload);
+          result = await this.ocppService.handleStartTransaction(
+            ocppId,
+            payload,
+          );
           break;
         case 'StopTransaction':
-          result = await this.ocppService.handleStopTransaction(ocppId, payload);
+          result = await this.ocppService.handleStopTransaction(
+            ocppId,
+            payload,
+          );
           break;
         case 'MeterValues':
           result = await this.ocppService.handleMeterValues(ocppId, payload);
           break;
         case 'DataTransfer':
-          result = await this.ocppService.handleDataTransfer(ocppId, payload);
+          result = this.ocppService.handleDataTransfer(ocppId, payload);
           break;
         case 'DiagnosticsStatusNotification':
-          result = await this.ocppService.handleDiagnosticsStatusNotification(ocppId, payload);
+          result = this.ocppService.handleDiagnosticsStatusNotification(
+            ocppId,
+            payload,
+          );
           break;
         case 'FirmwareStatusNotification':
-          result = await this.ocppService.handleFirmwareStatusNotification(ocppId, payload);
+          result = this.ocppService.handleFirmwareStatusNotification(
+            ocppId,
+            payload,
+          );
           break;
         case 'TriggerMessage':
           result = { status: 'Accepted' };
@@ -145,30 +194,44 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
           result = { status: 'Accepted' };
           break;
         case 'GetConfiguration':
-          result = await this.ocppService.handleGetConfiguration(ocppId, payload);
+          result = this.ocppService.handleGetConfiguration(ocppId, payload);
           break;
         case 'ChangeConfiguration':
-          result = await this.ocppService.handleChangeConfiguration(ocppId, payload);
+          result = this.ocppService.handleChangeConfiguration(ocppId, payload);
           break;
         case 'GetLocalListVersion':
           result = { listVersion: 1 };
           break;
         default:
           this.logger.warn(`Unsupported OCPP action: ${action}`);
-          this.sendError(ws, uniqueId, 'NotSupported', `Action ${action} not supported`, {});
+          this.sendError(
+            ws,
+            uniqueId,
+            'NotSupported',
+            `Action ${action} not supported`,
+            {},
+          );
           return;
       }
 
       this.sendResult(ws, uniqueId, result);
     } catch (error) {
-      this.logger.error(`Error processing action ${action}: ${error.message}`);
-      this.sendError(ws, uniqueId, 'InternalError', error.message, {});
+      const err = error as { message?: string };
+      const msg = err.message ?? 'unknown error';
+      this.logger.error(`Error processing action ${action}: ${msg}`);
+      this.sendError(ws, uniqueId, 'InternalError', msg, {});
     }
   }
 
-  // Remote commands: send message from server to charger
-  sendRemoteStartTransaction(ocppId: string, idTag: string, connectorId?: number) {
-    return this.sendCall(ocppId, 'RemoteStartTransaction', { connectorId, idTag });
+  sendRemoteStartTransaction(
+    ocppId: string,
+    idTag: string,
+    connectorId?: number,
+  ) {
+    return this.sendCall(ocppId, 'RemoteStartTransaction', {
+      connectorId,
+      idTag,
+    });
   }
 
   sendRemoteStopTransaction(ocppId: string, transactionId: number) {
@@ -191,21 +254,31 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
     return this.sendCall(ocppId, 'GetConfiguration', keys ? { key: keys } : {});
   }
 
-  private sendCall(ocppId: string, action: string, payload: any) {
-    const ws = (this.ocppService as any).chargerConnections?.get(ocppId);
+  private sendCall(
+    ocppId: string,
+    action: string,
+    payload: Record<string, unknown>,
+  ) {
+    const ws = this.ocppService.getConnection(ocppId);
     if (!ws || ws.readyState !== 1) {
-      this.logger.warn(`Cannot send ${action}: charger ${ocppId} not connected`);
+      this.logger.warn(
+        `Cannot send ${action}: charger ${ocppId} not connected`,
+      );
       return false;
     }
     const uniqueId = `${action}-${Date.now()}`;
-    const message = [2, uniqueId, action, payload];
+    const message: OcppMessage = [2, uniqueId, action, payload];
     ws.send(JSON.stringify(message));
     this.logger.log(`Sent ${action} to ${ocppId}`);
     return true;
   }
 
-  private sendResult(ws: WebSocket, uniqueId: string, payload: any) {
-    const response: OcppCallResult = [3, uniqueId, payload] as any;
+  private sendResult(
+    ws: WebSocket,
+    uniqueId: string,
+    payload: Record<string, unknown>,
+  ) {
+    const response = [3, uniqueId, payload] as unknown as OcppCallResult;
     if (ws.readyState === 1) {
       ws.send(JSON.stringify(response));
     }
@@ -216,7 +289,7 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
     uniqueId: string,
     errorCode: string,
     errorDescription: string,
-    errorDetails: any,
+    errorDetails: Record<string, unknown>,
   ) {
     const response = [4, uniqueId, errorCode, errorDescription, errorDetails];
     if (ws.readyState === 1) {
