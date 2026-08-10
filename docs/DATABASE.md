@@ -3,7 +3,7 @@
 Versão: MVP 1.0
 
 Banco:
-PostgreSQL
+MySQL em produção e SQLite em desenvolvimento local
 
 ORM:
 Prisma
@@ -29,7 +29,7 @@ O banco deve suportar:
 
 ## IDs
 
-Todas as tabelas utilizam UUID.
+Todas as tabelas utilizam IDs string gerados como CUID pelo Prisma.
 
 ---
 

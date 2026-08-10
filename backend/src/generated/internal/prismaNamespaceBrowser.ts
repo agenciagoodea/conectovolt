@@ -94,6 +94,7 @@ export const UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   role: 'role',
   companyId: 'companyId',
+  avatarUrl: 'avatarUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -108,6 +109,7 @@ export const CompanyScalarFieldEnum = {
   email: 'email',
   phone: 'phone',
   status: 'status',
+  commissionPercent: 'commissionPercent',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -354,7 +356,8 @@ export const UserOrderByRelevanceFieldEnum = {
   phone: 'phone',
   passwordHash: 'passwordHash',
   role: 'role',
-  companyId: 'companyId'
+  companyId: 'companyId',
+  avatarUrl: 'avatarUrl'
 } as const
 
 export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]

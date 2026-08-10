@@ -1,4 +1,11 @@
-import { Controller, Get, Query, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  Res,
+  UseGuards,
+  ForbiddenException,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ReportsService } from './reports.service';
@@ -14,18 +21,25 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
+  private companyScope(user: { role: string; companyId?: string }) {
+    if (user.role === 'OPERATOR' && !user.companyId) {
+      throw new ForbiddenException('Operator has no company associated');
+    }
+    return user.role === 'OPERATOR' ? user.companyId : undefined;
+  }
+
   @Get('charging')
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Relatorio de recargas' })
   getCharging(
+    @CurrentUser() user: { role: string; companyId?: string },
     @Query('start_date') startDate?: string,
     @Query('end_date') endDate?: string,
-    @CurrentUser('companyId') companyId?: string,
   ) {
     return this.reportsService.getChargingReport({
       startDate,
       endDate,
-      companyId,
+      companyId: this.companyScope(user),
     });
   }
 
@@ -33,15 +47,15 @@ export class ReportsController {
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Exportar relatorio de recargas (CSV)' })
   async exportCharging(
+    @CurrentUser() user: { role: string; companyId?: string },
     @Res() res: Response,
     @Query('start_date') startDate?: string,
     @Query('end_date') endDate?: string,
-    @CurrentUser('companyId') companyId?: string,
   ) {
     const report = await this.reportsService.getChargingReport({
       startDate,
       endDate,
-      companyId,
+      companyId: this.companyScope(user),
     });
     const csv = this.reportsService.generateCsv(
       [
@@ -125,21 +139,23 @@ export class ReportsController {
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Relatorio de energia' })
   getEnergy(
+    @CurrentUser() user: { role: string; companyId?: string },
     @Query('start_date') startDate?: string,
     @Query('end_date') endDate?: string,
-    @CurrentUser('companyId') companyId?: string,
   ) {
     return this.reportsService.getEnergyReport({
       startDate,
       endDate,
-      companyId,
+      companyId: this.companyScope(user),
     });
   }
 
   @Get('equipment')
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Relatorio de equipamentos' })
-  getEquipment(@CurrentUser('companyId') companyId?: string) {
-    return this.reportsService.getEquipmentReport({ companyId });
+  getEquipment(@CurrentUser() user: { role: string; companyId?: string }) {
+    return this.reportsService.getEquipmentReport({
+      companyId: this.companyScope(user),
+    });
   }
 }

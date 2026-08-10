@@ -26,10 +26,16 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
     try {
       if (process.env.ENABLE_OCPP_PORT === 'true') {
         const port = this.configService.get<number>('OCPP_PORT') || 3001;
-        // Keep the raw OCPP listener behind Nginx so chargers use TLS on port 443.
-        this.wss = new WebSocketServer({ port, host: '127.0.0.1' });
+        const host = this.configService.get<string>('OCPP_HOST') || '0.0.0.0';
+        this.wss = new WebSocketServer({ port, host });
 
         this.wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
+          if (!this.isAuthorized(req)) {
+            this.logger.warn('Rejected unauthenticated OCPP connection');
+            ws.close(1008, 'Authentication required');
+            return;
+          }
+
           const ocppId = this.extractOcppId(req);
           this.logger.log(`OCPP charger connected: ${ocppId}`);
 
@@ -55,7 +61,7 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
           });
         });
 
-        this.logger.log(`OCPP WebSocket server listening on port ${port}`);
+        this.logger.log(`OCPP WebSocket server listening on ${host}:${port}`);
       } else {
         this.logger.log(
           'OCPP standalone port disabled for Passenger environment',
@@ -87,6 +93,37 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
     }
 
     return `charger-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  }
+
+  private isAuthorized(req: IncomingMessage) {
+    const expectedToken = this.configService.get<string>('OCPP_SHARED_TOKEN');
+    if (!expectedToken) {
+      this.logger.error(
+        'OCPP_SHARED_TOKEN is not configured; refusing OCPP connections',
+      );
+      return false;
+    }
+
+    const header = req.headers['x-ocpp-token'] || req.headers.authorization;
+    const value = Array.isArray(header) ? header[0] : header;
+    if (!value) return false;
+
+    let receivedToken = value;
+    if (value.startsWith('Bearer ')) {
+      receivedToken = value.slice('Bearer '.length);
+    } else if (value.startsWith('Basic ')) {
+      try {
+        const credentials = Buffer.from(
+          value.slice('Basic '.length),
+          'base64',
+        ).toString('utf8');
+        receivedToken = credentials.slice(credentials.indexOf(':') + 1);
+      } catch {
+        return false;
+      }
+    }
+
+    return receivedToken === expectedToken;
   }
 
   private async handleMessage(ocppId: string, ws: WebSocket, data: RawData) {
@@ -149,7 +186,7 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
           result = await this.ocppService.handleHeartbeat(ocppId);
           break;
         case 'Authorize':
-          result = this.ocppService.handleAuthorize(ocppId, payload);
+          result = await this.ocppService.handleAuthorize(ocppId, payload);
           break;
         case 'StatusNotification':
           result = await this.ocppService.handleStatusNotification(
@@ -215,6 +252,10 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
       }
 
       this.sendResult(ws, uniqueId, result);
+      if (action === 'BootNotification' && result.status === 'Rejected') {
+        this.ocppService.removeConnection(ocppId);
+        ws.close(1008, 'Unknown charger');
+      }
     } catch (error) {
       const err = error as { message?: string };
       const msg = err.message ?? 'unknown error';

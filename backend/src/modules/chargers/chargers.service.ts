@@ -31,12 +31,10 @@ export class ChargersService {
       throw new NotFoundException('Charger not found');
     }
 
-    if (
-      user?.role === 'OPERATOR' &&
-      user.companyId &&
-      charger.station?.companyId !== user.companyId
-    ) {
-      throw new ForbiddenException('You do not have access to this charger');
+    if (user?.role === 'OPERATOR') {
+      if (!user.companyId || charger.station?.companyId !== user.companyId) {
+        throw new ForbiddenException('You do not have access to this charger');
+      }
     }
 
     return charger;
@@ -48,7 +46,10 @@ export class ChargersService {
   ) {
     const where: { stationId?: string; station?: { companyId: string } } = {};
     if (stationId) where.stationId = stationId;
-    if (user?.role === 'OPERATOR' && user.companyId) {
+    if (user?.role === 'OPERATOR') {
+      if (!user.companyId) {
+        throw new ForbiddenException('Operator has no company associated');
+      }
       where.station = { companyId: user.companyId };
     }
 
@@ -74,12 +75,10 @@ export class ChargersService {
       throw new NotFoundException('Station not found');
     }
 
-    if (
-      user?.role === 'OPERATOR' &&
-      user.companyId &&
-      station.companyId !== user.companyId
-    ) {
-      throw new ForbiddenException('You do not have access to this station');
+    if (user?.role === 'OPERATOR') {
+      if (!user.companyId || station.companyId !== user.companyId) {
+        throw new ForbiddenException('You do not have access to this station');
+      }
     }
 
     return this.prisma.charger.create({ data: dto });
@@ -91,6 +90,19 @@ export class ChargersService {
     user?: { role: string; companyId?: string },
   ) {
     await this.assertCompanyAccess(id, user);
+
+    if (dto.stationId) {
+      const station = await this.prisma.station.findUnique({
+        where: { id: dto.stationId },
+      });
+      if (!station) {
+        throw new NotFoundException('Station not found');
+      }
+      if (user?.role === 'OPERATOR' && station.companyId !== user.companyId) {
+        throw new ForbiddenException('You do not have access to this station');
+      }
+    }
+
     return this.prisma.charger.update({ where: { id }, data: dto });
   }
 
@@ -111,8 +123,33 @@ export class ChargersService {
     return this.prisma.charger.delete({ where: { id } });
   }
 
-  async testConnection(id: string) {
-    const charger = await this.prisma.charger.findUnique({ where: { id } });
+  async bulkDelete(ids: string[], user?: { role: string; companyId?: string }) {
+    if (!ids || ids.length === 0) return { deleted: 0 };
+    let validIds = ids;
+    if (user?.role === 'OPERATOR') {
+      const chargers = await this.prisma.charger.findMany({
+        where: { id: { in: ids }, station: { companyId: user.companyId } },
+        select: { id: true },
+      });
+      validIds = chargers.map((c) => c.id);
+    }
+    if (validIds.length === 0) return { deleted: 0 };
+
+    await this.prisma.connector.deleteMany({
+      where: { chargerId: { in: validIds } },
+    });
+
+    const res = await this.prisma.charger.deleteMany({
+      where: { id: { in: validIds } },
+    });
+    return { deleted: res.count };
+  }
+
+  async testConnection(
+    id: string,
+    user?: { role: string; companyId?: string },
+  ) {
+    const charger = await this.assertCompanyAccess(id, user);
     if (!charger || !charger.ocppId) {
       return {
         connected: false,
@@ -149,15 +186,27 @@ export class ChargersService {
     };
   }
 
-  async getConnectedChargers() {
+  async getConnectedChargers(user?: { role: string; companyId?: string }) {
     const connections = this.ocppService.connections;
     const connectedOcppIds = Array.from(connections.keys()).filter((ocppId) => {
       const ws = connections.get(ocppId);
       return ws && ws.readyState === 1;
     });
 
+    const where: {
+      ocppId: { in: string[] };
+      station?: { companyId: string };
+    } = { ocppId: { in: connectedOcppIds } };
+
+    if (user?.role === 'OPERATOR') {
+      if (!user.companyId) {
+        throw new ForbiddenException('Operator has no company associated');
+      }
+      where.station = { companyId: user.companyId };
+    }
+
     const chargers = await this.prisma.charger.findMany({
-      where: { ocppId: { in: connectedOcppIds } },
+      where,
       select: {
         id: true,
         ocppId: true,

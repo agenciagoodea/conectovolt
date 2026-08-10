@@ -48,16 +48,6 @@ export class ChargersController {
     return this.chargersService.findAll(stationId, user);
   }
 
-  @Get(':id')
-  @Roles('SUPER_ADMIN', 'OPERATOR', 'CUSTOMER')
-  @ApiOperation({ summary: 'Buscar carregador por ID' })
-  findOne(
-    @Param('id') id: string,
-    @CurrentUser() user?: { role: string; companyId?: string },
-  ) {
-    return this.chargersService.findById(id, user);
-  }
-
   @Patch(':id')
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Atualizar carregador' })
@@ -90,11 +80,21 @@ export class ChargersController {
     return this.chargersService.remove(id, user);
   }
 
+  @Post('bulk-delete')
+  @Roles('SUPER_ADMIN', 'OPERATOR')
+  @ApiOperation({ summary: 'Remover varios carregadores em lote' })
+  bulkDelete(
+    @Body() body: { ids: string[] },
+    @CurrentUser() user: { role: string; companyId?: string },
+  ) {
+    return this.chargersService.bulkDelete(body.ids || [], user);
+  }
+
   @Get('connections')
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Listar carregadores conectados (WebSocket ativo)' })
-  getConnected() {
-    return this.chargersService.getConnectedChargers();
+  getConnected(@CurrentUser() user: { role: string; companyId?: string }) {
+    return this.chargersService.getConnectedChargers(user);
   }
 
   @Get(':id/test-connection')
@@ -102,7 +102,20 @@ export class ChargersController {
   @ApiOperation({
     summary: 'Testar conectividade do carregador via WebSocket OCPP',
   })
-  testConnection(@Param('id') id: string) {
-    return this.chargersService.testConnection(id);
+  testConnection(
+    @Param('id') id: string,
+    @CurrentUser() user: { role: string; companyId?: string },
+  ) {
+    return this.chargersService.testConnection(id, user);
+  }
+
+  @Get(':id')
+  @Roles('SUPER_ADMIN', 'OPERATOR', 'CUSTOMER')
+  @ApiOperation({ summary: 'Buscar carregador por ID' })
+  findOne(
+    @Param('id') id: string,
+    @CurrentUser() user?: { role: string; companyId?: string },
+  ) {
+    return this.chargersService.findById(id, user);
   }
 }

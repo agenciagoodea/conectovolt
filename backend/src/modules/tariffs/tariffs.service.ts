@@ -19,7 +19,10 @@ export class TariffsService {
     user?: { role: string; companyId?: string },
   ) {
     const where: { companyId?: string } = {};
-    if (user?.role === 'OPERATOR' && user.companyId) {
+    if (user?.role === 'OPERATOR') {
+      if (!user.companyId) {
+        throw new ForbiddenException('Operator has no company associated');
+      }
       where.companyId = user.companyId;
     } else if (companyId) {
       where.companyId = companyId;
@@ -45,12 +48,10 @@ export class TariffsService {
       throw new NotFoundException('Tariff not found');
     }
 
-    if (
-      user?.role === 'OPERATOR' &&
-      user.companyId &&
-      tariff.companyId !== user.companyId
-    ) {
-      throw new ForbiddenException('You do not have access to this tariff');
+    if (user?.role === 'OPERATOR') {
+      if (!user.companyId || tariff.companyId !== user.companyId) {
+        throw new ForbiddenException('You do not have access to this tariff');
+      }
     }
 
     return tariff;
@@ -60,9 +61,11 @@ export class TariffsService {
     dto: CreateTariffDto,
     user?: { role: string; companyId?: string },
   ) {
-    if (user?.role === 'OPERATOR' && user.companyId) {
-      (dto as CreateTariffDto & { companyId: string }).companyId =
-        user.companyId;
+    if (user?.role === 'OPERATOR') {
+      if (!user.companyId) {
+        throw new ForbiddenException('Operator has no company associated');
+      }
+      dto = { ...dto, companyId: user.companyId };
     }
 
     const company = await this.prisma.company.findUnique({

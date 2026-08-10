@@ -27,6 +27,7 @@ export class UsersService {
         phone: true,
         role: true,
         companyId: true,
+        avatarUrl: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -34,8 +35,11 @@ export class UsersService {
     });
   }
 
-  async findById(id: string) {
-    return this.prisma.user.findUnique({
+  async findById(
+    id: string,
+    actor?: { id: string; role: string; companyId?: string },
+  ) {
+    const user = await this.prisma.user.findUnique({
       where: { id },
       select: {
         id: true,
@@ -44,11 +48,25 @@ export class UsersService {
         phone: true,
         role: true,
         companyId: true,
+        avatarUrl: true,
         company: true,
         createdAt: true,
         updatedAt: true,
       },
     });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (
+      actor?.role === 'OPERATOR' &&
+      (!actor.companyId || user.companyId !== actor.companyId)
+    ) {
+      throw new BadRequestException('Cannot access user outside your company');
+    }
+
+    return user;
   }
 
   async findByEmail(email: string) {
@@ -82,6 +100,7 @@ export class UsersService {
         phone: dto.phone,
         role: dto.role || 'CUSTOMER',
         companyId: dto.companyId || null,
+        avatarUrl: dto.avatarUrl || null,
       },
     });
 
@@ -114,7 +133,12 @@ export class UsersService {
 
     // Operators cannot modify users outside their company or modify SUPER_ADMIN users
     const actor = await this.prisma.user.findUnique({ where: { id: actorId } });
+    const updateData = { ...dto } as AdminUpdateUserDto;
+
     if (actor?.role === 'OPERATOR') {
+      if (!actor.companyId) {
+        throw new BadRequestException('Operator has no company associated');
+      }
       if (existing.role === 'SUPER_ADMIN') {
         throw new BadRequestException('Cannot modify super admin');
       }
@@ -124,11 +148,13 @@ export class UsersService {
         );
       }
       delete adminDto.role;
+      delete updateData.role;
+      delete updateData.companyId;
     }
 
     return this.prisma.user.update({
       where: { id },
-      data: dto,
+      data: updateData,
       select: {
         id: true,
         name: true,
@@ -136,6 +162,7 @@ export class UsersService {
         phone: true,
         role: true,
         companyId: true,
+        avatarUrl: true,
         updatedAt: true,
       },
     });

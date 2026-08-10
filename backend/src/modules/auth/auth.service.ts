@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import nodemailer from 'nodemailer';
 import { PrismaService } from '../../database/prisma.service';
 import {
   RegisterDto,
@@ -164,10 +165,12 @@ export class AuthService {
       },
     );
 
-    this.logger.log(`Password reset requested for: ${user.email}`);
-
-    // TODO: Send resetToken via email/SMS. Never return it in the API response.
-    void resetToken;
+    try {
+      await this.sendPasswordResetEmail(user.email, resetToken);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Password reset email failed: ${message}`);
+    }
 
     return {
       message: 'If the email exists, a reset link has been sent',
@@ -211,5 +214,35 @@ export class AuthService {
       access_token: accessToken,
       refresh_token: refreshToken,
     };
+  }
+
+  private async sendPasswordResetEmail(email: string, token: string) {
+    const host = this.configService.get<string>('SMTP_HOST');
+    const user = this.configService.get<string>('SMTP_USER');
+    const pass = this.configService.get<string>('SMTP_PASS');
+
+    if (!host || !user || !pass) {
+      this.logger.warn('Password reset email skipped: SMTP is not configured');
+      return;
+    }
+
+    const port = Number(this.configService.get<string>('SMTP_PORT') || 465);
+    const secure = this.configService.get<string>('SMTP_SECURE') !== 'false';
+    const frontendUrl =
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure,
+      auth: { user, pass },
+    });
+
+    await transporter.sendMail({
+      from: this.configService.get<string>('SMTP_FROM') || user,
+      to: email,
+      subject: 'Redefinicao de senha ConectoVolt',
+      text: `Acesse ${frontendUrl}/reset-password?token=${encodeURIComponent(token)} para redefinir sua senha. Este link expira em uma hora.`,
+    });
+    this.logger.log(`Password reset email sent to ${email}`);
   }
 }

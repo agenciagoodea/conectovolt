@@ -44,6 +44,16 @@ export class AuthController {
     return this.authService.refreshToken(dto);
   }
 
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Encerrar sessao local' })
+  logout() {
+    // JWTs are stateless; clients must discard both tokens after this call.
+    return { message: 'Logged out successfully' };
+  }
+
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

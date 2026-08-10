@@ -1,6 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject, Optional, forwardRef } from '@nestjs/common';
 import WebSocket from 'ws';
 import { PrismaService } from '../../database/prisma.service';
+import { ChargingGateway } from '../charging/gateways/charging.gateway';
 import {
   BootNotificationPayload,
   StatusNotificationPayload,
@@ -15,21 +16,44 @@ export class OcppService {
 
   private chargerConnections = new Map<string, WebSocket>();
   private chargerConfigs = new Map<string, Map<string, string>>();
+  private transactionSessions = new Map<number, string>();
+  private transactionMeterStarts = new Map<number, number>();
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional()
+    @Inject(forwardRef(() => ChargingGateway))
+    private readonly chargingGateway?: ChargingGateway,
+  ) {}
 
   get connections() {
     return this.chargerConnections;
   }
 
+  async broadcastChargerStatus(ocppId: string, status: string) {
+    try {
+      const charger = await this.prisma.charger.findUnique({
+        where: { ocppId },
+        select: { id: true },
+      });
+      if (charger && this.chargingGateway) {
+        this.chargingGateway.emitChargerStatusUpdate(charger.id, status);
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
   trackConnection(ocppId: string, ws: WebSocket) {
     this.chargerConnections.set(ocppId, ws);
     this.logger.log(`Charger connected: ${ocppId}`);
+    void this.broadcastChargerStatus(ocppId, 'ONLINE');
   }
 
   removeConnection(ocppId: string) {
     this.chargerConnections.delete(ocppId);
     this.logger.log(`Charger disconnected: ${ocppId}`);
+    void this.broadcastChargerStatus(ocppId, 'OFFLINE');
   }
 
   getConnection(ocppId: string): WebSocket | undefined {
@@ -60,18 +84,14 @@ export class OcppService {
         },
       });
     } else {
-      const defaultStation = await this.findOrCreateDefaultStation();
-      await this.prisma.charger.create({
-        data: {
-          stationId: defaultStation.id,
-          serialNumber: p.chargePointSerialNumber || `OCPP-${ocppId}`,
-          model: p.chargePointModel || 'Unknown',
-          manufacturer: p.chargePointVendor || 'Unknown',
-          ocppId,
-          status: 'ONLINE',
-          powerKw: 0,
-        },
-      });
+      this.logger.warn(
+        `Unknown charger rejected during BootNotification: ${ocppId}`,
+      );
+      return {
+        status: 'Rejected',
+        currentTime: new Date().toISOString(),
+        interval: 300,
+      };
     }
 
     return {
@@ -92,14 +112,17 @@ export class OcppService {
     return { currentTime: new Date().toISOString() };
   }
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  handleAuthorize(
+  async handleAuthorize(
     _ocppId: string,
-    _payload: Record<string, unknown>,
-  ): Record<string, unknown> {
-    return { idTagInfo: { status: 'Accepted' } };
+    payload: Record<string, unknown>,
+  ): Promise<Record<string, unknown>> {
+    const idTag = typeof payload.idTag === 'string' ? payload.idTag : '';
+    const user = idTag
+      ? await this.prisma.user.findUnique({ where: { id: idTag } })
+      : null;
+
+    return { idTagInfo: { status: user ? 'Accepted' : 'Invalid' } };
   }
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   async handleStatusNotification(
     ocppId: string,
@@ -128,10 +151,12 @@ export class OcppService {
       Faulted: 'ERROR',
     };
 
+    const newChargerStatus = chargerStatusMap[p.status] ?? 'ONLINE';
     await this.prisma.charger.update({
       where: { ocppId },
-      data: { status: chargerStatusMap[p.status] ?? 'ONLINE' },
+      data: { status: newChargerStatus },
     });
+    this.chargingGateway?.emitChargerStatusUpdate(charger.id, newChargerStatus);
 
     const connector = charger.connectors.find(
       (c) => c.id === `${charger.id}-connector-${p.connectorId}`,
@@ -150,6 +175,7 @@ export class OcppService {
     };
 
     const status = connectorStatusMap[p.status] ?? 'AVAILABLE';
+    const connectorId = connector?.id || `${charger.id}-connector-${p.connectorId}`;
 
     if (connector) {
       await this.prisma.connector.update({
@@ -161,7 +187,7 @@ export class OcppService {
     } else {
       await this.prisma.connector.create({
         data: {
-          id: `${charger.id}-connector-${p.connectorId}`,
+          id: connectorId,
           chargerId: charger.id,
           type: 'TYPE2',
           status: status as 'AVAILABLE' | 'CHARGING' | 'FAULT' | 'UNAVAILABLE',
@@ -169,6 +195,8 @@ export class OcppService {
         },
       });
     }
+
+    this.chargingGateway?.emitConnectorStatusUpdate(charger.id, connectorId, status);
 
     return {};
   }
@@ -190,9 +218,16 @@ export class OcppService {
             orderBy: { startTime: 'desc' },
           });
           if (activeSession) {
+            const reportedEnergy =
+              sv.unit === 'kWh' ? parseFloat(sv.value) : energyKwh;
             await this.prisma.chargingSession.update({
               where: { id: activeSession.id },
-              data: { energyKwh },
+              data: {
+                energyKwh: Math.max(
+                  Number(activeSession.energyKwh),
+                  reportedEnergy,
+                ),
+              },
             });
           }
         }
@@ -217,19 +252,31 @@ export class OcppService {
     });
     if (!charger) return { transactionId: 0, idTagInfo: { status: 'Invalid' } };
 
-    const connector = await this.prisma.connector.findFirst({
-      where: { chargerId: charger.id },
+    const user = await this.prisma.user.findUnique({
+      where: { id: p.idTag },
     });
+    if (!user) {
+      return { transactionId: 0, idTagInfo: { status: 'Invalid' } };
+    }
+
+    const connectorId = `${charger.id}-connector-${p.connectorId}`;
+    const connector =
+      (await this.prisma.connector.findUnique({
+        where: { id: connectorId },
+      })) ||
+      (await this.prisma.connector.findFirst({
+        where: { chargerId: charger.id },
+      }));
 
     const session = await this.prisma.chargingSession.create({
       data: {
-        userId: p.idTag,
+        userId: user.id,
         chargerId: charger.id,
         connectorId: connector?.id,
         stationId: charger.stationId,
         status: 'ACTIVE',
         startTime: new Date(p.timestamp),
-        energyKwh: p.meterStart / 1000,
+        energyKwh: 0,
         amount: 0,
       },
     });
@@ -241,7 +288,11 @@ export class OcppService {
       });
     }
 
-    return { transactionId: session.id, idTagInfo: { status: 'Accepted' } };
+    const transactionId = Date.now();
+    this.transactionSessions.set(transactionId, session.id);
+    this.transactionMeterStarts.set(transactionId, p.meterStart);
+
+    return { transactionId, idTagInfo: { status: 'Accepted' } };
   }
 
   async handleStopTransaction(
@@ -257,13 +308,19 @@ export class OcppService {
     });
     if (!charger) return { idTagInfo: { status: 'Invalid' } };
 
-    const session = await this.prisma.chargingSession.findFirst({
-      where: { chargerId: charger.id, status: 'ACTIVE' },
-      orderBy: { startTime: 'desc' },
-    });
+    const mappedSessionId = this.transactionSessions.get(p.transactionId);
+    const session = mappedSessionId
+      ? await this.prisma.chargingSession.findUnique({
+          where: { id: mappedSessionId },
+        })
+      : await this.prisma.chargingSession.findFirst({
+          where: { chargerId: charger.id, status: 'ACTIVE' },
+          orderBy: { startTime: 'desc' },
+        });
     if (!session) return { idTagInfo: { status: 'Invalid' } };
 
-    const energyKwh = p.meterStop / 1000;
+    const meterStart = this.transactionMeterStarts.get(p.transactionId) || 0;
+    const energyKwh = Math.max(0, (p.meterStop - meterStart) / 1000);
     const tariff = charger.station?.tariff;
     const pricePerKwh = tariff?.isActive ? Number(tariff.pricePerKwh) : 2.5;
 
@@ -283,6 +340,9 @@ export class OcppService {
         data: { status: 'AVAILABLE' },
       });
     }
+
+    this.transactionSessions.delete(p.transactionId);
+    this.transactionMeterStarts.delete(p.transactionId);
 
     return { idTagInfo: { status: 'Accepted' } };
   }
@@ -339,40 +399,5 @@ export class OcppService {
     }
     configs.set(key, value);
     return { status: 'Accepted' };
-  }
-
-  private async findOrCreateDefaultStation() {
-    let station = await this.prisma.station.findFirst({
-      include: { company: true },
-    });
-    if (!station) {
-      let company = await this.prisma.company.findFirst();
-      if (!company) {
-        company = await this.prisma.company.create({
-          data: {
-            name: 'Operadora OCPP',
-            document: `OCPP-${Date.now()}`,
-            status: 'ACTIVE',
-          },
-        });
-        await this.prisma.wallet.create({
-          data: { companyId: company.id, balance: 0 },
-        });
-      }
-      station = await this.prisma.station.create({
-        data: {
-          companyId: company.id,
-          name: 'Posto OCPP',
-          address: 'Auto-registered via OCPP',
-          city: 'Sao Paulo',
-          state: 'SP',
-          latitude: 0,
-          longitude: 0,
-          status: 'ACTIVE',
-        },
-        include: { company: true },
-      });
-    }
-    return station;
   }
 }

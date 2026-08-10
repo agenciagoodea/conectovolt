@@ -35,7 +35,7 @@ TypeScript
 
 Banco:
 
-PostgreSQL
+MySQL em produção e SQLite em desenvolvimento local
 
 ORM:
 
@@ -382,6 +382,8 @@ O backend possui suporte nativo a dois provedores de banco de dados:
   ```bash
   npm run prisma:generate:mysql
   # Ou migração inicial:
-  npx prisma migrate dev --schema=prisma/schema.mysql.prisma --name init
-  ```
+   npx prisma migrate dev --schema=prisma/schema.mysql.prisma --name init
+   ```
+
+Para comparar migrations MySQL localmente, defina também um banco de sombra isolado em `SHADOW_DATABASE_URL`. Nunca use o banco de produção como shadow database.
 

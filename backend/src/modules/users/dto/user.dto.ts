@@ -37,6 +37,11 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   companyId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  avatarUrl?: string;
 }
 
 export class UpdateUserDto {
@@ -50,6 +55,11 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  avatarUrl?: string;
 }
 
 export class AdminUpdateUserDto extends UpdateUserDto {

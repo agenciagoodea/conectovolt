@@ -4,6 +4,7 @@ import { SettingsService } from './settings.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { UpdateSettingsDto } from './dto/settings.dto';
 
 @ApiTags('Settings')
 @ApiBearerAuth()
@@ -21,7 +22,7 @@ export class SettingsController {
 
   @Patch()
   @ApiOperation({ summary: 'Atualizar comissao padrao' })
-  updateSettings(@Body() body: { commissionPercent?: number }) {
+  updateSettings(@Body() body: UpdateSettingsDto) {
     return this.settingsService.updateSettings(body);
   }
 }

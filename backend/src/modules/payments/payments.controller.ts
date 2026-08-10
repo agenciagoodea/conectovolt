@@ -44,19 +44,22 @@ export class PaymentsController {
   @Get()
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Listar pagamentos por status' })
-  findAll(@Query('status') status?: string) {
+  findAll(
+    @Query('status') status?: string,
+    @CurrentUser() user?: { id: string; role: string; companyId?: string },
+  ) {
     if (status) {
-      return this.paymentsService.getPaymentsByStatus(status);
+      return this.paymentsService.getPaymentsByStatus(status, user);
     }
-    return this.paymentsService.getPaymentsByStatus('APPROVED');
+    return this.paymentsService.getPaymentsByStatus('APPROVED', user);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Consultar pagamento por ID' })
-  findOne(
+  async findOne(
     @Param('id') id: string,
-    @CurrentUser() user: { id: string; role: string },
-  ) {
+    @CurrentUser() user: { id: string; role: string; companyId?: string },
+  ): Promise<unknown> {
     if (!user?.id) {
       throw new UnauthorizedException('User not authenticated');
     }
@@ -116,12 +119,31 @@ export class WebhooksController {
       throw new BadRequestException('Missing signature');
     }
 
+    const signatureParts = signature
+      .split(',')
+      .reduce<Record<string, string>>((parts, part) => {
+        const [key, value] = part.split('=', 2);
+        if (key && value) parts[key.trim()] = value.trim();
+        return parts;
+      }, {});
+    const timestamp = signatureParts.ts;
+    const receivedHash = signatureParts.v1;
+    const paymentId = data.data?.id ? String(data.data.id).toLowerCase() : '';
+    const manifest = `id:${paymentId};request-id:${requestId || ''};ts:${timestamp};`;
     const computed = crypto
       .createHmac('sha256', secret)
-      .update(JSON.stringify(data))
+      .update(manifest)
       .digest('hex');
 
-    if (computed !== signature) {
+    if (
+      !timestamp ||
+      !receivedHash ||
+      receivedHash.length !== computed.length ||
+      !crypto.timingSafeEqual(
+        Buffer.from(computed, 'utf8'),
+        Buffer.from(receivedHash, 'utf8'),
+      )
+    ) {
       this.logger.warn('Webhook signature mismatch');
       throw new BadRequestException('Invalid signature');
     }

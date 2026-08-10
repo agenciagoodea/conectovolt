@@ -1,24 +1,34 @@
-import { IsOptional, IsNumber, IsUUID, Min } from 'class-validator';
+import {
+  IsOptional,
+  IsNumber,
+  IsString,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class StartChargingDto {
   @ApiProperty({ description: 'ID do carregador' })
-  @IsUUID()
+  @IsString()
+  @MinLength(1)
   chargerId: string;
 
   @ApiPropertyOptional({ description: 'ID do conector' })
   @IsOptional()
-  @IsUUID()
+  @IsString()
+  @MinLength(1)
   connectorId?: string;
 
   @ApiPropertyOptional({ description: 'ID do veiculo' })
   @IsOptional()
-  @IsUUID()
+  @IsString()
+  @MinLength(1)
   vehicleId?: string;
 
   @ApiPropertyOptional({ description: 'ID do posto' })
   @IsOptional()
-  @IsUUID()
+  @IsString()
+  @MinLength(1)
   stationId?: string;
 }
 

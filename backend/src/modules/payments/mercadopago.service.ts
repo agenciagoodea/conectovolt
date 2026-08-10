@@ -23,6 +23,10 @@ export class MercadoPagoService {
     }
   }
 
+  get isLive() {
+    return this.isConfigured;
+  }
+
   async createPixPayment(
     amount: number,
     description: string,
@@ -62,6 +66,7 @@ export class MercadoPagoService {
     payerEmail: string,
     token: string,
     installments: number = 1,
+    paymentMethodId = 'mastercard',
   ) {
     if (!this.isConfigured) {
       return this.simulateCardPayment(amount, description);
@@ -72,7 +77,7 @@ export class MercadoPagoService {
       body: {
         transaction_amount: amount,
         description,
-        payment_method_id: 'mastercard',
+        payment_method_id: paymentMethodId,
         token,
         installments,
         payer: { email: payerEmail },
@@ -103,6 +108,16 @@ export class MercadoPagoService {
       amount: result.transaction_amount,
       dateApproved: result.date_approved,
     };
+  }
+
+  async refundPayment(paymentId: number) {
+    if (!this.isConfigured) {
+      return { id: paymentId, status: 'refunded' };
+    }
+
+    const payment = new Payment(this.client!);
+    const result = await payment.cancel({ id: paymentId });
+    return { id: result.id, status: result.status };
   }
 
   private simulatePixPayment(amount: number, description: string) {

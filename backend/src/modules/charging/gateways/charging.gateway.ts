@@ -10,6 +10,7 @@ import { Logger } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { getJwtSecret } from '../../../common/utils/config.utils';
+import { PrismaService } from '../../../database/prisma.service';
 
 export interface ChargingSessionUpdate {
   sessionId: string;
@@ -42,7 +43,10 @@ export class ChargingGateway
 
   private readonly logger = new Logger(ChargingGateway.name);
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   handleConnection(client: AuthenticatedSocket) {
     try {
@@ -78,8 +82,19 @@ export class ChargingGateway
   }
 
   @SubscribeMessage('subscribe:session')
-  handleSubscribeSession(client: AuthenticatedSocket, sessionId: string) {
+  async handleSubscribeSession(client: AuthenticatedSocket, sessionId: string) {
     if (!client.userId) return;
+
+    const session = await this.prisma.chargingSession.findUnique({
+      where: { id: sessionId },
+      select: { userId: true },
+    });
+
+    if (!session || session.userId !== client.userId) {
+      client.emit('error', { message: 'Not authorized' });
+      return;
+    }
+
     void client.join(`session:${sessionId}`);
     return { event: 'subscribed', data: { sessionId } };
   }
@@ -117,5 +132,13 @@ export class ChargingGateway
       .to(`session:${update.sessionId}`)
       .emit('session:completed', update);
     this.server.to(`user:${update.userId}`).emit('session:completed', update);
+  }
+
+  emitChargerStatusUpdate(chargerId: string, status: string) {
+    this.server.emit('charger:status', { chargerId, status });
+  }
+
+  emitConnectorStatusUpdate(chargerId: string, connectorId: string, status: string) {
+    this.server.emit('connector:status', { chargerId, connectorId, status });
   }
 }

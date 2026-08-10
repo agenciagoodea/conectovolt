@@ -18,7 +18,8 @@ NestJS
 
 Formato:
 
-JSON
+JSON. Os endpoints atuais retornam objetos ou arrays diretamente; o envelope
+`success/data` abaixo permanece uma proposta de compatibilidade futura.
 
 ---
 
@@ -56,6 +57,9 @@ Header:
 Authorization:
 
 Bearer TOKEN
+
+Os nomes dos campos usados pelo backend atual seguem camelCase, por exemplo
+`sessionId`, `chargerId`, `connectorId` e `vehicleId`.
 
 
 ---
@@ -127,6 +131,16 @@ POST
 
 /auth/refresh
 
+
+---
+
+## Logout
+
+POST
+
+/auth/logout
+
+Requer JWT. Como os tokens sao stateless, o cliente deve descartar o access token e o refresh token.
 
 ---
 
@@ -419,6 +433,8 @@ Request:
 "method":"PIX"
 }
 ```
+
+Na implementacao atual use `sessionId` e `gateway`. Para cartao, envie tambem o token temporario gerado pelo gateway (`cardToken`), o identificador do metodo (`paymentMethodId`) e `installments`.
 
 
 ---

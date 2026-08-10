@@ -13,6 +13,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { WithdrawalDto } from './dto/withdrawal.dto';
 
 @ApiTags('Commissions')
 @ApiBearerAuth()
@@ -51,12 +52,12 @@ export class WalletController {
   @ApiOperation({ summary: 'Solicitar saque' })
   withdraw(
     @CurrentUser('companyId') companyId: string,
-    @Body('amount') amount: number,
+    @Body() dto: WithdrawalDto,
   ) {
     if (!companyId) {
       throw new BadRequestException('No company associated');
     }
-    return this.commissionsService.requestWithdrawal(companyId, amount);
+    return this.commissionsService.requestWithdrawal(companyId, dto.amount);
   }
 
   @Get('transactions')

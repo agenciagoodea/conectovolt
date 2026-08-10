@@ -12,28 +12,60 @@ export class CommissionsService {
     this.logger.log(`Calculating commission for payment ${paymentId}`);
     const payment = await this.prisma.payment.findUnique({
       where: { id: paymentId },
-      include: { session: { include: { station: true } } },
+      include: {
+        session: { include: { station: { include: { company: true } } } },
+      },
     });
     if (!payment) throw new Error('Payment not found');
 
     const station = payment.session.station;
-    const platformAmount =
-      (Number(payment.amount) * this.DEFAULT_COMMISSION) / 100;
+    const percentage = Number(
+      payment.session.station.company.commissionPercent ??
+        this.DEFAULT_COMMISSION,
+    );
+    const platformAmount = (Number(payment.amount) * percentage) / 100;
     const operatorAmount = Number(payment.amount) - platformAmount;
 
-    const commission = await this.prisma.commission.create({
-      data: {
-        paymentId,
-        companyId: station.companyId,
-        percentage: this.DEFAULT_COMMISSION,
-        platformAmount,
-        operatorAmount,
-      },
+    return this.prisma.client.$transaction(async (tx) => {
+      const existingCommission = await tx.commission.findUnique({
+        where: { paymentId },
+      });
+      if (existingCommission) {
+        return existingCommission;
+      }
+      const commission = await tx.commission.create({
+        data: {
+          paymentId,
+          companyId: station.companyId,
+          percentage,
+          platformAmount,
+          operatorAmount,
+        },
+      });
+
+      const wallet = await tx.wallet.findUnique({
+        where: { companyId: station.companyId },
+      });
+      if (!wallet) {
+        throw new BadRequestException('Wallet not found');
+      }
+
+      await tx.transaction.create({
+        data: {
+          walletId: wallet.id,
+          type: 'CREDIT',
+          amount: operatorAmount,
+          description: 'Receita de sessao de recarga',
+        },
+      });
+
+      await tx.wallet.update({
+        where: { id: wallet.id },
+        data: { balance: { increment: operatorAmount } },
+      });
+
+      return commission;
     });
-
-    await this.creditWallet(station.companyId, operatorAmount);
-
-    return commission;
   }
 
   async findAll(companyId?: string) {
@@ -52,6 +84,12 @@ export class CommissionsService {
   }
 
   async requestWithdrawal(companyId: string, amount: number) {
+    if (!Number.isFinite(amount) || amount <= 0) {
+      throw new BadRequestException(
+        'Withdrawal amount must be greater than zero',
+      );
+    }
+
     const wallet = await this.prisma.wallet.findUnique({
       where: { companyId },
     });
@@ -59,18 +97,26 @@ export class CommissionsService {
     if (Number(wallet.balance) < amount)
       throw new BadRequestException('Insufficient balance');
 
-    await this.prisma.transaction.create({
-      data: {
-        walletId: wallet.id,
-        type: 'WITHDRAWAL',
-        amount,
-        description: 'Saque solicitado',
-      },
-    });
+    await this.prisma.client.$transaction(async (tx) => {
+      // The conditional update prevents two concurrent withdrawals from
+      // spending the same wallet balance.
+      const updated = await tx.wallet.updateMany({
+        where: { id: wallet.id, balance: { gte: amount } },
+        data: { balance: { decrement: amount } },
+      });
 
-    await this.prisma.wallet.update({
-      where: { id: wallet.id },
-      data: { balance: { decrement: amount } },
+      if (updated.count !== 1) {
+        throw new BadRequestException('Insufficient balance');
+      }
+
+      await tx.transaction.create({
+        data: {
+          walletId: wallet.id,
+          type: 'WITHDRAWAL',
+          amount,
+          description: 'Saque solicitado',
+        },
+      });
     });
 
     this.logger.log(
@@ -90,30 +136,5 @@ export class CommissionsService {
       where: { walletId: wallet.id },
       orderBy: { createdAt: 'desc' },
     });
-  }
-
-  private async creditWallet(companyId: string, amount: number) {
-    const wallet = await this.prisma.wallet.findUnique({
-      where: { companyId },
-    });
-    if (!wallet) return;
-
-    await this.prisma.transaction.create({
-      data: {
-        walletId: wallet.id,
-        type: 'CREDIT',
-        amount,
-        description: 'Receita de sessao de recarga',
-      },
-    });
-
-    await this.prisma.wallet.update({
-      where: { id: wallet.id },
-      data: { balance: { increment: amount } },
-    });
-
-    this.logger.log(
-      `Wallet credited: company=${companyId}, amount=R$${amount}`,
-    );
   }
 }

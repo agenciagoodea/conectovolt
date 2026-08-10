@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 
 @Injectable()
@@ -6,6 +6,9 @@ export class DashboardService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getOperatorDashboard(companyId: string) {
+    if (!companyId) {
+      throw new ForbiddenException('Operator has no company associated');
+    }
     const stationFilter = { station: { companyId } };
 
     const [revenue, sessionsCount, energy, activeChargers, wallet] =
@@ -37,6 +40,9 @@ export class DashboardService {
   }
 
   async getOperatorChart(companyId: string) {
+    if (!companyId) {
+      throw new ForbiddenException('Operator has no company associated');
+    }
     return this.getMonthlyChart(companyId);
   }
 
@@ -46,7 +52,7 @@ export class DashboardService {
       totalCommission,
       operators,
       stations,
-      chargers,
+      onlineChargers,
       sessions,
     ] = await Promise.all([
       this.prisma.payment.aggregate({
@@ -58,7 +64,7 @@ export class DashboardService {
       }),
       this.prisma.company.count(),
       this.prisma.station.count({ where: { status: 'ACTIVE' } }),
-      this.prisma.charger.count(),
+      this.prisma.charger.count({ where: { status: 'ONLINE' } }),
       this.prisma.chargingSession.count(),
     ]);
 
@@ -67,7 +73,7 @@ export class DashboardService {
       commission: totalCommission._sum.platformAmount || 0,
       operators,
       activeStations: stations,
-      totalChargers: chargers,
+      onlineChargers,
       totalSessions: sessions,
     };
   }

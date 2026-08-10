@@ -3,7 +3,6 @@ import {
   IsNumber,
   IsOptional,
   IsBoolean,
-  IsUUID,
   Min,
   MinLength,
 } from 'class-validator';
@@ -11,7 +10,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateTariffDto {
   @ApiProperty()
-  @IsUUID()
+  @IsString()
+  @MinLength(1)
   companyId: string;
 
   @ApiProperty({ example: 'Tarifa Padrao' })

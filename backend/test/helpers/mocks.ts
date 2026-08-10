@@ -5,6 +5,7 @@ export const mockPrismaService = {
     findFirst: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
+    updateMany: jest.fn(),
     delete: jest.fn(),
     count: jest.fn(),
   },
@@ -14,6 +15,7 @@ export const mockPrismaService = {
     findFirst: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
+    updateMany: jest.fn(),
     delete: jest.fn(),
     count: jest.fn(),
   },
@@ -71,7 +73,12 @@ export const mockPrismaService = {
     create: jest.fn(),
     aggregate: jest.fn(),
   },
-  wallet: { findUnique: jest.fn(), create: jest.fn(), update: jest.fn() },
+  wallet: {
+    findUnique: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    updateMany: jest.fn(),
+  },
   transaction: { findMany: jest.fn(), create: jest.fn() },
   tariff: {
     findUnique: jest.fn(),
@@ -81,9 +88,17 @@ export const mockPrismaService = {
     update: jest.fn(),
     delete: jest.fn(),
   },
+  client: {
+    $transaction: jest.fn(),
+  },
   $connect: jest.fn(),
   $disconnect: jest.fn(),
 };
+
+mockPrismaService.client.$transaction.mockImplementation(
+  (callback: (transaction: typeof mockPrismaService) => unknown) =>
+    callback(mockPrismaService),
+);
 
 export const mockJwtService = {
   sign: jest.fn().mockReturnValue('mock-token'),

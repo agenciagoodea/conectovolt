@@ -37,6 +37,10 @@ export class ChargingService {
       throw new BadRequestException('Charger is not online');
     }
 
+    if (dto.stationId && dto.stationId !== charger.stationId) {
+      throw new BadRequestException('Station does not belong to this charger');
+    }
+
     if (dto.vehicleId) {
       const vehicle = await this.prisma.vehicle.findUnique({
         where: { id: dto.vehicleId },
@@ -141,6 +145,12 @@ export class ChargingService {
       throw new BadRequestException('Session is not active');
     }
 
+    if (dto.energyKwh < Number(session.energyKwh)) {
+      throw new BadRequestException(
+        'Energy consumption cannot decrease during a session',
+      );
+    }
+
     const updated = await this.prisma.chargingSession.update({
       where: { id: sessionId },
       data: { energyKwh: dto.energyKwh },
@@ -172,6 +182,12 @@ export class ChargingService {
 
     if (session.status !== 'ACTIVE') {
       throw new BadRequestException('Session is not active');
+    }
+
+    if (dto.energyKwh < Number(session.energyKwh)) {
+      throw new BadRequestException(
+        'Energy consumption cannot decrease during a session',
+      );
     }
 
     const tariff = await this.getSessionTariff(sessionId);
@@ -326,8 +342,17 @@ export class ChargingService {
   private async getSessionTariff(sessionId: string) {
     const session = await this.prisma.chargingSession.findUnique({
       where: { id: sessionId },
-      include: { station: { include: { tariff: true } } },
+      include: {
+        tariff: true,
+        station: { include: { tariff: true } },
+      },
     });
+
+    // Keep the tariff selected when the session started, even if the station's
+    // current tariff is later changed or deactivated.
+    if (session?.tariff) {
+      return session.tariff;
+    }
 
     if (session?.station?.tariff?.isActive) {
       return session.station.tariff;

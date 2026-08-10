@@ -3,7 +3,6 @@ import {
   IsOptional,
   IsEnum,
   IsNumber,
-  IsUUID,
   MinLength,
   Max,
   Min,
@@ -18,7 +17,8 @@ export class CreateStationDto {
   name: string;
 
   @ApiProperty()
-  @IsUUID()
+  @IsString()
+  @MinLength(1)
   companyId: string;
 
   @ApiProperty({ example: 'Rua A, 123' })
@@ -54,7 +54,8 @@ export class CreateStationDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsUUID()
+  @IsString()
+  @MinLength(1)
   tariffId?: string;
 }
 

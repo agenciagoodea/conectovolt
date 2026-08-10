@@ -3,7 +3,6 @@ import {
   IsOptional,
   IsEnum,
   IsNumber,
-  IsUUID,
   MinLength,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -11,7 +10,8 @@ import { ChargerStatus } from '../../../common/enums';
 
 export class CreateChargerDto {
   @ApiProperty()
-  @IsUUID()
+  @IsString()
+  @MinLength(1)
   stationId: string;
 
   @ApiProperty({ example: 'SN-ABC123' })
@@ -43,7 +43,8 @@ export class CreateChargerDto {
 export class UpdateChargerDto {
   @ApiPropertyOptional()
   @IsOptional()
-  @IsUUID()
+  @IsString()
+  @MinLength(1)
   stationId?: string;
 
   @ApiPropertyOptional({ example: 'SN-ABC123' })

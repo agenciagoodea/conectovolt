@@ -40,8 +40,11 @@ export class UsersController {
   @Get(':id')
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({ summary: 'Buscar usuario por ID' })
-  findOne(@Param('id') id: string) {
-    return this.usersService.findById(id);
+  findOne(
+    @Param('id') id: string,
+    @CurrentUser() user: { id: string; role: string; companyId?: string },
+  ) {
+    return this.usersService.findById(id, user);
   }
 
   @Patch(':id')

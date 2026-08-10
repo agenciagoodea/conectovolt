@@ -27,7 +27,10 @@ export class StationsService {
     if (filters?.status) where.status = filters.status as StationStatus;
     if (filters?.city) where.city = filters.city;
 
-    if (user?.role === 'OPERATOR' && user.companyId) {
+    if (user?.role === 'OPERATOR') {
+      if (!user.companyId) {
+        throw new ForbiddenException('Operator has no company associated');
+      }
       where.companyId = user.companyId;
     } else if (filters?.companyId) {
       where.companyId = filters.companyId;
@@ -57,12 +60,10 @@ export class StationsService {
       throw new NotFoundException('Station not found');
     }
 
-    if (
-      user?.role === 'OPERATOR' &&
-      user.companyId &&
-      station.companyId !== user.companyId
-    ) {
-      throw new ForbiddenException('You do not have access to this station');
+    if (user?.role === 'OPERATOR') {
+      if (!user.companyId || station.companyId !== user.companyId) {
+        throw new ForbiddenException('You do not have access to this station');
+      }
     }
 
     return station;
@@ -72,9 +73,11 @@ export class StationsService {
     dto: CreateStationDto,
     user?: { role: string; companyId?: string },
   ) {
-    if (user?.role === 'OPERATOR' && user.companyId) {
-      (dto as CreateStationDto & { companyId: string }).companyId =
-        user.companyId;
+    if (user?.role === 'OPERATOR') {
+      if (!user.companyId) {
+        throw new ForbiddenException('Operator has no company associated');
+      }
+      dto = { ...dto, companyId: user.companyId };
     }
     return this.prisma.station.create({ data: dto });
   }

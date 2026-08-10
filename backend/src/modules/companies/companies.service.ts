@@ -17,7 +17,10 @@ export class CompaniesService {
   async findAll(status?: string, user?: { role: string; companyId?: string }) {
     const where: { status?: string; id?: string } = {};
     if (status) where.status = status;
-    if (user?.role === 'OPERATOR' && user.companyId) {
+    if (user?.role === 'OPERATOR') {
+      if (!user.companyId) {
+        throw new ForbiddenException('Operator has no company associated');
+      }
       where.id = user.companyId;
     }
 
@@ -43,12 +46,10 @@ export class CompaniesService {
       throw new NotFoundException('Company not found');
     }
 
-    if (
-      user?.role === 'OPERATOR' &&
-      user.companyId &&
-      company.id !== user.companyId
-    ) {
-      throw new ForbiddenException('You do not have access to this company');
+    if (user?.role === 'OPERATOR') {
+      if (!user.companyId || company.id !== user.companyId) {
+        throw new ForbiddenException('You do not have access to this company');
+      }
     }
 
     return company;

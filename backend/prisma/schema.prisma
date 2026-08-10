@@ -15,6 +15,7 @@ model User {
   passwordHash String   @map("password_hash")
   role         String   @default("CUSTOMER")
   companyId    String?  @map("company_id")
+  avatarUrl    String?  @map("avatar_url")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
@@ -33,6 +34,7 @@ model Company {
   email     String?
   phone     String?
   status    String   @default("PENDING")
+  commissionPercent Float @default(5.0) @map("commission_percent")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
