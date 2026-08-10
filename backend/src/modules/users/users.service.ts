@@ -27,6 +27,7 @@ export class UsersService {
         phone: true,
         role: true,
         companyId: true,
+        company: { select: { id: true, name: true } },
         avatarUrl: true,
         createdAt: true,
         updatedAt: true,
@@ -49,7 +50,7 @@ export class UsersService {
         role: true,
         companyId: true,
         avatarUrl: true,
-        company: true,
+        company: { select: { id: true, name: true } },
         createdAt: true,
         updatedAt: true,
       },
@@ -73,7 +74,10 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async create(dto: CreateUserDto) {
+  async create(
+    dto: CreateUserDto,
+    actor?: { id: string; role: string; companyId?: string },
+  ) {
     const existing = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
@@ -81,9 +85,25 @@ export class UsersService {
       throw new ConflictException('Email already registered');
     }
 
-    if (dto.companyId) {
+    let targetCompanyId = dto.companyId || null;
+
+    if (actor?.role === 'OPERATOR' && actor.companyId) {
+      targetCompanyId = actor.companyId;
+    }
+
+    if (!targetCompanyId) {
+      const mainCompany = await this.prisma.company.findFirst({
+        where: { status: 'ACTIVE' },
+        orderBy: { createdAt: 'asc' },
+      });
+      if (mainCompany) {
+        targetCompanyId = mainCompany.id;
+      }
+    }
+
+    if (targetCompanyId) {
       const company = await this.prisma.company.findUnique({
-        where: { id: dto.companyId },
+        where: { id: targetCompanyId },
       });
       if (!company) {
         throw new BadRequestException('Company not found');
@@ -99,14 +119,16 @@ export class UsersService {
         passwordHash,
         phone: dto.phone,
         role: dto.role || 'CUSTOMER',
-        companyId: dto.companyId || null,
+        companyId: targetCompanyId,
         avatarUrl: dto.avatarUrl || null,
+      },
+      include: {
+        company: { select: { id: true, name: true } },
       },
     });
 
-    this.logger.log(`User created by admin: ${user.email}`);
+    this.logger.log(`User created: ${user.email} (companyId: ${targetCompanyId})`);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash: _unused, ...result } = user;
     return result;
   }

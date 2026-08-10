@@ -24,10 +24,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @Roles('SUPER_ADMIN')
-  @ApiOperation({ summary: 'Criar usuario (Super Admin)' })
-  create(@Body() dto: CreateUserDto) {
-    return this.usersService.create(dto);
+  @Roles('SUPER_ADMIN', 'OPERATOR')
+  @ApiOperation({ summary: 'Criar usuario' })
+  create(
+    @Body() dto: CreateUserDto,
+    @CurrentUser() actor: { id: string; role: string; companyId?: string },
+  ) {
+    return this.usersService.create(dto, actor);
   }
 
   @Get()

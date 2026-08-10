@@ -73,13 +73,25 @@ export class StationsService {
     dto: CreateStationDto,
     user?: { role: string; companyId?: string },
   ) {
+    let companyId = dto.companyId;
     if (user?.role === 'OPERATOR') {
       if (!user.companyId) {
         throw new ForbiddenException('Operator has no company associated');
       }
-      dto = { ...dto, companyId: user.companyId };
+      companyId = user.companyId;
     }
-    return this.prisma.station.create({ data: dto });
+    if (!companyId) {
+      const mainCompany = await this.prisma.company.findFirst({
+        where: { status: 'ACTIVE' },
+        orderBy: { createdAt: 'asc' },
+      });
+      if (mainCompany) {
+        companyId = mainCompany.id;
+      }
+    }
+    return this.prisma.station.create({
+      data: { ...dto, companyId },
+    });
   }
 
   async update(

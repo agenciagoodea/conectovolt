@@ -61,19 +61,31 @@ export class TariffsService {
     dto: CreateTariffDto,
     user?: { role: string; companyId?: string },
   ) {
+    let companyId = dto.companyId;
     if (user?.role === 'OPERATOR') {
       if (!user.companyId) {
         throw new ForbiddenException('Operator has no company associated');
       }
-      dto = { ...dto, companyId: user.companyId };
+      companyId = user.companyId;
+    }
+    if (!companyId) {
+      const mainCompany = await this.prisma.company.findFirst({
+        where: { status: 'ACTIVE' },
+        orderBy: { createdAt: 'asc' },
+      });
+      if (mainCompany) {
+        companyId = mainCompany.id;
+      }
     }
 
     const company = await this.prisma.company.findUnique({
-      where: { id: dto.companyId },
+      where: { id: companyId },
     });
     if (!company) throw new BadRequestException('Company not found');
 
-    const tariff = await this.prisma.tariff.create({ data: dto });
+    const tariff = await this.prisma.tariff.create({
+      data: { ...dto, companyId },
+    });
 
     this.logger.log(
       `Tariff created: ${tariff.name} - R$${tariff.pricePerKwh}/kWh`,
