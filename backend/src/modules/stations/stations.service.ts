@@ -93,6 +93,29 @@ export class StationsService {
 
   async remove(id: string, user?: { role: string; companyId?: string }) {
     await this.findById(id, user);
+
+    const chargers = await this.prisma.charger.findMany({
+      where: { stationId: id },
+      select: { id: true },
+    });
+    const chargerIds = chargers.map((c) => c.id);
+
+    if (chargerIds.length > 0) {
+      await this.prisma.connector.deleteMany({
+        where: { chargerId: { in: chargerIds } },
+      });
+      await this.prisma.chargingSession.deleteMany({
+        where: { chargerId: { in: chargerIds } },
+      });
+      await this.prisma.charger.deleteMany({
+        where: { stationId: id },
+      });
+    }
+
+    await this.prisma.chargingSession.deleteMany({
+      where: { stationId: id },
+    });
+
     return this.prisma.station.delete({ where: { id } });
   }
 }

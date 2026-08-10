@@ -6,6 +6,7 @@ on:
     paths:
       - 'backend/**'
       - 'frontend/**'
+      - 'mobile/**'
       - 'deploy-cpanel.sh'
       - 'deploy.php'
 
@@ -45,14 +46,33 @@ jobs:
           script: |
             cd /home/kryontecnologic/conectovolt
             git pull origin master
-            cp backend.env.production backend/.env
+            test -f backend/.env.production.local || { echo "Missing backend/.env.production.local on server"; exit 1; }
+            cp backend/.env.production.local backend/.env
             cd backend
             npm ci --production
             DB_PROVIDER=mysql npx prisma generate --schema=prisma/schema.mysql.prisma
-            npx prisma db push --schema=prisma/schema.mysql.prisma
+            npx prisma migrate deploy --schema=prisma/schema.mysql.prisma
             npm run build
             cd ../frontend
             npm ci
             NEXT_PUBLIC_API_URL=/api/v1 npm run build
             cd ../backend
-            pm2 restart conectovolt-api || pm2 start dist/main.js --name conectovolt-api
+            pm2 restart conectovolt-api || pm2 start dist/src/main.js --name conectovolt-api
+
+  mobile-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Install Flutter dependencies
+        working-directory: mobile
+        run: flutter pub get
+      - name: Analyze Flutter app
+        working-directory: mobile
+        run: flutter analyze
+      - name: Build Android debug artifact
+        working-directory: mobile
+        run: flutter build apk --debug

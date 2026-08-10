@@ -1,9 +1,12 @@
 @echo off
 setlocal
 
-set HOST=pro122.dnspro.com.br:2083
-set USER=kryontecnologic
-set PASS=ZQ(~{Y?9de&;DqYA
+if "%CPANEL_HOST%"=="" exit /b 1
+if "%CPANEL_USER%"=="" exit /b 1
+if "%CPANEL_PASSWORD%"=="" exit /b 1
+set "HOST=%CPANEL_HOST%"
+set "USER=%CPANEL_USER%"
+set "PASS=%CPANEL_PASSWORD%"
 set BASEDIR=/home/kryontecnologic/conectovolt
 
 echo === Deploy ConectoVolt via cPanel API ===
@@ -27,10 +30,10 @@ curl.exe -k -s -u "%USER%:%PASS%" ^
   "https://%HOST%/json-api/cpanel?cpanel_jsonapi_module=CommandManager&cpanel_jsonapi_func=execute&cpanel_jsonapi_version=1" ^
   --data-urlencode "command=cd %BASEDIR%/backend && npx prisma generate --schema=prisma/schema.mysql.prisma && echo PRISMA_GEN_OK"
 
-echo [4/5] Aplicando schema no banco MySQL...
+echo [4/5] Aplicando migrations no banco MySQL...
 curl.exe -k -s -u "%USER%:%PASS%" ^
   "https://%HOST%/json-api/cpanel?cpanel_jsonapi_module=CommandManager&cpanel_jsonapi_func=execute&cpanel_jsonapi_version=1" ^
-  --data-urlencode "command=cd %BASEDIR%/backend && npx prisma db push --schema=prisma/schema.mysql.prisma && echo DB_PUSH_OK"
+  --data-urlencode "command=cd %BASEDIR%/backend && npx prisma migrate deploy --schema=prisma/schema.mysql.prisma && echo DB_MIGRATE_OK"
 
 echo [5/5] Compilando backend NestJS...
 curl.exe -k -s -u "%USER%:%PASS%" ^

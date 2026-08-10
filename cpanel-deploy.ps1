@@ -2,9 +2,15 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
 
-$cpanelUser = "kryontecnologic"
-$cpanelPass = 'ZQ(~{Y?9de&;DqYA'
-$cpanelHost = "pro122.dnspro.com.br:2083"
+$cpanelUser = $env:CPANEL_USER
+$cpanelPass = $env:CPANEL_PASSWORD
+$cpanelHost = $env:CPANEL_HOST
+
+if ([string]::IsNullOrWhiteSpace($cpanelUser) -or
+    [string]::IsNullOrWhiteSpace($cpanelPass) -or
+    [string]::IsNullOrWhiteSpace($cpanelHost)) {
+    throw "Defina CPANEL_USER, CPANEL_PASSWORD e CPANEL_HOST no ambiente antes de executar este script."
+}
 
 $base64Auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("${cpanelUser}:${cpanelPass}"))
 $headers = @{

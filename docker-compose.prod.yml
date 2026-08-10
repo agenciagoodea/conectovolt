@@ -6,10 +6,10 @@ services:
     container_name: conectovolt-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${DB_NAME:-conectovolt}
-      MYSQL_USER: ${DB_USER:-conectovolt}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-conectovolt}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD is required}
+      MYSQL_DATABASE: ${DB_NAME:?DB_NAME is required}
+      MYSQL_USER: ${DB_USER:?DB_USER is required}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
     ports:
       - "${DB_PORT:-3306}:3306"
     volumes:
@@ -43,18 +43,21 @@ services:
       - "3000:3000"
       - "3001:3001"
     env_file:
-      - ./backend/.env.production
+      - ./backend/.env.production.local
     environment:
       DB_HOST: mysql
-      DB_USER: ${DB_USER:-conectovolt}
-      DB_PASSWORD: ${DB_PASSWORD:-conectovolt}
-      DB_NAME: ${DB_NAME:-conectovolt}
+      DB_USER: ${DB_USER:?DB_USER is required}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      DB_NAME: ${DB_NAME:?DB_NAME is required}
       DB_PORT: 3306
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET is required}
       MERCADO_PAGO_ACCESS_TOKEN: ${MERCADO_PAGO_ACCESS_TOKEN:-}
       MERCADO_PAGO_WEBHOOK_SECRET: ${MERCADO_PAGO_WEBHOOK_SECRET:-}
-      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      ENABLE_OCPP_PORT: ${ENABLE_OCPP_PORT:-false}
+      OCPP_HOST: ${OCPP_HOST:-0.0.0.0}
+      OCPP_SHARED_TOKEN: ${OCPP_SHARED_TOKEN:-}
+      CORS_ORIGIN: ${CORS_ORIGIN:?CORS_ORIGIN is required}
     depends_on:
       mysql:
         condition: service_healthy

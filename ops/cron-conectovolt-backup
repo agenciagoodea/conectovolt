@@ -1,0 +1,3 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+15 2 * * * root ENV_FILE=/etc/conectovolt/backup.env APP_ROOT=/usr/local/lib/conectovolt BACKUP_SCRIPT=/usr/local/lib/conectovolt/backup-mysql.sh /usr/local/sbin/conectovolt-backup >> /home/conectovolt/logs/backup.log 2>&1

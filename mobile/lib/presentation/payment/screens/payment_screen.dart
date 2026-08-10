@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import '../../../core/services/api_service.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../data/repositories/auth_repository.dart';
 import 'package:intl/intl.dart';
 
 class PaymentScreen extends ConsumerStatefulWidget {
@@ -20,13 +21,22 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   bool _loading = true;
   String? _qrCode;
   String? _copyPaste;
+  String? _paymentId;
+  String _status = 'PENDING';
   String? _error;
   bool _copied = false;
+  Timer? _statusTimer;
 
   @override
   void initState() {
     super.initState();
     _createPix();
+  }
+
+  @override
+  void dispose() {
+    _statusTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _createPix() async {
@@ -35,13 +45,35 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       final api = ref.read(apiServiceProvider);
       final response = await api.dio.post('/payments', data: {'sessionId': widget.sessionId, 'gateway': 'PIX'});
       setState(() {
+        _paymentId = response.data['payment']?['id'];
+        _status = response.data['payment']?['status'] ?? 'PENDING';
         _qrCode = response.data['gateway']['qrCode'];
         _copyPaste = response.data['gateway']['copyPaste'];
       });
+      _startStatusPolling();
     } catch (e) {
       setState(() { _error = 'Erro ao gerar pagamento. Tente novamente.'; });
     } finally {
       setState(() { _loading = false; });
+    }
+  }
+
+  void _startStatusPolling() {
+    _statusTimer?.cancel();
+    if (_paymentId == null || _status == 'APPROVED') return;
+    _statusTimer = Timer.periodic(const Duration(seconds: 5), (_) => _refreshStatus());
+  }
+
+  Future<void> _refreshStatus() async {
+    if (_paymentId == null || _status == 'APPROVED') return;
+    try {
+      final api = ref.read(apiServiceProvider);
+      final response = await api.dio.get('/payments/$_paymentId');
+      if (!mounted) return;
+      setState(() => _status = response.data['status'] ?? _status);
+      if (_status == 'APPROVED') _statusTimer?.cancel();
+    } catch (_) {
+      // Keep the PIX screen usable during transient network failures.
     }
   }
 
@@ -98,7 +130,12 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                   ),
                 ),
 
-              if (_qrCode != null && _qrCode!.isNotEmpty) ...[
+               if (_status == 'APPROVED') ...[
+                 const SizedBox(height: 28),
+                 const Icon(Icons.check_circle, color: AppTheme.primary, size: 64),
+                 const SizedBox(height: 12),
+                 const Text('Pagamento confirmado!', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+               ] else if (_qrCode != null && _qrCode!.isNotEmpty) ...[
                 const Text('Escaneie o QR Code', style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
                 const SizedBox(height: 20),
                 Container(
@@ -159,7 +196,11 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 ],
               ],
 
-              const SizedBox(height: 24),
+               if (_status != 'APPROVED') const Padding(
+                 padding: EdgeInsets.only(top: 18),
+                 child: Text('Aguardando confirmacao do pagamento...', style: TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+               ),
+               const SizedBox(height: 24),
               TextButton(
                 onPressed: () => context.go('/history'),
                 child: const Text('Ver historico de recargas', style: TextStyle(color: AppTheme.textSecondary)),

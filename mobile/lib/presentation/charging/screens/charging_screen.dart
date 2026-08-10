@@ -1,13 +1,15 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/services/api_service.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../data/repositories/auth_repository.dart';
 
 class ChargingScreen extends ConsumerStatefulWidget {
   final String chargerId;
   final String stationId;
-  const ChargingScreen({super.key, required this.chargerId, required this.stationId});
+  final String? connectorId;
+  const ChargingScreen({super.key, required this.chargerId, required this.stationId, this.connectorId});
 
   @override
   ConsumerState<ChargingScreen> createState() => _ChargingScreenState();
@@ -21,48 +23,99 @@ class _ChargingScreenState extends ConsumerState<ChargingScreen> {
   int elapsedSeconds = 0;
   String tariff = 'Padrao';
   double pricePerKwh = 2.50;
+  String? vehicleId;
+  List<Map<String, dynamic>> vehicles = [];
+  Timer? _pollTimer;
+  bool loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadVehicles();
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadVehicles() async {
+    try {
+      final api = ref.read(apiServiceProvider);
+      final response = await api.dio.get('/vehicles');
+      if (mounted) {
+        setState(() {
+          vehicles = (response.data as List).cast<Map<String, dynamic>>();
+        });
+      }
+    } catch (_) {
+      // Vehicle selection remains optional for chargers that identify drivers.
+    }
+  }
 
   Future<void> _start() async {
     final api = ref.read(apiServiceProvider);
+    setState(() => loading = true);
     try {
       final response = await api.dio.post('/charging/start', data: {
         'chargerId': widget.chargerId,
         'stationId': widget.stationId,
+        if (widget.connectorId != null) 'connectorId': widget.connectorId,
+        if (vehicleId != null) 'vehicleId': vehicleId,
       });
       setState(() {
-        sessionId = response.data['id'];
+        sessionId = response.data['id'] ?? response.data['sessionId'];
         charging = true;
         if (response.data['tariff'] != null) {
           pricePerKwh = (response.data['tariff']['pricePerKwh'] ?? 2.50).toDouble();
           tariff = response.data['tariff']['name'] ?? 'Padrao';
         }
       });
-      _startTimer();
+      _pollTimer = Timer.periodic(const Duration(seconds: 5), (_) => _refreshSession());
+      await _refreshSession();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro: $e'), backgroundColor: Colors.red));
       }
+    } finally {
+      if (mounted) setState(() => loading = false);
     }
   }
 
-  void _startTimer() {
-    Future.doWhile(() async {
-      await Future.delayed(const Duration(seconds: 5));
-      if (!charging || sessionId == null || !mounted) return false;
-      elapsedSeconds += 5;
-      energyKwh += (pricePerKwh * 0.02);
-      amount = energyKwh * pricePerKwh;
-      try {
-        final api = ref.read(apiServiceProvider);
-        await api.dio.patch('/charging/$sessionId/energy', data: {'energyKwh': energyKwh});
-      } catch (_) {}
-      if (mounted) setState(() {});
-      return charging;
-    });
+  Future<void> _refreshSession() async {
+    if (!charging || sessionId == null) return;
+    try {
+      final api = ref.read(apiServiceProvider);
+      final response = await api.dio.get('/charging/active');
+      final data = response.data as Map<String, dynamic>?;
+      if (data == null || !mounted) return;
+      setState(() {
+        energyKwh = (data['energyKwh'] ?? energyKwh).toDouble();
+        amount = (data['currentAmount'] ?? data['amount'] ?? amount).toDouble();
+        elapsedSeconds = ((data['durationMinutes'] ?? 0) as num).toInt() * 60;
+        final activeTariff = data['tariff'];
+        if (activeTariff is Map<String, dynamic>) {
+          pricePerKwh = (activeTariff['pricePerKwh'] ?? pricePerKwh).toDouble();
+          tariff = activeTariff['name'] ?? tariff;
+        }
+      });
+    } catch (_) {
+      // Keep the last confirmed telemetry on transient network failures.
+    }
   }
 
   Future<void> _stop() async {
     final api = ref.read(apiServiceProvider);
+    if (sessionId == null || energyKwh <= 0) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Aguardando a telemetria de energia para finalizar.')),
+        );
+      }
+      return;
+    }
+    setState(() => loading = true);
     try {
       final response = await api.dio.post('/charging/$sessionId/stop', data: {'energyKwh': energyKwh});
       setState(() { charging = false; amount = (response.data['amount'] ?? 0).toDouble(); });
@@ -71,6 +124,8 @@ class _ChargingScreenState extends ConsumerState<ChargingScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro: $e'), backgroundColor: Colors.red));
       }
+    } finally {
+      if (mounted) setState(() => loading = false);
     }
   }
 
@@ -110,7 +165,7 @@ class _ChargingScreenState extends ConsumerState<ChargingScreen> {
                 SizedBox(
                   width: double.infinity, height: 52,
                   child: ElevatedButton(
-                    onPressed: _stop,
+                    onPressed: loading ? null : _stop,
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
                     child: const Text('Finalizar Recarga'),
                   ),
@@ -119,8 +174,17 @@ class _ChargingScreenState extends ConsumerState<ChargingScreen> {
                 const Text('Pronto para recarregar?', style: TextStyle(fontSize: 20, color: Colors.white)),
                 const SizedBox(height: 8),
                 Text('Tarifa: $tariff - R\$ ${pricePerKwh.toStringAsFixed(2)}/kWh', style: const TextStyle(color: AppTheme.textSecondary)),
+                if (vehicles.isNotEmpty) ...[
+                  const SizedBox(height: 20),
+                  DropdownButtonFormField<String>(
+                    initialValue: vehicleId,
+                    decoration: const InputDecoration(labelText: 'Veiculo (opcional)'),
+                    items: vehicles.map((vehicle) => DropdownMenuItem<String>(value: vehicle['id'] as String, child: Text('${vehicle['brand']} ${vehicle['model']}'))).toList(),
+                    onChanged: (value) => setState(() => vehicleId = value),
+                  ),
+                ],
                 const SizedBox(height: 32),
-                SizedBox(width: double.infinity, height: 52, child: ElevatedButton(onPressed: _start, child: const Text('Iniciar Recarga'))),
+                SizedBox(width: double.infinity, height: 52, child: ElevatedButton(onPressed: loading ? null : _start, child: loading ? const CircularProgressIndicator() : const Text('Iniciar Recarga'))),
               ] else ...[
                 const Text('Recarga finalizada!', style: TextStyle(fontSize: 20, color: Colors.white)),
                 const SizedBox(height: 8),

@@ -1,6 +1,12 @@
-$host = 'pro122.dnspro.com.br'
-$user = 'kryontecnologic'
-$pass = 'ZQ(~{Y?9de&;DqYA'
+$host = $env:CPANEL_SSH_HOST
+$user = $env:CPANEL_SSH_USER
+$pass = $env:CPANEL_SSH_PASSWORD
+
+if ([string]::IsNullOrWhiteSpace($host) -or
+    [string]::IsNullOrWhiteSpace($user) -or
+    [string]::IsNullOrWhiteSpace($pass)) {
+    throw 'Defina CPANEL_SSH_HOST, CPANEL_SSH_USER e CPANEL_SSH_PASSWORD no ambiente.'
+}
 
 # Testar com plink via senha (nao chave)
 $ports = @(21098, 22, 2222, 26)

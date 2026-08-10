@@ -3,6 +3,9 @@ dist/
 .env
 .env.local
 .env.production
+**/.env.production
+backend.env.production
+**/.env.production.local
 *.db
 *.db-journal
 .DS_Store
@@ -13,4 +16,5 @@ id_rsa*
 test-*.js
 seed-*.js
 acesso.txt
-
+ops/*.env
+*.env

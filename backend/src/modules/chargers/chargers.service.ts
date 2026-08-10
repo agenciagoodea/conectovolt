@@ -120,6 +120,12 @@ export class ChargersService {
 
   async remove(id: string, user?: { role: string; companyId?: string }) {
     await this.assertCompanyAccess(id, user);
+    await this.prisma.connector.deleteMany({
+      where: { chargerId: id },
+    });
+    await this.prisma.chargingSession.deleteMany({
+      where: { chargerId: id },
+    });
     return this.prisma.charger.delete({ where: { id } });
   }
 
@@ -136,6 +142,9 @@ export class ChargersService {
     if (validIds.length === 0) return { deleted: 0 };
 
     await this.prisma.connector.deleteMany({
+      where: { chargerId: { in: validIds } },
+    });
+    await this.prisma.chargingSession.deleteMany({
       where: { chargerId: { in: validIds } },
     });
 

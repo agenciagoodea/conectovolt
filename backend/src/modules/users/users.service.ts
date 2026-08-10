@@ -169,6 +169,9 @@ export class UsersService {
   }
 
   async remove(id: string) {
+    await this.prisma.notification.deleteMany({ where: { userId: id } });
+    await this.prisma.vehicle.deleteMany({ where: { userId: id } });
+    await this.prisma.chargingSession.deleteMany({ where: { userId: id } });
     await this.prisma.user.delete({ where: { id } });
   }
 }

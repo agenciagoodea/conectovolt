@@ -33,6 +33,31 @@ export class HttpExceptionFilter implements ExceptionFilter {
           : Array.isArray(responseMessage)
             ? responseMessage.join(', ')
             : exception.message;
+    } else if (
+      exception &&
+      typeof exception === 'object' &&
+      'code' in exception &&
+      typeof (exception as { code: unknown }).code === 'string'
+    ) {
+      const prismaError = exception as { code: string; message?: string };
+      switch (prismaError.code) {
+        case 'P2002':
+          status = HttpStatus.CONFLICT;
+          message = 'Já existe um registro cadastrado com este dado único (duplicidade)';
+          break;
+        case 'P2025':
+          status = HttpStatus.NOT_FOUND;
+          message = 'Registro não encontrado para exclusão ou alteração';
+          break;
+        case 'P2003':
+          status = HttpStatus.BAD_REQUEST;
+          message = 'Não foi possível excluir o registro devido a dependências ativas';
+          break;
+        default:
+          status = HttpStatus.BAD_REQUEST;
+          message = prismaError.message || 'Erro de banco de dados';
+          break;
+      }
     } else if (exception instanceof Error) {
       message = exception.message;
     }

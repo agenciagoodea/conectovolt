@@ -8,15 +8,20 @@ echo "1. Puxando as atualizações mais recentes do GitHub..."
 git pull origin master
 
 echo "2. Configurando ambiente e compilando o Backend (NestJS)..."
-cp $BASE_DIR/backend.env.production $BASE_DIR/backend/.env
+if [ ! -f "$BASE_DIR/backend/.env.production.local" ]; then
+  echo "ERRO: crie backend/.env.production.local fora do Git com os segredos de produção."
+  exit 1
+fi
+cp "$BASE_DIR/backend/.env.production.local" "$BASE_DIR/backend/.env"
+bash "$BASE_DIR/ops/preflight-production.sh" "$BASE_DIR/backend/.env.production.local"
 cd $BASE_DIR/backend
 npm install
 npx prisma generate --schema=prisma/schema.mysql.prisma
-npx prisma db push --schema=prisma/schema.mysql.prisma
+npx prisma migrate deploy --schema=prisma/schema.mysql.prisma
 npm run build
 
 echo "3. Executando Seed de dados no Banco MySQL..."
-node dist/prisma/seed.js
+npx prisma db seed --schema=prisma/schema.mysql.prisma
 
 echo "4. Instalando dependências e compilando o Frontend (Next.js)..."
 cd $BASE_DIR/frontend

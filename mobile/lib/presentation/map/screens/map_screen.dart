@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/services/api_service.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/models.dart';
+import '../../../data/repositories/auth_repository.dart';
 
 final stationsProvider = FutureProvider<List<StationModel>>((ref) async {
   final api = ref.read(apiServiceProvider);
@@ -24,6 +25,7 @@ class MapScreen extends ConsumerWidget {
         title: const Text('Postos Proximos'),
         actions: [
           IconButton(icon: const Icon(Icons.history), onPressed: () => context.go('/history')),
+          IconButton(icon: const Icon(Icons.person), onPressed: () => context.go('/profile')),
           IconButton(icon: const Icon(Icons.logout), onPressed: () async {
             await ref.read(authProvider.notifier).logout();
             if (context.mounted) context.go('/login');
@@ -33,11 +35,42 @@ class MapScreen extends ConsumerWidget {
       body: stationsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Erro: $e', style: const TextStyle(color: Colors.redAccent))),
-        data: (stations) => ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: stations.length,
-          itemBuilder: (_, i) => _StationCard(station: stations[i]),
-        ),
+        data: (stations) {
+          final markers = stations
+              .where((station) => station.latitude != 0 || station.longitude != 0)
+              .map((station) => Marker(
+                    markerId: MarkerId(station.id),
+                    position: LatLng(station.latitude, station.longitude),
+                    infoWindow: InfoWindow(title: station.name),
+                    onTap: () => context.go('/station/${station.id}'),
+                  ))
+              .toSet();
+          final first = stations.firstWhere(
+            (station) => station.latitude != 0 || station.longitude != 0,
+            orElse: () => StationModel(id: '', name: '', address: '', city: '', state: '', latitude: -23.5505, longitude: -46.6333, status: 'ACTIVE', chargersCount: 0),
+          );
+
+          return Column(
+            children: [
+              SizedBox(
+                height: 260,
+                child: GoogleMap(
+                  initialCameraPosition: CameraPosition(target: LatLng(first.latitude, first.longitude), zoom: 11),
+                  markers: markers,
+                  myLocationButtonEnabled: false,
+                  zoomControlsEnabled: false,
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: stations.length,
+                  itemBuilder: (_, i) => _StationCard(station: stations[i]),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

@@ -4,14 +4,21 @@ set -e
 
 echo "=== ConectoVolt Deploy ==="
 
-# Load env
-if [ -f .env.production ]; then
-  export $(grep -v '^#' .env.production | xargs)
+# Load secrets kept outside the repository.
+ENV_FILE=".env.production.local"
+if [ ! -f "$ENV_FILE" ]; then
+  echo "ERROR: $ENV_FILE is required and must not be committed"
+  exit 1
 fi
+set -a
+. "$ENV_FILE"
+set +a
+
+bash ops/preflight-production.sh "$ENV_FILE"
 
 # Check required vars
-if [ -z "$DB_PASSWORD" ] || [ -z "$JWT_SECRET" ]; then
-  echo "ERROR: DB_PASSWORD and JWT_SECRET must be set in .env.production"
+if [ -z "$DB_PASSWORD" ] || [ -z "$JWT_SECRET" ] || [ -z "$JWT_REFRESH_SECRET" ] || [ -z "$DATABASE_URL" ]; then
+  echo "ERROR: database URL, database password and JWT secrets must be set in $ENV_FILE"
   exit 1
 fi
 

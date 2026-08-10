@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/services/api_service.dart';
+import 'package:dio/dio.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../data/repositories/auth_repository.dart';
 
 class StationDetailScreen extends ConsumerWidget {
   final String stationId;
@@ -16,11 +17,21 @@ class StationDetailScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(title: const Text('Detalhes do Posto')),
-      body: FutureBuilder(
+      body: FutureBuilder<Response<dynamic>>(
         future: stationFuture,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-          final station = snapshot.data!.data;
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError || !snapshot.hasData) {
+            return const Center(
+              child: Text(
+                'Nao foi possivel carregar o posto.',
+                style: TextStyle(color: AppTheme.textSecondary),
+              ),
+            );
+          }
+          final station = snapshot.data!.data as Map<String, dynamic>;
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -72,7 +83,18 @@ class StationDetailScreen extends ConsumerWidget {
                         const SizedBox(width: 8),
                         if (charger['status'] == 'ONLINE')
                           ElevatedButton(
-                            onPressed: () => context.go('/charging/start?charger=${charger['id']}&station=$stationId'),
+                            onPressed: () {
+                              final connectors = (charger['connectors'] as List?) ?? [];
+                              String? availableConnectorId;
+                              for (final item in connectors) {
+                                if (item is Map<String, dynamic> && item['status'] == 'AVAILABLE') {
+                                  availableConnectorId = item['id'] as String?;
+                                  break;
+                                }
+                              }
+                              final connectorQuery = availableConnectorId == null ? '' : '&connector=$availableConnectorId';
+                              context.go('/charging/start?charger=${charger['id']}&station=$stationId$connectorQuery');
+                            },
                             style: ElevatedButton.styleFrom(minimumSize: const Size(80, 36), padding: const EdgeInsets.symmetric(horizontal: 12)),
                             child: const Text('Iniciar', style: TextStyle(fontSize: 13)),
                           ),

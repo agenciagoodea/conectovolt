@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../../../core/services/api_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/models.dart';
+import '../../../data/repositories/auth_repository.dart';
 
 final historyProvider = FutureProvider<List<ChargingSessionModel>>((ref) async {
   final api = ref.read(apiServiceProvider);
