@@ -40,11 +40,11 @@ jobs:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: pro122.dnspro.com.br
-          username: kryontecnologic
+          host: 177.136.229.136
+          username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /home/kryontecnologic/conectovolt
+            cd /root/conectovolt
             git pull origin master
             test -f backend/.env.production.local || { echo "Missing backend/.env.production.local on server"; exit 1; }
             cp backend/.env.production.local backend/.env

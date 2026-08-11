@@ -7,7 +7,7 @@ if "%CPANEL_PASSWORD%"=="" exit /b 1
 set "HOST=%CPANEL_HOST%"
 set "USER=%CPANEL_USER%"
 set "PASS=%CPANEL_PASSWORD%"
-set BASEDIR=/home/kryontecnologic/conectovolt
+set BASEDIR=/root/conectovolt
 
 echo === Deploy ConectoVolt via cPanel API ===
 echo.

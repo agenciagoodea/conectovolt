@@ -19,13 +19,13 @@ function requiredEnv($name) {
     return $value;
 }
 
-$repo = '/home/kryontecnologic/conectovolt';
+$repo = '/root/conectovolt';
 $backend = "$repo/backend";
 $frontend = "$repo/frontend";
 
 // Clone or pull
 if (!is_dir($repo)) {
-    run("cd /home/kryontecnologic && git clone https://github.com/agenciagoodea/conectovolt.git");
+    run("cd /root && git clone https://github.com/agenciagoodea/conectovolt.git");
 } else {
     run("cd $repo && git pull origin master");
 }
@@ -64,7 +64,7 @@ run("cd $frontend && NEXT_PUBLIC_API_URL=/api/v1 npm run build");
 
 // Kill existing backend and restart
 run("pkill -f 'node dist/src/main.js' 2>/dev/null; sleep 1");
-run("cd $backend && nohup node dist/src/main.js > /home/kryontecnologic/conectovolt/api.log 2>&1 &");
+run("cd $backend && nohup node dist/src/main.js > /root/conectovolt/api.log 2>&1 &");
 
 // Check health
 sleep(5);

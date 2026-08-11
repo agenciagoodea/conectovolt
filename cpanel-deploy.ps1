@@ -20,7 +20,7 @@ $headers = @{
 Write-Host "=== Testando conexao com cPanel UAPI ===" -ForegroundColor Cyan
 
 try {
-    $resp = Invoke-RestMethod -Uri "https://${cpanelHost}/execute/Fileman/list_files?dir=%2Fhome%2Fkryontecnologic" `
+    $resp = Invoke-RestMethod -Uri "https://${cpanelHost}/execute/Fileman/list_files?dir=%2Froot" `
         -Headers $headers -Method GET
     Write-Host "Conectado ao cPanel!" -ForegroundColor Green
     Write-Host ($resp | ConvertTo-Json -Depth 2)
@@ -41,7 +41,7 @@ try {
 # Tentar executar via cPanel Terminal (Corectl)
 Write-Host "`n=== Tentando Terminal via cPanel API ===" -ForegroundColor Cyan
 try {
-    $body = "command=cd+%2Fhome%2Fkryontecnologic%2Fconectovolt+%26%26+git+pull+origin+master+%26%26+echo+DEPLOY_OK"
+    $body = "command=cd+%2Froot%2Fconectovolt+%26%26+git+pull+origin+master+%26%26+echo+DEPLOY_OK"
     $resp3 = Invoke-WebRequest -Uri "https://${cpanelHost}/execute/Terminal/run" `
         -Headers $headers -Method POST -Body $body -ContentType "application/x-www-form-urlencoded"
     Write-Host "Terminal OK:" -ForegroundColor Green

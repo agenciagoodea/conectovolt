@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "=== 🚀 Iniciando Deploy Automatizado do ConectoVolt no cPanel ==="
 
-BASE_DIR="/home/kryontecnologic/conectovolt"
+BASE_DIR="/root/conectovolt"
 cd $BASE_DIR || exit 1
 
 echo "1. Puxando as atualizações mais recentes do GitHub..."
