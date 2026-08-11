@@ -276,7 +276,6 @@ export type PlatformUsageOrderByWithRelationInput = {
   revenue?: Prisma.SortOrder
   commission?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  _relevance?: Prisma.PlatformUsageOrderByRelevanceInput
 }
 
 export type PlatformUsageWhereUniqueInput = Prisma.AtLeast<{
@@ -411,12 +410,6 @@ export type PlatformUsageUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type PlatformUsageOrderByRelevanceInput = {
-  fields: Prisma.PlatformUsageOrderByRelevanceFieldEnum | Prisma.PlatformUsageOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
-}
-
 export type PlatformUsageCompanyIdMonthCompoundUniqueInput = {
   companyId: string
   month: string
@@ -488,7 +481,29 @@ export type PlatformUsageSelect<ExtArgs extends runtime.Types.Extensions.Interna
   createdAt?: boolean
 }, ExtArgs["result"]["platformUsage"]>
 
+export type PlatformUsageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  month?: boolean
+  stations?: boolean
+  chargers?: boolean
+  sessions?: boolean
+  revenue?: boolean
+  commission?: boolean
+  createdAt?: boolean
+}, ExtArgs["result"]["platformUsage"]>
 
+export type PlatformUsageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  month?: boolean
+  stations?: boolean
+  chargers?: boolean
+  sessions?: boolean
+  revenue?: boolean
+  commission?: boolean
+  createdAt?: boolean
+}, ExtArgs["result"]["platformUsage"]>
 
 export type PlatformUsageSelectScalar = {
   id?: boolean
@@ -635,6 +650,30 @@ export interface PlatformUsageDelegate<ExtArgs extends runtime.Types.Extensions.
   createMany<T extends PlatformUsageCreateManyArgs>(args?: Prisma.SelectSubset<T, PlatformUsageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many PlatformUsages and returns the data saved in the database.
+   * @param {PlatformUsageCreateManyAndReturnArgs} args - Arguments to create many PlatformUsages.
+   * @example
+   * // Create many PlatformUsages
+   * const platformUsage = await prisma.platformUsage.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many PlatformUsages and only return the `id`
+   * const platformUsageWithIdOnly = await prisma.platformUsage.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends PlatformUsageCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, PlatformUsageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformUsagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a PlatformUsage.
    * @param {PlatformUsageDeleteArgs} args - Arguments to delete one PlatformUsage.
    * @example
@@ -697,6 +736,36 @@ export interface PlatformUsageDelegate<ExtArgs extends runtime.Types.Extensions.
    * 
    */
   updateMany<T extends PlatformUsageUpdateManyArgs>(args: Prisma.SelectSubset<T, PlatformUsageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more PlatformUsages and returns the data updated in the database.
+   * @param {PlatformUsageUpdateManyAndReturnArgs} args - Arguments to update many PlatformUsages.
+   * @example
+   * // Update many PlatformUsages
+   * const platformUsage = await prisma.platformUsage.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more PlatformUsages and only return the `id`
+   * const platformUsageWithIdOnly = await prisma.platformUsage.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends PlatformUsageUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, PlatformUsageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformUsagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one PlatformUsage.
@@ -1105,7 +1174,24 @@ export type PlatformUsageCreateManyArgs<ExtArgs extends runtime.Types.Extensions
    * The data used to create many PlatformUsages.
    */
   data: Prisma.PlatformUsageCreateManyInput | Prisma.PlatformUsageCreateManyInput[]
-  skipDuplicates?: boolean
+}
+
+/**
+ * PlatformUsage createManyAndReturn
+ */
+export type PlatformUsageCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatformUsage
+   */
+  select?: Prisma.PlatformUsageSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatformUsage
+   */
+  omit?: Prisma.PlatformUsageOmit<ExtArgs> | null
+  /**
+   * The data used to create many PlatformUsages.
+   */
+  data: Prisma.PlatformUsageCreateManyInput | Prisma.PlatformUsageCreateManyInput[]
 }
 
 /**
@@ -1134,6 +1220,32 @@ export type PlatformUsageUpdateArgs<ExtArgs extends runtime.Types.Extensions.Int
  * PlatformUsage updateMany
  */
 export type PlatformUsageUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * The data used to update PlatformUsages.
+   */
+  data: Prisma.XOR<Prisma.PlatformUsageUpdateManyMutationInput, Prisma.PlatformUsageUncheckedUpdateManyInput>
+  /**
+   * Filter which PlatformUsages to update
+   */
+  where?: Prisma.PlatformUsageWhereInput
+  /**
+   * Limit how many PlatformUsages to update.
+   */
+  limit?: number
+}
+
+/**
+ * PlatformUsage updateManyAndReturn
+ */
+export type PlatformUsageUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatformUsage
+   */
+  select?: Prisma.PlatformUsageSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatformUsage
+   */
+  omit?: Prisma.PlatformUsageOmit<ExtArgs> | null
   /**
    * The data used to update PlatformUsages.
    */

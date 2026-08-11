@@ -248,7 +248,6 @@ export type TariffOrderByWithRelationInput = {
   company?: Prisma.CompanyOrderByWithRelationInput
   stations?: Prisma.StationOrderByRelationAggregateInput
   chargingSessions?: Prisma.ChargingSessionOrderByRelationAggregateInput
-  _relevance?: Prisma.TariffOrderByRelevanceInput
 }
 
 export type TariffWhereUniqueInput = Prisma.AtLeast<{
@@ -387,12 +386,6 @@ export type TariffNullableScalarRelationFilter = {
   isNot?: Prisma.TariffWhereInput | null
 }
 
-export type TariffOrderByRelevanceInput = {
-  fields: Prisma.TariffOrderByRelevanceFieldEnum | Prisma.TariffOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
-}
-
 export type TariffCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
@@ -489,10 +482,6 @@ export type TariffUpdateOneWithoutStationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TariffUpdateToOneWithWhereWithoutStationsInput, Prisma.TariffUpdateWithoutStationsInput>, Prisma.TariffUncheckedUpdateWithoutStationsInput>
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type TariffCreateNestedOneWithoutChargingSessionsInput = {
   create?: Prisma.XOR<Prisma.TariffCreateWithoutChargingSessionsInput, Prisma.TariffUncheckedCreateWithoutChargingSessionsInput>
   connectOrCreate?: Prisma.TariffCreateOrConnectWithoutChargingSessionsInput
@@ -538,7 +527,6 @@ export type TariffCreateOrConnectWithoutCompanyInput = {
 
 export type TariffCreateManyCompanyInputEnvelope = {
   data: Prisma.TariffCreateManyCompanyInput | Prisma.TariffCreateManyCompanyInput[]
-  skipDuplicates?: boolean
 }
 
 export type TariffUpsertWithWhereUniqueWithoutCompanyInput = {
@@ -784,7 +772,27 @@ export type TariffSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   _count?: boolean | Prisma.TariffCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tariff"]>
 
+export type TariffSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  name?: boolean
+  pricePerKwh?: boolean
+  isActive?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["tariff"]>
 
+export type TariffSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  name?: boolean
+  pricePerKwh?: boolean
+  isActive?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["tariff"]>
 
 export type TariffSelectScalar = {
   id?: boolean
@@ -802,6 +810,12 @@ export type TariffInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   stations?: boolean | Prisma.Tariff$stationsArgs<ExtArgs>
   chargingSessions?: boolean | Prisma.Tariff$chargingSessionsArgs<ExtArgs>
   _count?: boolean | Prisma.TariffCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type TariffIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}
+export type TariffIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
 }
 
 export type $TariffPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -937,6 +951,30 @@ export interface TariffDelegate<ExtArgs extends runtime.Types.Extensions.Interna
   createMany<T extends TariffCreateManyArgs>(args?: Prisma.SelectSubset<T, TariffCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Tariffs and returns the data saved in the database.
+   * @param {TariffCreateManyAndReturnArgs} args - Arguments to create many Tariffs.
+   * @example
+   * // Create many Tariffs
+   * const tariff = await prisma.tariff.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Tariffs and only return the `id`
+   * const tariffWithIdOnly = await prisma.tariff.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends TariffCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, TariffCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TariffPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Tariff.
    * @param {TariffDeleteArgs} args - Arguments to delete one Tariff.
    * @example
@@ -999,6 +1037,36 @@ export interface TariffDelegate<ExtArgs extends runtime.Types.Extensions.Interna
    * 
    */
   updateMany<T extends TariffUpdateManyArgs>(args: Prisma.SelectSubset<T, TariffUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Tariffs and returns the data updated in the database.
+   * @param {TariffUpdateManyAndReturnArgs} args - Arguments to update many Tariffs.
+   * @example
+   * // Update many Tariffs
+   * const tariff = await prisma.tariff.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Tariffs and only return the `id`
+   * const tariffWithIdOnly = await prisma.tariff.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends TariffUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, TariffUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TariffPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Tariff.
@@ -1432,7 +1500,28 @@ export type TariffCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * The data used to create many Tariffs.
    */
   data: Prisma.TariffCreateManyInput | Prisma.TariffCreateManyInput[]
-  skipDuplicates?: boolean
+}
+
+/**
+ * Tariff createManyAndReturn
+ */
+export type TariffCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Tariff
+   */
+  select?: Prisma.TariffSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Tariff
+   */
+  omit?: Prisma.TariffOmit<ExtArgs> | null
+  /**
+   * The data used to create many Tariffs.
+   */
+  data: Prisma.TariffCreateManyInput | Prisma.TariffCreateManyInput[]
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TariffIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1477,6 +1566,36 @@ export type TariffUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Limit how many Tariffs to update.
    */
   limit?: number
+}
+
+/**
+ * Tariff updateManyAndReturn
+ */
+export type TariffUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Tariff
+   */
+  select?: Prisma.TariffSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Tariff
+   */
+  omit?: Prisma.TariffOmit<ExtArgs> | null
+  /**
+   * The data used to update Tariffs.
+   */
+  data: Prisma.XOR<Prisma.TariffUpdateManyMutationInput, Prisma.TariffUncheckedUpdateManyInput>
+  /**
+   * Filter which Tariffs to update
+   */
+  where?: Prisma.TariffWhereInput
+  /**
+   * Limit how many Tariffs to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TariffIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

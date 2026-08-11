@@ -18,13 +18,57 @@ export class OcppService {
   private chargerConfigs = new Map<string, Map<string, string>>();
   private transactionSessions = new Map<number, string>();
   private transactionMeterStarts = new Map<number, number>();
+  private heartbeatTimestamps = new Map<string, Date>();
+  private heartbeatCheckInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(
     private readonly prisma: PrismaService,
     @Optional()
     @Inject(forwardRef(() => ChargingGateway))
     private readonly chargingGateway?: ChargingGateway,
-  ) {}
+  ) {
+    this.startHeartbeatCheck();
+  }
+
+  private startHeartbeatCheck() {
+    this.heartbeatCheckInterval = setInterval(async () => {
+      const timeoutMs = 5 * 60 * 1000;
+      const now = Date.now();
+
+      for (const [ocppId, lastHeartbeat] of this.heartbeatTimestamps) {
+        if (now - lastHeartbeat.getTime() > timeoutMs) {
+          const charger = await this.prisma.charger.findUnique({
+            where: { ocppId },
+            include: { station: { select: { companyId: true, id: true } } },
+          });
+
+          if (charger && charger.status === 'ONLINE') {
+            await this.prisma.charger.update({
+              where: { ocppId },
+              data: { status: 'OFFLINE' },
+            });
+
+            this.logger.warn(
+              `Charger ${ocppId} marked OFFLINE - heartbeat timeout`,
+            );
+
+            this.chargingGateway?.emitChargerStatusUpdate(
+              charger.id,
+              'OFFLINE',
+            );
+
+            this.heartbeatTimestamps.delete(ocppId);
+          }
+        }
+      }
+    }, 60000);
+  }
+
+  onModuleDestroy() {
+    if (this.heartbeatCheckInterval) {
+      clearInterval(this.heartbeatCheckInterval);
+    }
+  }
 
   get connections() {
     return this.chargerConnections;
@@ -102,6 +146,7 @@ export class OcppService {
   }
 
   async handleHeartbeat(ocppId: string) {
+    this.heartbeatTimestamps.set(ocppId, new Date());
     const charger = await this.prisma.charger.findUnique({ where: { ocppId } });
     if (charger) {
       await this.prisma.charger.update({

@@ -254,7 +254,6 @@ export type CommissionOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   payment?: Prisma.PaymentOrderByWithRelationInput
   company?: Prisma.CompanyOrderByWithRelationInput
-  _relevance?: Prisma.CommissionOrderByRelevanceInput
 }
 
 export type CommissionWhereUniqueInput = Prisma.AtLeast<{
@@ -381,12 +380,6 @@ export type CommissionOrderByRelationAggregateInput = {
 export type CommissionNullableScalarRelationFilter = {
   is?: Prisma.CommissionWhereInput | null
   isNot?: Prisma.CommissionWhereInput | null
-}
-
-export type CommissionOrderByRelevanceInput = {
-  fields: Prisma.CommissionOrderByRelevanceFieldEnum | Prisma.CommissionOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type CommissionCountOrderByAggregateInput = {
@@ -530,7 +523,6 @@ export type CommissionCreateOrConnectWithoutCompanyInput = {
 
 export type CommissionCreateManyCompanyInputEnvelope = {
   data: Prisma.CommissionCreateManyCompanyInput | Prisma.CommissionCreateManyCompanyInput[]
-  skipDuplicates?: boolean
 }
 
 export type CommissionUpsertWithWhereUniqueWithoutCompanyInput = {
@@ -664,7 +656,29 @@ export type CommissionSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["commission"]>
 
+export type CommissionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  paymentId?: boolean
+  companyId?: boolean
+  percentage?: boolean
+  platformAmount?: boolean
+  operatorAmount?: boolean
+  createdAt?: boolean
+  payment?: boolean | Prisma.PaymentDefaultArgs<ExtArgs>
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["commission"]>
 
+export type CommissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  paymentId?: boolean
+  companyId?: boolean
+  percentage?: boolean
+  platformAmount?: boolean
+  operatorAmount?: boolean
+  createdAt?: boolean
+  payment?: boolean | Prisma.PaymentDefaultArgs<ExtArgs>
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["commission"]>
 
 export type CommissionSelectScalar = {
   id?: boolean
@@ -678,6 +692,14 @@ export type CommissionSelectScalar = {
 
 export type CommissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "paymentId" | "companyId" | "percentage" | "platformAmount" | "operatorAmount" | "createdAt", ExtArgs["result"]["commission"]>
 export type CommissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  payment?: boolean | Prisma.PaymentDefaultArgs<ExtArgs>
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}
+export type CommissionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  payment?: boolean | Prisma.PaymentDefaultArgs<ExtArgs>
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}
+export type CommissionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   payment?: boolean | Prisma.PaymentDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
 }
@@ -814,6 +836,30 @@ export interface CommissionDelegate<ExtArgs extends runtime.Types.Extensions.Int
   createMany<T extends CommissionCreateManyArgs>(args?: Prisma.SelectSubset<T, CommissionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Commissions and returns the data saved in the database.
+   * @param {CommissionCreateManyAndReturnArgs} args - Arguments to create many Commissions.
+   * @example
+   * // Create many Commissions
+   * const commission = await prisma.commission.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Commissions and only return the `id`
+   * const commissionWithIdOnly = await prisma.commission.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends CommissionCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, CommissionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Commission.
    * @param {CommissionDeleteArgs} args - Arguments to delete one Commission.
    * @example
@@ -876,6 +922,36 @@ export interface CommissionDelegate<ExtArgs extends runtime.Types.Extensions.Int
    * 
    */
   updateMany<T extends CommissionUpdateManyArgs>(args: Prisma.SelectSubset<T, CommissionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Commissions and returns the data updated in the database.
+   * @param {CommissionUpdateManyAndReturnArgs} args - Arguments to update many Commissions.
+   * @example
+   * // Update many Commissions
+   * const commission = await prisma.commission.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Commissions and only return the `id`
+   * const commissionWithIdOnly = await prisma.commission.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends CommissionUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, CommissionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Commission.
@@ -1308,7 +1384,28 @@ export type CommissionCreateManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * The data used to create many Commissions.
    */
   data: Prisma.CommissionCreateManyInput | Prisma.CommissionCreateManyInput[]
-  skipDuplicates?: boolean
+}
+
+/**
+ * Commission createManyAndReturn
+ */
+export type CommissionCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Commission
+   */
+  select?: Prisma.CommissionSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Commission
+   */
+  omit?: Prisma.CommissionOmit<ExtArgs> | null
+  /**
+   * The data used to create many Commissions.
+   */
+  data: Prisma.CommissionCreateManyInput | Prisma.CommissionCreateManyInput[]
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommissionIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1353,6 +1450,36 @@ export type CommissionUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Limit how many Commissions to update.
    */
   limit?: number
+}
+
+/**
+ * Commission updateManyAndReturn
+ */
+export type CommissionUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Commission
+   */
+  select?: Prisma.CommissionSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Commission
+   */
+  omit?: Prisma.CommissionOmit<ExtArgs> | null
+  /**
+   * The data used to update Commissions.
+   */
+  data: Prisma.XOR<Prisma.CommissionUpdateManyMutationInput, Prisma.CommissionUncheckedUpdateManyInput>
+  /**
+   * Filter which Commissions to update
+   */
+  where?: Prisma.CommissionWhereInput
+  /**
+   * Limit how many Commissions to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommissionIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

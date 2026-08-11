@@ -124,3 +124,23 @@ export type Subscription = Prisma.SubscriptionModel
  * 
  */
 export type PlatformUsage = Prisma.PlatformUsageModel
+/**
+ * Model TelemetryEvent
+ * 
+ */
+export type TelemetryEvent = Prisma.TelemetryEventModel
+/**
+ * Model Alert
+ * 
+ */
+export type Alert = Prisma.AlertModel
+/**
+ * Model MaintenanceRecord
+ * 
+ */
+export type MaintenanceRecord = Prisma.MaintenanceRecordModel
+/**
+ * Model StationImage
+ * 
+ */
+export type StationImage = Prisma.StationImageModel

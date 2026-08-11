@@ -46,6 +46,23 @@ export class StationsController {
     return this.stationsService.findAll({ status, city, companyId }, user);
   }
 
+  @Get('nearby')
+  @Roles('SUPER_ADMIN', 'OPERATOR', 'CUSTOMER')
+  @ApiOperation({ summary: 'Buscar postos por proximidade geográfica' })
+  findNearby(
+    @Query('lat') lat: string,
+    @Query('lng') lng: string,
+    @Query('radius') radius?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.stationsService.findNearby(
+      parseFloat(lat),
+      parseFloat(lng),
+      radius ? parseFloat(radius) : 50,
+      limit ? parseInt(limit, 10) : 20,
+    );
+  }
+
   @Get(':id')
   @Roles('SUPER_ADMIN', 'OPERATOR', 'CUSTOMER')
   @ApiOperation({ summary: 'Buscar posto por ID' })

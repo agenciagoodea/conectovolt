@@ -120,4 +120,16 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
   get platformUsage() {
     return this.client.platformUsage;
   }
+  get telemetryEvent() {
+    return this.client.telemetryEvent;
+  }
+  get alert() {
+    return this.client.alert;
+  }
+  get maintenanceRecord() {
+    return this.client.maintenanceRecord;
+  }
+  get stationImage() {
+    return this.client.stationImage;
+  }
 }

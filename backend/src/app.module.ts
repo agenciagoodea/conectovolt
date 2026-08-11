@@ -20,6 +20,9 @@ import { ReportsModule } from './modules/reports/reports.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { BillingModule } from './modules/billing/billing.module';
+import { TelemetryModule } from './modules/telemetry/telemetry.module';
+import { AlertsModule } from './modules/alerts/alerts.module';
+import { MaintenanceModule } from './modules/maintenance/maintenance.module';
 import { HealthController } from './common/health.controller';
 
 @Module({
@@ -58,6 +61,9 @@ import { HealthController } from './common/health.controller';
     NotificationsModule,
     AuditModule,
     BillingModule,
+    TelemetryModule,
+    AlertsModule,
+    MaintenanceModule,
   ],
   controllers: [HealthController],
   providers: [

@@ -299,6 +299,7 @@ export type ChargingSessionWhereInput = {
   connector?: Prisma.XOR<Prisma.ConnectorNullableScalarRelationFilter, Prisma.ConnectorWhereInput> | null
   tariff?: Prisma.XOR<Prisma.TariffNullableScalarRelationFilter, Prisma.TariffWhereInput> | null
   payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
+  telemetry?: Prisma.TelemetryEventListRelationFilter
 }
 
 export type ChargingSessionOrderByWithRelationInput = {
@@ -323,7 +324,7 @@ export type ChargingSessionOrderByWithRelationInput = {
   connector?: Prisma.ConnectorOrderByWithRelationInput
   tariff?: Prisma.TariffOrderByWithRelationInput
   payment?: Prisma.PaymentOrderByWithRelationInput
-  _relevance?: Prisma.ChargingSessionOrderByRelevanceInput
+  telemetry?: Prisma.TelemetryEventOrderByRelationAggregateInput
 }
 
 export type ChargingSessionWhereUniqueInput = Prisma.AtLeast<{
@@ -351,6 +352,7 @@ export type ChargingSessionWhereUniqueInput = Prisma.AtLeast<{
   connector?: Prisma.XOR<Prisma.ConnectorNullableScalarRelationFilter, Prisma.ConnectorWhereInput> | null
   tariff?: Prisma.XOR<Prisma.TariffNullableScalarRelationFilter, Prisma.TariffWhereInput> | null
   payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
+  telemetry?: Prisma.TelemetryEventListRelationFilter
 }, "id">
 
 export type ChargingSessionOrderByWithAggregationInput = {
@@ -411,6 +413,7 @@ export type ChargingSessionCreateInput = {
   connector?: Prisma.ConnectorCreateNestedOneWithoutChargingSessionsInput
   tariff?: Prisma.TariffCreateNestedOneWithoutChargingSessionsInput
   payment?: Prisma.PaymentCreateNestedOneWithoutSessionInput
+  telemetry?: Prisma.TelemetryEventCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionUncheckedCreateInput = {
@@ -429,6 +432,7 @@ export type ChargingSessionUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutSessionInput
+  telemetry?: Prisma.TelemetryEventUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionUpdateInput = {
@@ -447,6 +451,7 @@ export type ChargingSessionUpdateInput = {
   connector?: Prisma.ConnectorUpdateOneWithoutChargingSessionsNestedInput
   tariff?: Prisma.TariffUpdateOneWithoutChargingSessionsNestedInput
   payment?: Prisma.PaymentUpdateOneWithoutSessionNestedInput
+  telemetry?: Prisma.TelemetryEventUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionUncheckedUpdateInput = {
@@ -465,6 +470,7 @@ export type ChargingSessionUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutSessionNestedInput
+  telemetry?: Prisma.TelemetryEventUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionCreateManyInput = {
@@ -520,12 +526,6 @@ export type ChargingSessionListRelationFilter = {
 
 export type ChargingSessionOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type ChargingSessionOrderByRelevanceInput = {
-  fields: Prisma.ChargingSessionOrderByRelevanceFieldEnum | Prisma.ChargingSessionOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type ChargingSessionCountOrderByAggregateInput = {
@@ -592,6 +592,11 @@ export type ChargingSessionSumOrderByAggregateInput = {
 export type ChargingSessionScalarRelationFilter = {
   is?: Prisma.ChargingSessionWhereInput
   isNot?: Prisma.ChargingSessionWhereInput
+}
+
+export type ChargingSessionNullableScalarRelationFilter = {
+  is?: Prisma.ChargingSessionWhereInput | null
+  isNot?: Prisma.ChargingSessionWhereInput | null
 }
 
 export type ChargingSessionCreateNestedManyWithoutUserInput = {
@@ -864,6 +869,22 @@ export type ChargingSessionUpdateOneRequiredWithoutPaymentNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ChargingSessionUpdateToOneWithWhereWithoutPaymentInput, Prisma.ChargingSessionUpdateWithoutPaymentInput>, Prisma.ChargingSessionUncheckedUpdateWithoutPaymentInput>
 }
 
+export type ChargingSessionCreateNestedOneWithoutTelemetryInput = {
+  create?: Prisma.XOR<Prisma.ChargingSessionCreateWithoutTelemetryInput, Prisma.ChargingSessionUncheckedCreateWithoutTelemetryInput>
+  connectOrCreate?: Prisma.ChargingSessionCreateOrConnectWithoutTelemetryInput
+  connect?: Prisma.ChargingSessionWhereUniqueInput
+}
+
+export type ChargingSessionUpdateOneWithoutTelemetryNestedInput = {
+  create?: Prisma.XOR<Prisma.ChargingSessionCreateWithoutTelemetryInput, Prisma.ChargingSessionUncheckedCreateWithoutTelemetryInput>
+  connectOrCreate?: Prisma.ChargingSessionCreateOrConnectWithoutTelemetryInput
+  upsert?: Prisma.ChargingSessionUpsertWithoutTelemetryInput
+  disconnect?: Prisma.ChargingSessionWhereInput | boolean
+  delete?: Prisma.ChargingSessionWhereInput | boolean
+  connect?: Prisma.ChargingSessionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChargingSessionUpdateToOneWithWhereWithoutTelemetryInput, Prisma.ChargingSessionUpdateWithoutTelemetryInput>, Prisma.ChargingSessionUncheckedUpdateWithoutTelemetryInput>
+}
+
 export type ChargingSessionCreateWithoutUserInput = {
   id?: string
   startTime?: Date | string
@@ -879,6 +900,7 @@ export type ChargingSessionCreateWithoutUserInput = {
   connector?: Prisma.ConnectorCreateNestedOneWithoutChargingSessionsInput
   tariff?: Prisma.TariffCreateNestedOneWithoutChargingSessionsInput
   payment?: Prisma.PaymentCreateNestedOneWithoutSessionInput
+  telemetry?: Prisma.TelemetryEventCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionUncheckedCreateWithoutUserInput = {
@@ -896,6 +918,7 @@ export type ChargingSessionUncheckedCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutSessionInput
+  telemetry?: Prisma.TelemetryEventUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionCreateOrConnectWithoutUserInput = {
@@ -905,7 +928,6 @@ export type ChargingSessionCreateOrConnectWithoutUserInput = {
 
 export type ChargingSessionCreateManyUserInputEnvelope = {
   data: Prisma.ChargingSessionCreateManyUserInput | Prisma.ChargingSessionCreateManyUserInput[]
-  skipDuplicates?: boolean
 }
 
 export type ChargingSessionUpsertWithWhereUniqueWithoutUserInput = {
@@ -959,6 +981,7 @@ export type ChargingSessionCreateWithoutStationInput = {
   connector?: Prisma.ConnectorCreateNestedOneWithoutChargingSessionsInput
   tariff?: Prisma.TariffCreateNestedOneWithoutChargingSessionsInput
   payment?: Prisma.PaymentCreateNestedOneWithoutSessionInput
+  telemetry?: Prisma.TelemetryEventCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionUncheckedCreateWithoutStationInput = {
@@ -976,6 +999,7 @@ export type ChargingSessionUncheckedCreateWithoutStationInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutSessionInput
+  telemetry?: Prisma.TelemetryEventUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionCreateOrConnectWithoutStationInput = {
@@ -985,7 +1009,6 @@ export type ChargingSessionCreateOrConnectWithoutStationInput = {
 
 export type ChargingSessionCreateManyStationInputEnvelope = {
   data: Prisma.ChargingSessionCreateManyStationInput | Prisma.ChargingSessionCreateManyStationInput[]
-  skipDuplicates?: boolean
 }
 
 export type ChargingSessionUpsertWithWhereUniqueWithoutStationInput = {
@@ -1019,6 +1042,7 @@ export type ChargingSessionCreateWithoutChargerInput = {
   connector?: Prisma.ConnectorCreateNestedOneWithoutChargingSessionsInput
   tariff?: Prisma.TariffCreateNestedOneWithoutChargingSessionsInput
   payment?: Prisma.PaymentCreateNestedOneWithoutSessionInput
+  telemetry?: Prisma.TelemetryEventCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionUncheckedCreateWithoutChargerInput = {
@@ -1036,6 +1060,7 @@ export type ChargingSessionUncheckedCreateWithoutChargerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutSessionInput
+  telemetry?: Prisma.TelemetryEventUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionCreateOrConnectWithoutChargerInput = {
@@ -1045,7 +1070,6 @@ export type ChargingSessionCreateOrConnectWithoutChargerInput = {
 
 export type ChargingSessionCreateManyChargerInputEnvelope = {
   data: Prisma.ChargingSessionCreateManyChargerInput | Prisma.ChargingSessionCreateManyChargerInput[]
-  skipDuplicates?: boolean
 }
 
 export type ChargingSessionUpsertWithWhereUniqueWithoutChargerInput = {
@@ -1079,6 +1103,7 @@ export type ChargingSessionCreateWithoutConnectorInput = {
   charger: Prisma.ChargerCreateNestedOneWithoutChargingSessionsInput
   tariff?: Prisma.TariffCreateNestedOneWithoutChargingSessionsInput
   payment?: Prisma.PaymentCreateNestedOneWithoutSessionInput
+  telemetry?: Prisma.TelemetryEventCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionUncheckedCreateWithoutConnectorInput = {
@@ -1096,6 +1121,7 @@ export type ChargingSessionUncheckedCreateWithoutConnectorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutSessionInput
+  telemetry?: Prisma.TelemetryEventUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionCreateOrConnectWithoutConnectorInput = {
@@ -1105,7 +1131,6 @@ export type ChargingSessionCreateOrConnectWithoutConnectorInput = {
 
 export type ChargingSessionCreateManyConnectorInputEnvelope = {
   data: Prisma.ChargingSessionCreateManyConnectorInput | Prisma.ChargingSessionCreateManyConnectorInput[]
-  skipDuplicates?: boolean
 }
 
 export type ChargingSessionUpsertWithWhereUniqueWithoutConnectorInput = {
@@ -1139,6 +1164,7 @@ export type ChargingSessionCreateWithoutVehicleInput = {
   connector?: Prisma.ConnectorCreateNestedOneWithoutChargingSessionsInput
   tariff?: Prisma.TariffCreateNestedOneWithoutChargingSessionsInput
   payment?: Prisma.PaymentCreateNestedOneWithoutSessionInput
+  telemetry?: Prisma.TelemetryEventCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionUncheckedCreateWithoutVehicleInput = {
@@ -1156,6 +1182,7 @@ export type ChargingSessionUncheckedCreateWithoutVehicleInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutSessionInput
+  telemetry?: Prisma.TelemetryEventUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionCreateOrConnectWithoutVehicleInput = {
@@ -1165,7 +1192,6 @@ export type ChargingSessionCreateOrConnectWithoutVehicleInput = {
 
 export type ChargingSessionCreateManyVehicleInputEnvelope = {
   data: Prisma.ChargingSessionCreateManyVehicleInput | Prisma.ChargingSessionCreateManyVehicleInput[]
-  skipDuplicates?: boolean
 }
 
 export type ChargingSessionUpsertWithWhereUniqueWithoutVehicleInput = {
@@ -1199,6 +1225,7 @@ export type ChargingSessionCreateWithoutTariffInput = {
   charger: Prisma.ChargerCreateNestedOneWithoutChargingSessionsInput
   connector?: Prisma.ConnectorCreateNestedOneWithoutChargingSessionsInput
   payment?: Prisma.PaymentCreateNestedOneWithoutSessionInput
+  telemetry?: Prisma.TelemetryEventCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionUncheckedCreateWithoutTariffInput = {
@@ -1216,6 +1243,7 @@ export type ChargingSessionUncheckedCreateWithoutTariffInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutSessionInput
+  telemetry?: Prisma.TelemetryEventUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionCreateOrConnectWithoutTariffInput = {
@@ -1225,7 +1253,6 @@ export type ChargingSessionCreateOrConnectWithoutTariffInput = {
 
 export type ChargingSessionCreateManyTariffInputEnvelope = {
   data: Prisma.ChargingSessionCreateManyTariffInput | Prisma.ChargingSessionCreateManyTariffInput[]
-  skipDuplicates?: boolean
 }
 
 export type ChargingSessionUpsertWithWhereUniqueWithoutTariffInput = {
@@ -1259,6 +1286,7 @@ export type ChargingSessionCreateWithoutPaymentInput = {
   charger: Prisma.ChargerCreateNestedOneWithoutChargingSessionsInput
   connector?: Prisma.ConnectorCreateNestedOneWithoutChargingSessionsInput
   tariff?: Prisma.TariffCreateNestedOneWithoutChargingSessionsInput
+  telemetry?: Prisma.TelemetryEventCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionUncheckedCreateWithoutPaymentInput = {
@@ -1276,6 +1304,7 @@ export type ChargingSessionUncheckedCreateWithoutPaymentInput = {
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  telemetry?: Prisma.TelemetryEventUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type ChargingSessionCreateOrConnectWithoutPaymentInput = {
@@ -1309,6 +1338,7 @@ export type ChargingSessionUpdateWithoutPaymentInput = {
   charger?: Prisma.ChargerUpdateOneRequiredWithoutChargingSessionsNestedInput
   connector?: Prisma.ConnectorUpdateOneWithoutChargingSessionsNestedInput
   tariff?: Prisma.TariffUpdateOneWithoutChargingSessionsNestedInput
+  telemetry?: Prisma.TelemetryEventUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionUncheckedUpdateWithoutPaymentInput = {
@@ -1326,6 +1356,95 @@ export type ChargingSessionUncheckedUpdateWithoutPaymentInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  telemetry?: Prisma.TelemetryEventUncheckedUpdateManyWithoutSessionNestedInput
+}
+
+export type ChargingSessionCreateWithoutTelemetryInput = {
+  id?: string
+  startTime?: Date | string
+  endTime?: Date | string | null
+  energyKwh?: number
+  amount?: number
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutChargingSessionsInput
+  vehicle?: Prisma.VehicleCreateNestedOneWithoutChargingSessionsInput
+  station: Prisma.StationCreateNestedOneWithoutChargingSessionsInput
+  charger: Prisma.ChargerCreateNestedOneWithoutChargingSessionsInput
+  connector?: Prisma.ConnectorCreateNestedOneWithoutChargingSessionsInput
+  tariff?: Prisma.TariffCreateNestedOneWithoutChargingSessionsInput
+  payment?: Prisma.PaymentCreateNestedOneWithoutSessionInput
+}
+
+export type ChargingSessionUncheckedCreateWithoutTelemetryInput = {
+  id?: string
+  userId: string
+  vehicleId?: string | null
+  stationId: string
+  chargerId: string
+  connectorId?: string | null
+  tariffId?: string | null
+  startTime?: Date | string
+  endTime?: Date | string | null
+  energyKwh?: number
+  amount?: number
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutSessionInput
+}
+
+export type ChargingSessionCreateOrConnectWithoutTelemetryInput = {
+  where: Prisma.ChargingSessionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChargingSessionCreateWithoutTelemetryInput, Prisma.ChargingSessionUncheckedCreateWithoutTelemetryInput>
+}
+
+export type ChargingSessionUpsertWithoutTelemetryInput = {
+  update: Prisma.XOR<Prisma.ChargingSessionUpdateWithoutTelemetryInput, Prisma.ChargingSessionUncheckedUpdateWithoutTelemetryInput>
+  create: Prisma.XOR<Prisma.ChargingSessionCreateWithoutTelemetryInput, Prisma.ChargingSessionUncheckedCreateWithoutTelemetryInput>
+  where?: Prisma.ChargingSessionWhereInput
+}
+
+export type ChargingSessionUpdateToOneWithWhereWithoutTelemetryInput = {
+  where?: Prisma.ChargingSessionWhereInput
+  data: Prisma.XOR<Prisma.ChargingSessionUpdateWithoutTelemetryInput, Prisma.ChargingSessionUncheckedUpdateWithoutTelemetryInput>
+}
+
+export type ChargingSessionUpdateWithoutTelemetryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutChargingSessionsNestedInput
+  vehicle?: Prisma.VehicleUpdateOneWithoutChargingSessionsNestedInput
+  station?: Prisma.StationUpdateOneRequiredWithoutChargingSessionsNestedInput
+  charger?: Prisma.ChargerUpdateOneRequiredWithoutChargingSessionsNestedInput
+  connector?: Prisma.ConnectorUpdateOneWithoutChargingSessionsNestedInput
+  tariff?: Prisma.TariffUpdateOneWithoutChargingSessionsNestedInput
+  payment?: Prisma.PaymentUpdateOneWithoutSessionNestedInput
+}
+
+export type ChargingSessionUncheckedUpdateWithoutTelemetryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  vehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stationId?: Prisma.StringFieldUpdateOperationsInput | string
+  chargerId?: Prisma.StringFieldUpdateOperationsInput | string
+  connectorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tariffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payment?: Prisma.PaymentUncheckedUpdateOneWithoutSessionNestedInput
 }
 
 export type ChargingSessionCreateManyUserInput = {
@@ -1359,6 +1478,7 @@ export type ChargingSessionUpdateWithoutUserInput = {
   connector?: Prisma.ConnectorUpdateOneWithoutChargingSessionsNestedInput
   tariff?: Prisma.TariffUpdateOneWithoutChargingSessionsNestedInput
   payment?: Prisma.PaymentUpdateOneWithoutSessionNestedInput
+  telemetry?: Prisma.TelemetryEventUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionUncheckedUpdateWithoutUserInput = {
@@ -1376,6 +1496,7 @@ export type ChargingSessionUncheckedUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutSessionNestedInput
+  telemetry?: Prisma.TelemetryEventUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionUncheckedUpdateManyWithoutUserInput = {
@@ -1425,6 +1546,7 @@ export type ChargingSessionUpdateWithoutStationInput = {
   connector?: Prisma.ConnectorUpdateOneWithoutChargingSessionsNestedInput
   tariff?: Prisma.TariffUpdateOneWithoutChargingSessionsNestedInput
   payment?: Prisma.PaymentUpdateOneWithoutSessionNestedInput
+  telemetry?: Prisma.TelemetryEventUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionUncheckedUpdateWithoutStationInput = {
@@ -1442,6 +1564,7 @@ export type ChargingSessionUncheckedUpdateWithoutStationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutSessionNestedInput
+  telemetry?: Prisma.TelemetryEventUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionUncheckedUpdateManyWithoutStationInput = {
@@ -1491,6 +1614,7 @@ export type ChargingSessionUpdateWithoutChargerInput = {
   connector?: Prisma.ConnectorUpdateOneWithoutChargingSessionsNestedInput
   tariff?: Prisma.TariffUpdateOneWithoutChargingSessionsNestedInput
   payment?: Prisma.PaymentUpdateOneWithoutSessionNestedInput
+  telemetry?: Prisma.TelemetryEventUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionUncheckedUpdateWithoutChargerInput = {
@@ -1508,6 +1632,7 @@ export type ChargingSessionUncheckedUpdateWithoutChargerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutSessionNestedInput
+  telemetry?: Prisma.TelemetryEventUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionUncheckedUpdateManyWithoutChargerInput = {
@@ -1557,6 +1682,7 @@ export type ChargingSessionUpdateWithoutConnectorInput = {
   charger?: Prisma.ChargerUpdateOneRequiredWithoutChargingSessionsNestedInput
   tariff?: Prisma.TariffUpdateOneWithoutChargingSessionsNestedInput
   payment?: Prisma.PaymentUpdateOneWithoutSessionNestedInput
+  telemetry?: Prisma.TelemetryEventUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionUncheckedUpdateWithoutConnectorInput = {
@@ -1574,6 +1700,7 @@ export type ChargingSessionUncheckedUpdateWithoutConnectorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutSessionNestedInput
+  telemetry?: Prisma.TelemetryEventUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionUncheckedUpdateManyWithoutConnectorInput = {
@@ -1623,6 +1750,7 @@ export type ChargingSessionUpdateWithoutVehicleInput = {
   connector?: Prisma.ConnectorUpdateOneWithoutChargingSessionsNestedInput
   tariff?: Prisma.TariffUpdateOneWithoutChargingSessionsNestedInput
   payment?: Prisma.PaymentUpdateOneWithoutSessionNestedInput
+  telemetry?: Prisma.TelemetryEventUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionUncheckedUpdateWithoutVehicleInput = {
@@ -1640,6 +1768,7 @@ export type ChargingSessionUncheckedUpdateWithoutVehicleInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutSessionNestedInput
+  telemetry?: Prisma.TelemetryEventUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionUncheckedUpdateManyWithoutVehicleInput = {
@@ -1689,6 +1818,7 @@ export type ChargingSessionUpdateWithoutTariffInput = {
   charger?: Prisma.ChargerUpdateOneRequiredWithoutChargingSessionsNestedInput
   connector?: Prisma.ConnectorUpdateOneWithoutChargingSessionsNestedInput
   payment?: Prisma.PaymentUpdateOneWithoutSessionNestedInput
+  telemetry?: Prisma.TelemetryEventUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionUncheckedUpdateWithoutTariffInput = {
@@ -1706,6 +1836,7 @@ export type ChargingSessionUncheckedUpdateWithoutTariffInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutSessionNestedInput
+  telemetry?: Prisma.TelemetryEventUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type ChargingSessionUncheckedUpdateManyWithoutTariffInput = {
@@ -1724,6 +1855,35 @@ export type ChargingSessionUncheckedUpdateManyWithoutTariffInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type ChargingSessionCountOutputType
+ */
+
+export type ChargingSessionCountOutputType = {
+  telemetry: number
+}
+
+export type ChargingSessionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  telemetry?: boolean | ChargingSessionCountOutputTypeCountTelemetryArgs
+}
+
+/**
+ * ChargingSessionCountOutputType without action
+ */
+export type ChargingSessionCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ChargingSessionCountOutputType
+   */
+  select?: Prisma.ChargingSessionCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ChargingSessionCountOutputType without action
+ */
+export type ChargingSessionCountOutputTypeCountTelemetryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TelemetryEventWhereInput
+}
 
 
 export type ChargingSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1748,9 +1908,55 @@ export type ChargingSessionSelect<ExtArgs extends runtime.Types.Extensions.Inter
   connector?: boolean | Prisma.ChargingSession$connectorArgs<ExtArgs>
   tariff?: boolean | Prisma.ChargingSession$tariffArgs<ExtArgs>
   payment?: boolean | Prisma.ChargingSession$paymentArgs<ExtArgs>
+  telemetry?: boolean | Prisma.ChargingSession$telemetryArgs<ExtArgs>
+  _count?: boolean | Prisma.ChargingSessionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["chargingSession"]>
 
+export type ChargingSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  userId?: boolean
+  vehicleId?: boolean
+  stationId?: boolean
+  chargerId?: boolean
+  connectorId?: boolean
+  tariffId?: boolean
+  startTime?: boolean
+  endTime?: boolean
+  energyKwh?: boolean
+  amount?: boolean
+  status?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.ChargingSession$vehicleArgs<ExtArgs>
+  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
+  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
+  connector?: boolean | Prisma.ChargingSession$connectorArgs<ExtArgs>
+  tariff?: boolean | Prisma.ChargingSession$tariffArgs<ExtArgs>
+}, ExtArgs["result"]["chargingSession"]>
 
+export type ChargingSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  userId?: boolean
+  vehicleId?: boolean
+  stationId?: boolean
+  chargerId?: boolean
+  connectorId?: boolean
+  tariffId?: boolean
+  startTime?: boolean
+  endTime?: boolean
+  energyKwh?: boolean
+  amount?: boolean
+  status?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.ChargingSession$vehicleArgs<ExtArgs>
+  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
+  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
+  connector?: boolean | Prisma.ChargingSession$connectorArgs<ExtArgs>
+  tariff?: boolean | Prisma.ChargingSession$tariffArgs<ExtArgs>
+}, ExtArgs["result"]["chargingSession"]>
 
 export type ChargingSessionSelectScalar = {
   id?: boolean
@@ -1778,6 +1984,24 @@ export type ChargingSessionInclude<ExtArgs extends runtime.Types.Extensions.Inte
   connector?: boolean | Prisma.ChargingSession$connectorArgs<ExtArgs>
   tariff?: boolean | Prisma.ChargingSession$tariffArgs<ExtArgs>
   payment?: boolean | Prisma.ChargingSession$paymentArgs<ExtArgs>
+  telemetry?: boolean | Prisma.ChargingSession$telemetryArgs<ExtArgs>
+  _count?: boolean | Prisma.ChargingSessionCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type ChargingSessionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.ChargingSession$vehicleArgs<ExtArgs>
+  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
+  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
+  connector?: boolean | Prisma.ChargingSession$connectorArgs<ExtArgs>
+  tariff?: boolean | Prisma.ChargingSession$tariffArgs<ExtArgs>
+}
+export type ChargingSessionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.ChargingSession$vehicleArgs<ExtArgs>
+  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
+  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
+  connector?: boolean | Prisma.ChargingSession$connectorArgs<ExtArgs>
+  tariff?: boolean | Prisma.ChargingSession$tariffArgs<ExtArgs>
 }
 
 export type $ChargingSessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1790,6 +2014,7 @@ export type $ChargingSessionPayload<ExtArgs extends runtime.Types.Extensions.Int
     connector: Prisma.$ConnectorPayload<ExtArgs> | null
     tariff: Prisma.$TariffPayload<ExtArgs> | null
     payment: Prisma.$PaymentPayload<ExtArgs> | null
+    telemetry: Prisma.$TelemetryEventPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1924,6 +2149,30 @@ export interface ChargingSessionDelegate<ExtArgs extends runtime.Types.Extension
   createMany<T extends ChargingSessionCreateManyArgs>(args?: Prisma.SelectSubset<T, ChargingSessionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many ChargingSessions and returns the data saved in the database.
+   * @param {ChargingSessionCreateManyAndReturnArgs} args - Arguments to create many ChargingSessions.
+   * @example
+   * // Create many ChargingSessions
+   * const chargingSession = await prisma.chargingSession.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many ChargingSessions and only return the `id`
+   * const chargingSessionWithIdOnly = await prisma.chargingSession.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends ChargingSessionCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, ChargingSessionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChargingSessionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a ChargingSession.
    * @param {ChargingSessionDeleteArgs} args - Arguments to delete one ChargingSession.
    * @example
@@ -1986,6 +2235,36 @@ export interface ChargingSessionDelegate<ExtArgs extends runtime.Types.Extension
    * 
    */
   updateMany<T extends ChargingSessionUpdateManyArgs>(args: Prisma.SelectSubset<T, ChargingSessionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more ChargingSessions and returns the data updated in the database.
+   * @param {ChargingSessionUpdateManyAndReturnArgs} args - Arguments to update many ChargingSessions.
+   * @example
+   * // Update many ChargingSessions
+   * const chargingSession = await prisma.chargingSession.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more ChargingSessions and only return the `id`
+   * const chargingSessionWithIdOnly = await prisma.chargingSession.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends ChargingSessionUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, ChargingSessionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChargingSessionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one ChargingSession.
@@ -2153,6 +2432,7 @@ export interface Prisma__ChargingSessionClient<T, Null = never, ExtArgs extends 
   connector<T extends Prisma.ChargingSession$connectorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChargingSession$connectorArgs<ExtArgs>>): Prisma.Prisma__ConnectorClient<runtime.Types.Result.GetResult<Prisma.$ConnectorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   tariff<T extends Prisma.ChargingSession$tariffArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChargingSession$tariffArgs<ExtArgs>>): Prisma.Prisma__TariffClient<runtime.Types.Result.GetResult<Prisma.$TariffPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   payment<T extends Prisma.ChargingSession$paymentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChargingSession$paymentArgs<ExtArgs>>): Prisma.Prisma__PaymentClient<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  telemetry<T extends Prisma.ChargingSession$telemetryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChargingSession$telemetryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TelemetryEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2430,7 +2710,28 @@ export type ChargingSessionCreateManyArgs<ExtArgs extends runtime.Types.Extensio
    * The data used to create many ChargingSessions.
    */
   data: Prisma.ChargingSessionCreateManyInput | Prisma.ChargingSessionCreateManyInput[]
-  skipDuplicates?: boolean
+}
+
+/**
+ * ChargingSession createManyAndReturn
+ */
+export type ChargingSessionCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ChargingSession
+   */
+  select?: Prisma.ChargingSessionSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the ChargingSession
+   */
+  omit?: Prisma.ChargingSessionOmit<ExtArgs> | null
+  /**
+   * The data used to create many ChargingSessions.
+   */
+  data: Prisma.ChargingSessionCreateManyInput | Prisma.ChargingSessionCreateManyInput[]
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChargingSessionIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -2475,6 +2776,36 @@ export type ChargingSessionUpdateManyArgs<ExtArgs extends runtime.Types.Extensio
    * Limit how many ChargingSessions to update.
    */
   limit?: number
+}
+
+/**
+ * ChargingSession updateManyAndReturn
+ */
+export type ChargingSessionUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ChargingSession
+   */
+  select?: Prisma.ChargingSessionSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the ChargingSession
+   */
+  omit?: Prisma.ChargingSessionOmit<ExtArgs> | null
+  /**
+   * The data used to update ChargingSessions.
+   */
+  data: Prisma.XOR<Prisma.ChargingSessionUpdateManyMutationInput, Prisma.ChargingSessionUncheckedUpdateManyInput>
+  /**
+   * Filter which ChargingSessions to update
+   */
+  where?: Prisma.ChargingSessionWhereInput
+  /**
+   * Limit how many ChargingSessions to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChargingSessionIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -2617,6 +2948,30 @@ export type ChargingSession$paymentArgs<ExtArgs extends runtime.Types.Extensions
    */
   include?: Prisma.PaymentInclude<ExtArgs> | null
   where?: Prisma.PaymentWhereInput
+}
+
+/**
+ * ChargingSession.telemetry
+ */
+export type ChargingSession$telemetryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TelemetryEvent
+   */
+  select?: Prisma.TelemetryEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TelemetryEvent
+   */
+  omit?: Prisma.TelemetryEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TelemetryEventInclude<ExtArgs> | null
+  where?: Prisma.TelemetryEventWhereInput
+  orderBy?: Prisma.TelemetryEventOrderByWithRelationInput | Prisma.TelemetryEventOrderByWithRelationInput[]
+  cursor?: Prisma.TelemetryEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TelemetryEventScalarFieldEnum | Prisma.TelemetryEventScalarFieldEnum[]
 }
 
 /**

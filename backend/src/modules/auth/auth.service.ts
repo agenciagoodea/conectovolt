@@ -46,6 +46,11 @@ export class AuthService {
 
     const passwordHash = await hashPassword(dto.password);
 
+    const verifyToken = this.jwtService.sign(
+      { sub: dto.email, type: 'email_verify' },
+      { expiresIn: '24h' as const },
+    );
+
     const user = await this.prisma.user.create({
       data: {
         name: dto.name,
@@ -53,12 +58,20 @@ export class AuthService {
         passwordHash,
         phone: dto.phone,
         role: 'CUSTOMER',
+        verifyToken,
       },
     });
 
     const tokens = this.generateTokens(user.id, user.email, user.role);
 
     this.logger.log(`User registered: ${user.email}`);
+
+    try {
+      await this.sendVerificationEmail(user.email, verifyToken);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.warn(`Verification email failed: ${message}`);
+    }
 
     return {
       user: {
@@ -69,6 +82,68 @@ export class AuthService {
       },
       ...tokens,
     };
+  }
+
+  async verifyEmail(token: string) {
+    try {
+      const decoded = this.jwtService.verify(token) as unknown;
+      const payload = decoded as { sub: string; type?: string };
+
+      if (payload.type !== 'email_verify') {
+        throw new BadRequestException('Invalid verification token');
+      }
+
+      const user = await this.prisma.user.findUnique({
+        where: { email: payload.sub },
+      });
+
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+
+      if (user.emailVerified) {
+        return { message: 'Email already verified' };
+      }
+
+      await this.prisma.user.update({
+        where: { email: payload.sub },
+        data: { emailVerified: true, verifyToken: null },
+      });
+
+      return { message: 'Email verified successfully' };
+    } catch {
+      throw new BadRequestException('Invalid or expired verification token');
+    }
+  }
+
+  async resendVerification(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return { message: 'If the email exists, a verification link has been sent' };
+    }
+
+    if (user.emailVerified) {
+      return { message: 'Email already verified' };
+    }
+
+    const verifyToken = this.jwtService.sign(
+      { sub: user.email, type: 'email_verify' },
+      { expiresIn: '24h' as const },
+    );
+
+    await this.prisma.user.update({
+      where: { email },
+      data: { verifyToken },
+    });
+
+    try {
+      await this.sendVerificationEmail(email, verifyToken);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.warn(`Verification email failed: ${message}`);
+    }
+
+    return { message: 'If the email exists, a verification link has been sent' };
   }
 
   async login(dto: LoginDto) {
@@ -244,5 +319,35 @@ export class AuthService {
       text: `Acesse ${frontendUrl}/reset-password?token=${encodeURIComponent(token)} para redefinir sua senha. Este link expira em uma hora.`,
     });
     this.logger.log(`Password reset email sent to ${email}`);
+  }
+
+  private async sendVerificationEmail(email: string, token: string) {
+    const host = this.configService.get<string>('SMTP_HOST');
+    const user = this.configService.get<string>('SMTP_USER');
+    const pass = this.configService.get<string>('SMTP_PASS');
+
+    if (!host || !user || !pass) {
+      this.logger.warn('Verification email skipped: SMTP is not configured');
+      return;
+    }
+
+    const port = Number(this.configService.get<string>('SMTP_PORT') || 465);
+    const secure = this.configService.get<string>('SMTP_SECURE') !== 'false';
+    const frontendUrl =
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure,
+      auth: { user, pass },
+    });
+
+    await transporter.sendMail({
+      from: this.configService.get<string>('SMTP_FROM') || user,
+      to: email,
+      subject: 'Verifique seu email - ConectoVolt',
+      text: `Acesse ${frontendUrl}/verify-email?token=${encodeURIComponent(token)} para verificar seu email. Este link expira em 24 horas.`,
+    });
+    this.logger.log(`Verification email sent to ${email}`);
   }
 }

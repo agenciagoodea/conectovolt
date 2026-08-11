@@ -259,6 +259,9 @@ export type ChargerWhereInput = {
   station?: Prisma.XOR<Prisma.StationScalarRelationFilter, Prisma.StationWhereInput>
   connectors?: Prisma.ConnectorListRelationFilter
   chargingSessions?: Prisma.ChargingSessionListRelationFilter
+  telemetryEvents?: Prisma.TelemetryEventListRelationFilter
+  alerts?: Prisma.AlertListRelationFilter
+  maintenance?: Prisma.MaintenanceRecordListRelationFilter
 }
 
 export type ChargerOrderByWithRelationInput = {
@@ -275,7 +278,9 @@ export type ChargerOrderByWithRelationInput = {
   station?: Prisma.StationOrderByWithRelationInput
   connectors?: Prisma.ConnectorOrderByRelationAggregateInput
   chargingSessions?: Prisma.ChargingSessionOrderByRelationAggregateInput
-  _relevance?: Prisma.ChargerOrderByRelevanceInput
+  telemetryEvents?: Prisma.TelemetryEventOrderByRelationAggregateInput
+  alerts?: Prisma.AlertOrderByRelationAggregateInput
+  maintenance?: Prisma.MaintenanceRecordOrderByRelationAggregateInput
 }
 
 export type ChargerWhereUniqueInput = Prisma.AtLeast<{
@@ -295,6 +300,9 @@ export type ChargerWhereUniqueInput = Prisma.AtLeast<{
   station?: Prisma.XOR<Prisma.StationScalarRelationFilter, Prisma.StationWhereInput>
   connectors?: Prisma.ConnectorListRelationFilter
   chargingSessions?: Prisma.ChargingSessionListRelationFilter
+  telemetryEvents?: Prisma.TelemetryEventListRelationFilter
+  alerts?: Prisma.AlertListRelationFilter
+  maintenance?: Prisma.MaintenanceRecordListRelationFilter
 }, "id" | "serialNumber" | "ocppId">
 
 export type ChargerOrderByWithAggregationInput = {
@@ -344,6 +352,9 @@ export type ChargerCreateInput = {
   station: Prisma.StationCreateNestedOneWithoutChargersInput
   connectors?: Prisma.ConnectorCreateNestedManyWithoutChargerInput
   chargingSessions?: Prisma.ChargingSessionCreateNestedManyWithoutChargerInput
+  telemetryEvents?: Prisma.TelemetryEventCreateNestedManyWithoutChargerInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutChargerInput
+  maintenance?: Prisma.MaintenanceRecordCreateNestedManyWithoutChargerInput
 }
 
 export type ChargerUncheckedCreateInput = {
@@ -359,6 +370,9 @@ export type ChargerUncheckedCreateInput = {
   updatedAt?: Date | string
   connectors?: Prisma.ConnectorUncheckedCreateNestedManyWithoutChargerInput
   chargingSessions?: Prisma.ChargingSessionUncheckedCreateNestedManyWithoutChargerInput
+  telemetryEvents?: Prisma.TelemetryEventUncheckedCreateNestedManyWithoutChargerInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutChargerInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutChargerInput
 }
 
 export type ChargerUpdateInput = {
@@ -374,6 +388,9 @@ export type ChargerUpdateInput = {
   station?: Prisma.StationUpdateOneRequiredWithoutChargersNestedInput
   connectors?: Prisma.ConnectorUpdateManyWithoutChargerNestedInput
   chargingSessions?: Prisma.ChargingSessionUpdateManyWithoutChargerNestedInput
+  telemetryEvents?: Prisma.TelemetryEventUpdateManyWithoutChargerNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutChargerNestedInput
+  maintenance?: Prisma.MaintenanceRecordUpdateManyWithoutChargerNestedInput
 }
 
 export type ChargerUncheckedUpdateInput = {
@@ -389,6 +406,9 @@ export type ChargerUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   connectors?: Prisma.ConnectorUncheckedUpdateManyWithoutChargerNestedInput
   chargingSessions?: Prisma.ChargingSessionUncheckedUpdateManyWithoutChargerNestedInput
+  telemetryEvents?: Prisma.TelemetryEventUncheckedUpdateManyWithoutChargerNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutChargerNestedInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutChargerNestedInput
 }
 
 export type ChargerCreateManyInput = {
@@ -437,12 +457,6 @@ export type ChargerListRelationFilter = {
 
 export type ChargerOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type ChargerOrderByRelevanceInput = {
-  fields: Prisma.ChargerOrderByRelevanceFieldEnum | Prisma.ChargerOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type ChargerCountOrderByAggregateInput = {
@@ -495,6 +509,11 @@ export type ChargerSumOrderByAggregateInput = {
 export type ChargerScalarRelationFilter = {
   is?: Prisma.ChargerWhereInput
   isNot?: Prisma.ChargerWhereInput
+}
+
+export type ChargerNullableScalarRelationFilter = {
+  is?: Prisma.ChargerWhereInput | null
+  isNot?: Prisma.ChargerWhereInput | null
 }
 
 export type ChargerCreateNestedManyWithoutStationInput = {
@@ -567,6 +586,50 @@ export type ChargerUpdateOneRequiredWithoutChargingSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ChargerUpdateToOneWithWhereWithoutChargingSessionsInput, Prisma.ChargerUpdateWithoutChargingSessionsInput>, Prisma.ChargerUncheckedUpdateWithoutChargingSessionsInput>
 }
 
+export type ChargerCreateNestedOneWithoutTelemetryEventsInput = {
+  create?: Prisma.XOR<Prisma.ChargerCreateWithoutTelemetryEventsInput, Prisma.ChargerUncheckedCreateWithoutTelemetryEventsInput>
+  connectOrCreate?: Prisma.ChargerCreateOrConnectWithoutTelemetryEventsInput
+  connect?: Prisma.ChargerWhereUniqueInput
+}
+
+export type ChargerUpdateOneRequiredWithoutTelemetryEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChargerCreateWithoutTelemetryEventsInput, Prisma.ChargerUncheckedCreateWithoutTelemetryEventsInput>
+  connectOrCreate?: Prisma.ChargerCreateOrConnectWithoutTelemetryEventsInput
+  upsert?: Prisma.ChargerUpsertWithoutTelemetryEventsInput
+  connect?: Prisma.ChargerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChargerUpdateToOneWithWhereWithoutTelemetryEventsInput, Prisma.ChargerUpdateWithoutTelemetryEventsInput>, Prisma.ChargerUncheckedUpdateWithoutTelemetryEventsInput>
+}
+
+export type ChargerCreateNestedOneWithoutAlertsInput = {
+  create?: Prisma.XOR<Prisma.ChargerCreateWithoutAlertsInput, Prisma.ChargerUncheckedCreateWithoutAlertsInput>
+  connectOrCreate?: Prisma.ChargerCreateOrConnectWithoutAlertsInput
+  connect?: Prisma.ChargerWhereUniqueInput
+}
+
+export type ChargerUpdateOneWithoutAlertsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChargerCreateWithoutAlertsInput, Prisma.ChargerUncheckedCreateWithoutAlertsInput>
+  connectOrCreate?: Prisma.ChargerCreateOrConnectWithoutAlertsInput
+  upsert?: Prisma.ChargerUpsertWithoutAlertsInput
+  disconnect?: Prisma.ChargerWhereInput | boolean
+  delete?: Prisma.ChargerWhereInput | boolean
+  connect?: Prisma.ChargerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChargerUpdateToOneWithWhereWithoutAlertsInput, Prisma.ChargerUpdateWithoutAlertsInput>, Prisma.ChargerUncheckedUpdateWithoutAlertsInput>
+}
+
+export type ChargerCreateNestedOneWithoutMaintenanceInput = {
+  create?: Prisma.XOR<Prisma.ChargerCreateWithoutMaintenanceInput, Prisma.ChargerUncheckedCreateWithoutMaintenanceInput>
+  connectOrCreate?: Prisma.ChargerCreateOrConnectWithoutMaintenanceInput
+  connect?: Prisma.ChargerWhereUniqueInput
+}
+
+export type ChargerUpdateOneRequiredWithoutMaintenanceNestedInput = {
+  create?: Prisma.XOR<Prisma.ChargerCreateWithoutMaintenanceInput, Prisma.ChargerUncheckedCreateWithoutMaintenanceInput>
+  connectOrCreate?: Prisma.ChargerCreateOrConnectWithoutMaintenanceInput
+  upsert?: Prisma.ChargerUpsertWithoutMaintenanceInput
+  connect?: Prisma.ChargerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChargerUpdateToOneWithWhereWithoutMaintenanceInput, Prisma.ChargerUpdateWithoutMaintenanceInput>, Prisma.ChargerUncheckedUpdateWithoutMaintenanceInput>
+}
+
 export type ChargerCreateWithoutStationInput = {
   id?: string
   serialNumber: string
@@ -579,6 +642,9 @@ export type ChargerCreateWithoutStationInput = {
   updatedAt?: Date | string
   connectors?: Prisma.ConnectorCreateNestedManyWithoutChargerInput
   chargingSessions?: Prisma.ChargingSessionCreateNestedManyWithoutChargerInput
+  telemetryEvents?: Prisma.TelemetryEventCreateNestedManyWithoutChargerInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutChargerInput
+  maintenance?: Prisma.MaintenanceRecordCreateNestedManyWithoutChargerInput
 }
 
 export type ChargerUncheckedCreateWithoutStationInput = {
@@ -593,6 +659,9 @@ export type ChargerUncheckedCreateWithoutStationInput = {
   updatedAt?: Date | string
   connectors?: Prisma.ConnectorUncheckedCreateNestedManyWithoutChargerInput
   chargingSessions?: Prisma.ChargingSessionUncheckedCreateNestedManyWithoutChargerInput
+  telemetryEvents?: Prisma.TelemetryEventUncheckedCreateNestedManyWithoutChargerInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutChargerInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutChargerInput
 }
 
 export type ChargerCreateOrConnectWithoutStationInput = {
@@ -602,7 +671,6 @@ export type ChargerCreateOrConnectWithoutStationInput = {
 
 export type ChargerCreateManyStationInputEnvelope = {
   data: Prisma.ChargerCreateManyStationInput | Prisma.ChargerCreateManyStationInput[]
-  skipDuplicates?: boolean
 }
 
 export type ChargerUpsertWithWhereUniqueWithoutStationInput = {
@@ -649,6 +717,9 @@ export type ChargerCreateWithoutConnectorsInput = {
   updatedAt?: Date | string
   station: Prisma.StationCreateNestedOneWithoutChargersInput
   chargingSessions?: Prisma.ChargingSessionCreateNestedManyWithoutChargerInput
+  telemetryEvents?: Prisma.TelemetryEventCreateNestedManyWithoutChargerInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutChargerInput
+  maintenance?: Prisma.MaintenanceRecordCreateNestedManyWithoutChargerInput
 }
 
 export type ChargerUncheckedCreateWithoutConnectorsInput = {
@@ -663,6 +734,9 @@ export type ChargerUncheckedCreateWithoutConnectorsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   chargingSessions?: Prisma.ChargingSessionUncheckedCreateNestedManyWithoutChargerInput
+  telemetryEvents?: Prisma.TelemetryEventUncheckedCreateNestedManyWithoutChargerInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutChargerInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutChargerInput
 }
 
 export type ChargerCreateOrConnectWithoutConnectorsInput = {
@@ -693,6 +767,9 @@ export type ChargerUpdateWithoutConnectorsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   station?: Prisma.StationUpdateOneRequiredWithoutChargersNestedInput
   chargingSessions?: Prisma.ChargingSessionUpdateManyWithoutChargerNestedInput
+  telemetryEvents?: Prisma.TelemetryEventUpdateManyWithoutChargerNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutChargerNestedInput
+  maintenance?: Prisma.MaintenanceRecordUpdateManyWithoutChargerNestedInput
 }
 
 export type ChargerUncheckedUpdateWithoutConnectorsInput = {
@@ -707,6 +784,9 @@ export type ChargerUncheckedUpdateWithoutConnectorsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   chargingSessions?: Prisma.ChargingSessionUncheckedUpdateManyWithoutChargerNestedInput
+  telemetryEvents?: Prisma.TelemetryEventUncheckedUpdateManyWithoutChargerNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutChargerNestedInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutChargerNestedInput
 }
 
 export type ChargerCreateWithoutChargingSessionsInput = {
@@ -721,6 +801,9 @@ export type ChargerCreateWithoutChargingSessionsInput = {
   updatedAt?: Date | string
   station: Prisma.StationCreateNestedOneWithoutChargersInput
   connectors?: Prisma.ConnectorCreateNestedManyWithoutChargerInput
+  telemetryEvents?: Prisma.TelemetryEventCreateNestedManyWithoutChargerInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutChargerInput
+  maintenance?: Prisma.MaintenanceRecordCreateNestedManyWithoutChargerInput
 }
 
 export type ChargerUncheckedCreateWithoutChargingSessionsInput = {
@@ -735,6 +818,9 @@ export type ChargerUncheckedCreateWithoutChargingSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   connectors?: Prisma.ConnectorUncheckedCreateNestedManyWithoutChargerInput
+  telemetryEvents?: Prisma.TelemetryEventUncheckedCreateNestedManyWithoutChargerInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutChargerInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutChargerInput
 }
 
 export type ChargerCreateOrConnectWithoutChargingSessionsInput = {
@@ -765,6 +851,9 @@ export type ChargerUpdateWithoutChargingSessionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   station?: Prisma.StationUpdateOneRequiredWithoutChargersNestedInput
   connectors?: Prisma.ConnectorUpdateManyWithoutChargerNestedInput
+  telemetryEvents?: Prisma.TelemetryEventUpdateManyWithoutChargerNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutChargerNestedInput
+  maintenance?: Prisma.MaintenanceRecordUpdateManyWithoutChargerNestedInput
 }
 
 export type ChargerUncheckedUpdateWithoutChargingSessionsInput = {
@@ -779,6 +868,261 @@ export type ChargerUncheckedUpdateWithoutChargingSessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   connectors?: Prisma.ConnectorUncheckedUpdateManyWithoutChargerNestedInput
+  telemetryEvents?: Prisma.TelemetryEventUncheckedUpdateManyWithoutChargerNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutChargerNestedInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutChargerNestedInput
+}
+
+export type ChargerCreateWithoutTelemetryEventsInput = {
+  id?: string
+  serialNumber: string
+  model?: string | null
+  manufacturer?: string | null
+  powerKw?: number
+  ocppId?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  station: Prisma.StationCreateNestedOneWithoutChargersInput
+  connectors?: Prisma.ConnectorCreateNestedManyWithoutChargerInput
+  chargingSessions?: Prisma.ChargingSessionCreateNestedManyWithoutChargerInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutChargerInput
+  maintenance?: Prisma.MaintenanceRecordCreateNestedManyWithoutChargerInput
+}
+
+export type ChargerUncheckedCreateWithoutTelemetryEventsInput = {
+  id?: string
+  stationId: string
+  serialNumber: string
+  model?: string | null
+  manufacturer?: string | null
+  powerKw?: number
+  ocppId?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  connectors?: Prisma.ConnectorUncheckedCreateNestedManyWithoutChargerInput
+  chargingSessions?: Prisma.ChargingSessionUncheckedCreateNestedManyWithoutChargerInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutChargerInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutChargerInput
+}
+
+export type ChargerCreateOrConnectWithoutTelemetryEventsInput = {
+  where: Prisma.ChargerWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChargerCreateWithoutTelemetryEventsInput, Prisma.ChargerUncheckedCreateWithoutTelemetryEventsInput>
+}
+
+export type ChargerUpsertWithoutTelemetryEventsInput = {
+  update: Prisma.XOR<Prisma.ChargerUpdateWithoutTelemetryEventsInput, Prisma.ChargerUncheckedUpdateWithoutTelemetryEventsInput>
+  create: Prisma.XOR<Prisma.ChargerCreateWithoutTelemetryEventsInput, Prisma.ChargerUncheckedCreateWithoutTelemetryEventsInput>
+  where?: Prisma.ChargerWhereInput
+}
+
+export type ChargerUpdateToOneWithWhereWithoutTelemetryEventsInput = {
+  where?: Prisma.ChargerWhereInput
+  data: Prisma.XOR<Prisma.ChargerUpdateWithoutTelemetryEventsInput, Prisma.ChargerUncheckedUpdateWithoutTelemetryEventsInput>
+}
+
+export type ChargerUpdateWithoutTelemetryEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  serialNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  powerKw?: Prisma.FloatFieldUpdateOperationsInput | number
+  ocppId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  station?: Prisma.StationUpdateOneRequiredWithoutChargersNestedInput
+  connectors?: Prisma.ConnectorUpdateManyWithoutChargerNestedInput
+  chargingSessions?: Prisma.ChargingSessionUpdateManyWithoutChargerNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutChargerNestedInput
+  maintenance?: Prisma.MaintenanceRecordUpdateManyWithoutChargerNestedInput
+}
+
+export type ChargerUncheckedUpdateWithoutTelemetryEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  stationId?: Prisma.StringFieldUpdateOperationsInput | string
+  serialNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  powerKw?: Prisma.FloatFieldUpdateOperationsInput | number
+  ocppId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  connectors?: Prisma.ConnectorUncheckedUpdateManyWithoutChargerNestedInput
+  chargingSessions?: Prisma.ChargingSessionUncheckedUpdateManyWithoutChargerNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutChargerNestedInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutChargerNestedInput
+}
+
+export type ChargerCreateWithoutAlertsInput = {
+  id?: string
+  serialNumber: string
+  model?: string | null
+  manufacturer?: string | null
+  powerKw?: number
+  ocppId?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  station: Prisma.StationCreateNestedOneWithoutChargersInput
+  connectors?: Prisma.ConnectorCreateNestedManyWithoutChargerInput
+  chargingSessions?: Prisma.ChargingSessionCreateNestedManyWithoutChargerInput
+  telemetryEvents?: Prisma.TelemetryEventCreateNestedManyWithoutChargerInput
+  maintenance?: Prisma.MaintenanceRecordCreateNestedManyWithoutChargerInput
+}
+
+export type ChargerUncheckedCreateWithoutAlertsInput = {
+  id?: string
+  stationId: string
+  serialNumber: string
+  model?: string | null
+  manufacturer?: string | null
+  powerKw?: number
+  ocppId?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  connectors?: Prisma.ConnectorUncheckedCreateNestedManyWithoutChargerInput
+  chargingSessions?: Prisma.ChargingSessionUncheckedCreateNestedManyWithoutChargerInput
+  telemetryEvents?: Prisma.TelemetryEventUncheckedCreateNestedManyWithoutChargerInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutChargerInput
+}
+
+export type ChargerCreateOrConnectWithoutAlertsInput = {
+  where: Prisma.ChargerWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChargerCreateWithoutAlertsInput, Prisma.ChargerUncheckedCreateWithoutAlertsInput>
+}
+
+export type ChargerUpsertWithoutAlertsInput = {
+  update: Prisma.XOR<Prisma.ChargerUpdateWithoutAlertsInput, Prisma.ChargerUncheckedUpdateWithoutAlertsInput>
+  create: Prisma.XOR<Prisma.ChargerCreateWithoutAlertsInput, Prisma.ChargerUncheckedCreateWithoutAlertsInput>
+  where?: Prisma.ChargerWhereInput
+}
+
+export type ChargerUpdateToOneWithWhereWithoutAlertsInput = {
+  where?: Prisma.ChargerWhereInput
+  data: Prisma.XOR<Prisma.ChargerUpdateWithoutAlertsInput, Prisma.ChargerUncheckedUpdateWithoutAlertsInput>
+}
+
+export type ChargerUpdateWithoutAlertsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  serialNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  powerKw?: Prisma.FloatFieldUpdateOperationsInput | number
+  ocppId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  station?: Prisma.StationUpdateOneRequiredWithoutChargersNestedInput
+  connectors?: Prisma.ConnectorUpdateManyWithoutChargerNestedInput
+  chargingSessions?: Prisma.ChargingSessionUpdateManyWithoutChargerNestedInput
+  telemetryEvents?: Prisma.TelemetryEventUpdateManyWithoutChargerNestedInput
+  maintenance?: Prisma.MaintenanceRecordUpdateManyWithoutChargerNestedInput
+}
+
+export type ChargerUncheckedUpdateWithoutAlertsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  stationId?: Prisma.StringFieldUpdateOperationsInput | string
+  serialNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  powerKw?: Prisma.FloatFieldUpdateOperationsInput | number
+  ocppId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  connectors?: Prisma.ConnectorUncheckedUpdateManyWithoutChargerNestedInput
+  chargingSessions?: Prisma.ChargingSessionUncheckedUpdateManyWithoutChargerNestedInput
+  telemetryEvents?: Prisma.TelemetryEventUncheckedUpdateManyWithoutChargerNestedInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutChargerNestedInput
+}
+
+export type ChargerCreateWithoutMaintenanceInput = {
+  id?: string
+  serialNumber: string
+  model?: string | null
+  manufacturer?: string | null
+  powerKw?: number
+  ocppId?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  station: Prisma.StationCreateNestedOneWithoutChargersInput
+  connectors?: Prisma.ConnectorCreateNestedManyWithoutChargerInput
+  chargingSessions?: Prisma.ChargingSessionCreateNestedManyWithoutChargerInput
+  telemetryEvents?: Prisma.TelemetryEventCreateNestedManyWithoutChargerInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutChargerInput
+}
+
+export type ChargerUncheckedCreateWithoutMaintenanceInput = {
+  id?: string
+  stationId: string
+  serialNumber: string
+  model?: string | null
+  manufacturer?: string | null
+  powerKw?: number
+  ocppId?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  connectors?: Prisma.ConnectorUncheckedCreateNestedManyWithoutChargerInput
+  chargingSessions?: Prisma.ChargingSessionUncheckedCreateNestedManyWithoutChargerInput
+  telemetryEvents?: Prisma.TelemetryEventUncheckedCreateNestedManyWithoutChargerInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutChargerInput
+}
+
+export type ChargerCreateOrConnectWithoutMaintenanceInput = {
+  where: Prisma.ChargerWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChargerCreateWithoutMaintenanceInput, Prisma.ChargerUncheckedCreateWithoutMaintenanceInput>
+}
+
+export type ChargerUpsertWithoutMaintenanceInput = {
+  update: Prisma.XOR<Prisma.ChargerUpdateWithoutMaintenanceInput, Prisma.ChargerUncheckedUpdateWithoutMaintenanceInput>
+  create: Prisma.XOR<Prisma.ChargerCreateWithoutMaintenanceInput, Prisma.ChargerUncheckedCreateWithoutMaintenanceInput>
+  where?: Prisma.ChargerWhereInput
+}
+
+export type ChargerUpdateToOneWithWhereWithoutMaintenanceInput = {
+  where?: Prisma.ChargerWhereInput
+  data: Prisma.XOR<Prisma.ChargerUpdateWithoutMaintenanceInput, Prisma.ChargerUncheckedUpdateWithoutMaintenanceInput>
+}
+
+export type ChargerUpdateWithoutMaintenanceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  serialNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  powerKw?: Prisma.FloatFieldUpdateOperationsInput | number
+  ocppId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  station?: Prisma.StationUpdateOneRequiredWithoutChargersNestedInput
+  connectors?: Prisma.ConnectorUpdateManyWithoutChargerNestedInput
+  chargingSessions?: Prisma.ChargingSessionUpdateManyWithoutChargerNestedInput
+  telemetryEvents?: Prisma.TelemetryEventUpdateManyWithoutChargerNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutChargerNestedInput
+}
+
+export type ChargerUncheckedUpdateWithoutMaintenanceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  stationId?: Prisma.StringFieldUpdateOperationsInput | string
+  serialNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  manufacturer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  powerKw?: Prisma.FloatFieldUpdateOperationsInput | number
+  ocppId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  connectors?: Prisma.ConnectorUncheckedUpdateManyWithoutChargerNestedInput
+  chargingSessions?: Prisma.ChargingSessionUncheckedUpdateManyWithoutChargerNestedInput
+  telemetryEvents?: Prisma.TelemetryEventUncheckedUpdateManyWithoutChargerNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutChargerNestedInput
 }
 
 export type ChargerCreateManyStationInput = {
@@ -805,6 +1149,9 @@ export type ChargerUpdateWithoutStationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   connectors?: Prisma.ConnectorUpdateManyWithoutChargerNestedInput
   chargingSessions?: Prisma.ChargingSessionUpdateManyWithoutChargerNestedInput
+  telemetryEvents?: Prisma.TelemetryEventUpdateManyWithoutChargerNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutChargerNestedInput
+  maintenance?: Prisma.MaintenanceRecordUpdateManyWithoutChargerNestedInput
 }
 
 export type ChargerUncheckedUpdateWithoutStationInput = {
@@ -819,6 +1166,9 @@ export type ChargerUncheckedUpdateWithoutStationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   connectors?: Prisma.ConnectorUncheckedUpdateManyWithoutChargerNestedInput
   chargingSessions?: Prisma.ChargingSessionUncheckedUpdateManyWithoutChargerNestedInput
+  telemetryEvents?: Prisma.TelemetryEventUncheckedUpdateManyWithoutChargerNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutChargerNestedInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutChargerNestedInput
 }
 
 export type ChargerUncheckedUpdateManyWithoutStationInput = {
@@ -841,11 +1191,17 @@ export type ChargerUncheckedUpdateManyWithoutStationInput = {
 export type ChargerCountOutputType = {
   connectors: number
   chargingSessions: number
+  telemetryEvents: number
+  alerts: number
+  maintenance: number
 }
 
 export type ChargerCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   connectors?: boolean | ChargerCountOutputTypeCountConnectorsArgs
   chargingSessions?: boolean | ChargerCountOutputTypeCountChargingSessionsArgs
+  telemetryEvents?: boolean | ChargerCountOutputTypeCountTelemetryEventsArgs
+  alerts?: boolean | ChargerCountOutputTypeCountAlertsArgs
+  maintenance?: boolean | ChargerCountOutputTypeCountMaintenanceArgs
 }
 
 /**
@@ -872,6 +1228,27 @@ export type ChargerCountOutputTypeCountChargingSessionsArgs<ExtArgs extends runt
   where?: Prisma.ChargingSessionWhereInput
 }
 
+/**
+ * ChargerCountOutputType without action
+ */
+export type ChargerCountOutputTypeCountTelemetryEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TelemetryEventWhereInput
+}
+
+/**
+ * ChargerCountOutputType without action
+ */
+export type ChargerCountOutputTypeCountAlertsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AlertWhereInput
+}
+
+/**
+ * ChargerCountOutputType without action
+ */
+export type ChargerCountOutputTypeCountMaintenanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MaintenanceRecordWhereInput
+}
+
 
 export type ChargerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -887,10 +1264,39 @@ export type ChargerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
   connectors?: boolean | Prisma.Charger$connectorsArgs<ExtArgs>
   chargingSessions?: boolean | Prisma.Charger$chargingSessionsArgs<ExtArgs>
+  telemetryEvents?: boolean | Prisma.Charger$telemetryEventsArgs<ExtArgs>
+  alerts?: boolean | Prisma.Charger$alertsArgs<ExtArgs>
+  maintenance?: boolean | Prisma.Charger$maintenanceArgs<ExtArgs>
   _count?: boolean | Prisma.ChargerCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["charger"]>
 
+export type ChargerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  stationId?: boolean
+  serialNumber?: boolean
+  model?: boolean
+  manufacturer?: boolean
+  powerKw?: boolean
+  ocppId?: boolean
+  status?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["charger"]>
 
+export type ChargerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  stationId?: boolean
+  serialNumber?: boolean
+  model?: boolean
+  manufacturer?: boolean
+  powerKw?: boolean
+  ocppId?: boolean
+  status?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["charger"]>
 
 export type ChargerSelectScalar = {
   id?: boolean
@@ -910,7 +1316,16 @@ export type ChargerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
   connectors?: boolean | Prisma.Charger$connectorsArgs<ExtArgs>
   chargingSessions?: boolean | Prisma.Charger$chargingSessionsArgs<ExtArgs>
+  telemetryEvents?: boolean | Prisma.Charger$telemetryEventsArgs<ExtArgs>
+  alerts?: boolean | Prisma.Charger$alertsArgs<ExtArgs>
+  maintenance?: boolean | Prisma.Charger$maintenanceArgs<ExtArgs>
   _count?: boolean | Prisma.ChargerCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type ChargerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
+}
+export type ChargerIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
 }
 
 export type $ChargerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -919,6 +1334,9 @@ export type $ChargerPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     station: Prisma.$StationPayload<ExtArgs>
     connectors: Prisma.$ConnectorPayload<ExtArgs>[]
     chargingSessions: Prisma.$ChargingSessionPayload<ExtArgs>[]
+    telemetryEvents: Prisma.$TelemetryEventPayload<ExtArgs>[]
+    alerts: Prisma.$AlertPayload<ExtArgs>[]
+    maintenance: Prisma.$MaintenanceRecordPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1049,6 +1467,30 @@ export interface ChargerDelegate<ExtArgs extends runtime.Types.Extensions.Intern
   createMany<T extends ChargerCreateManyArgs>(args?: Prisma.SelectSubset<T, ChargerCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Chargers and returns the data saved in the database.
+   * @param {ChargerCreateManyAndReturnArgs} args - Arguments to create many Chargers.
+   * @example
+   * // Create many Chargers
+   * const charger = await prisma.charger.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Chargers and only return the `id`
+   * const chargerWithIdOnly = await prisma.charger.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends ChargerCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, ChargerCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChargerPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Charger.
    * @param {ChargerDeleteArgs} args - Arguments to delete one Charger.
    * @example
@@ -1111,6 +1553,36 @@ export interface ChargerDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    * 
    */
   updateMany<T extends ChargerUpdateManyArgs>(args: Prisma.SelectSubset<T, ChargerUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Chargers and returns the data updated in the database.
+   * @param {ChargerUpdateManyAndReturnArgs} args - Arguments to update many Chargers.
+   * @example
+   * // Update many Chargers
+   * const charger = await prisma.charger.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Chargers and only return the `id`
+   * const chargerWithIdOnly = await prisma.charger.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends ChargerUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, ChargerUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChargerPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Charger.
@@ -1274,6 +1746,9 @@ export interface Prisma__ChargerClient<T, Null = never, ExtArgs extends runtime.
   station<T extends Prisma.StationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StationDefaultArgs<ExtArgs>>): Prisma.Prisma__StationClient<runtime.Types.Result.GetResult<Prisma.$StationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   connectors<T extends Prisma.Charger$connectorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Charger$connectorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConnectorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   chargingSessions<T extends Prisma.Charger$chargingSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Charger$chargingSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChargingSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  telemetryEvents<T extends Prisma.Charger$telemetryEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Charger$telemetryEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TelemetryEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  alerts<T extends Prisma.Charger$alertsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Charger$alertsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AlertPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  maintenance<T extends Prisma.Charger$maintenanceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Charger$maintenanceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaintenanceRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1547,7 +2022,28 @@ export type ChargerCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data used to create many Chargers.
    */
   data: Prisma.ChargerCreateManyInput | Prisma.ChargerCreateManyInput[]
-  skipDuplicates?: boolean
+}
+
+/**
+ * Charger createManyAndReturn
+ */
+export type ChargerCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Charger
+   */
+  select?: Prisma.ChargerSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Charger
+   */
+  omit?: Prisma.ChargerOmit<ExtArgs> | null
+  /**
+   * The data used to create many Chargers.
+   */
+  data: Prisma.ChargerCreateManyInput | Prisma.ChargerCreateManyInput[]
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChargerIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1592,6 +2088,36 @@ export type ChargerUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Chargers to update.
    */
   limit?: number
+}
+
+/**
+ * Charger updateManyAndReturn
+ */
+export type ChargerUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Charger
+   */
+  select?: Prisma.ChargerSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Charger
+   */
+  omit?: Prisma.ChargerOmit<ExtArgs> | null
+  /**
+   * The data used to update Chargers.
+   */
+  data: Prisma.XOR<Prisma.ChargerUpdateManyMutationInput, Prisma.ChargerUncheckedUpdateManyInput>
+  /**
+   * Filter which Chargers to update
+   */
+  where?: Prisma.ChargerWhereInput
+  /**
+   * Limit how many Chargers to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChargerIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1706,6 +2232,78 @@ export type Charger$chargingSessionsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.ChargingSessionScalarFieldEnum | Prisma.ChargingSessionScalarFieldEnum[]
+}
+
+/**
+ * Charger.telemetryEvents
+ */
+export type Charger$telemetryEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TelemetryEvent
+   */
+  select?: Prisma.TelemetryEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TelemetryEvent
+   */
+  omit?: Prisma.TelemetryEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TelemetryEventInclude<ExtArgs> | null
+  where?: Prisma.TelemetryEventWhereInput
+  orderBy?: Prisma.TelemetryEventOrderByWithRelationInput | Prisma.TelemetryEventOrderByWithRelationInput[]
+  cursor?: Prisma.TelemetryEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TelemetryEventScalarFieldEnum | Prisma.TelemetryEventScalarFieldEnum[]
+}
+
+/**
+ * Charger.alerts
+ */
+export type Charger$alertsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Alert
+   */
+  select?: Prisma.AlertSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Alert
+   */
+  omit?: Prisma.AlertOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AlertInclude<ExtArgs> | null
+  where?: Prisma.AlertWhereInput
+  orderBy?: Prisma.AlertOrderByWithRelationInput | Prisma.AlertOrderByWithRelationInput[]
+  cursor?: Prisma.AlertWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AlertScalarFieldEnum | Prisma.AlertScalarFieldEnum[]
+}
+
+/**
+ * Charger.maintenance
+ */
+export type Charger$maintenanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MaintenanceRecord
+   */
+  select?: Prisma.MaintenanceRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MaintenanceRecord
+   */
+  omit?: Prisma.MaintenanceRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MaintenanceRecordInclude<ExtArgs> | null
+  where?: Prisma.MaintenanceRecordWhereInput
+  orderBy?: Prisma.MaintenanceRecordOrderByWithRelationInput | Prisma.MaintenanceRecordOrderByWithRelationInput[]
+  cursor?: Prisma.MaintenanceRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MaintenanceRecordScalarFieldEnum | Prisma.MaintenanceRecordScalarFieldEnum[]
 }
 
 /**

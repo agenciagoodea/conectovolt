@@ -237,7 +237,6 @@ export type VehicleOrderByWithRelationInput = {
   batteryCapacity?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   chargingSessions?: Prisma.ChargingSessionOrderByRelationAggregateInput
-  _relevance?: Prisma.VehicleOrderByRelevanceInput
 }
 
 export type VehicleWhereUniqueInput = Prisma.AtLeast<{
@@ -354,12 +353,6 @@ export type VehicleListRelationFilter = {
 
 export type VehicleOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type VehicleOrderByRelevanceInput = {
-  fields: Prisma.VehicleOrderByRelevanceFieldEnum | Prisma.VehicleOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type VehicleCountOrderByAggregateInput = {
@@ -485,7 +478,6 @@ export type VehicleCreateOrConnectWithoutUserInput = {
 
 export type VehicleCreateManyUserInputEnvelope = {
   data: Prisma.VehicleCreateManyUserInput | Prisma.VehicleCreateManyUserInput[]
-  skipDuplicates?: boolean
 }
 
 export type VehicleUpsertWithWhereUniqueWithoutUserInput = {
@@ -645,7 +637,25 @@ export type VehicleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   _count?: boolean | Prisma.VehicleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["vehicle"]>
 
+export type VehicleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  userId?: boolean
+  brand?: boolean
+  model?: boolean
+  plate?: boolean
+  batteryCapacity?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["vehicle"]>
 
+export type VehicleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  userId?: boolean
+  brand?: boolean
+  model?: boolean
+  plate?: boolean
+  batteryCapacity?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["vehicle"]>
 
 export type VehicleSelectScalar = {
   id?: boolean
@@ -661,6 +671,12 @@ export type VehicleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   chargingSessions?: boolean | Prisma.Vehicle$chargingSessionsArgs<ExtArgs>
   _count?: boolean | Prisma.VehicleCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type VehicleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
+export type VehicleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $VehiclePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -794,6 +810,30 @@ export interface VehicleDelegate<ExtArgs extends runtime.Types.Extensions.Intern
   createMany<T extends VehicleCreateManyArgs>(args?: Prisma.SelectSubset<T, VehicleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Vehicles and returns the data saved in the database.
+   * @param {VehicleCreateManyAndReturnArgs} args - Arguments to create many Vehicles.
+   * @example
+   * // Create many Vehicles
+   * const vehicle = await prisma.vehicle.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Vehicles and only return the `id`
+   * const vehicleWithIdOnly = await prisma.vehicle.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends VehicleCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, VehicleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VehiclePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Vehicle.
    * @param {VehicleDeleteArgs} args - Arguments to delete one Vehicle.
    * @example
@@ -856,6 +896,36 @@ export interface VehicleDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    * 
    */
   updateMany<T extends VehicleUpdateManyArgs>(args: Prisma.SelectSubset<T, VehicleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Vehicles and returns the data updated in the database.
+   * @param {VehicleUpdateManyAndReturnArgs} args - Arguments to update many Vehicles.
+   * @example
+   * // Update many Vehicles
+   * const vehicle = await prisma.vehicle.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Vehicles and only return the `id`
+   * const vehicleWithIdOnly = await prisma.vehicle.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends VehicleUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, VehicleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VehiclePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Vehicle.
@@ -1287,7 +1357,28 @@ export type VehicleCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data used to create many Vehicles.
    */
   data: Prisma.VehicleCreateManyInput | Prisma.VehicleCreateManyInput[]
-  skipDuplicates?: boolean
+}
+
+/**
+ * Vehicle createManyAndReturn
+ */
+export type VehicleCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Vehicle
+   */
+  select?: Prisma.VehicleSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Vehicle
+   */
+  omit?: Prisma.VehicleOmit<ExtArgs> | null
+  /**
+   * The data used to create many Vehicles.
+   */
+  data: Prisma.VehicleCreateManyInput | Prisma.VehicleCreateManyInput[]
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VehicleIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1332,6 +1423,36 @@ export type VehicleUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Vehicles to update.
    */
   limit?: number
+}
+
+/**
+ * Vehicle updateManyAndReturn
+ */
+export type VehicleUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Vehicle
+   */
+  select?: Prisma.VehicleSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Vehicle
+   */
+  omit?: Prisma.VehicleOmit<ExtArgs> | null
+  /**
+   * The data used to update Vehicles.
+   */
+  data: Prisma.XOR<Prisma.VehicleUpdateManyMutationInput, Prisma.VehicleUncheckedUpdateManyInput>
+  /**
+   * Filter which Vehicles to update
+   */
+  where?: Prisma.VehicleWhereInput
+  /**
+   * Limit how many Vehicles to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VehicleIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

@@ -288,6 +288,8 @@ export type StationWhereInput = {
   tariff?: Prisma.XOR<Prisma.TariffNullableScalarRelationFilter, Prisma.TariffWhereInput> | null
   chargers?: Prisma.ChargerListRelationFilter
   chargingSessions?: Prisma.ChargingSessionListRelationFilter
+  images?: Prisma.StationImageListRelationFilter
+  alerts?: Prisma.AlertListRelationFilter
 }
 
 export type StationOrderByWithRelationInput = {
@@ -308,7 +310,8 @@ export type StationOrderByWithRelationInput = {
   tariff?: Prisma.TariffOrderByWithRelationInput
   chargers?: Prisma.ChargerOrderByRelationAggregateInput
   chargingSessions?: Prisma.ChargingSessionOrderByRelationAggregateInput
-  _relevance?: Prisma.StationOrderByRelevanceInput
+  images?: Prisma.StationImageOrderByRelationAggregateInput
+  alerts?: Prisma.AlertOrderByRelationAggregateInput
 }
 
 export type StationWhereUniqueInput = Prisma.AtLeast<{
@@ -332,6 +335,8 @@ export type StationWhereUniqueInput = Prisma.AtLeast<{
   tariff?: Prisma.XOR<Prisma.TariffNullableScalarRelationFilter, Prisma.TariffWhereInput> | null
   chargers?: Prisma.ChargerListRelationFilter
   chargingSessions?: Prisma.ChargingSessionListRelationFilter
+  images?: Prisma.StationImageListRelationFilter
+  alerts?: Prisma.AlertListRelationFilter
 }, "id">
 
 export type StationOrderByWithAggregationInput = {
@@ -390,6 +395,8 @@ export type StationCreateInput = {
   tariff?: Prisma.TariffCreateNestedOneWithoutStationsInput
   chargers?: Prisma.ChargerCreateNestedManyWithoutStationInput
   chargingSessions?: Prisma.ChargingSessionCreateNestedManyWithoutStationInput
+  images?: Prisma.StationImageCreateNestedManyWithoutStationInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutStationInput
 }
 
 export type StationUncheckedCreateInput = {
@@ -408,6 +415,8 @@ export type StationUncheckedCreateInput = {
   updatedAt?: Date | string
   chargers?: Prisma.ChargerUncheckedCreateNestedManyWithoutStationInput
   chargingSessions?: Prisma.ChargingSessionUncheckedCreateNestedManyWithoutStationInput
+  images?: Prisma.StationImageUncheckedCreateNestedManyWithoutStationInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutStationInput
 }
 
 export type StationUpdateInput = {
@@ -426,6 +435,8 @@ export type StationUpdateInput = {
   tariff?: Prisma.TariffUpdateOneWithoutStationsNestedInput
   chargers?: Prisma.ChargerUpdateManyWithoutStationNestedInput
   chargingSessions?: Prisma.ChargingSessionUpdateManyWithoutStationNestedInput
+  images?: Prisma.StationImageUpdateManyWithoutStationNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutStationNestedInput
 }
 
 export type StationUncheckedUpdateInput = {
@@ -444,6 +455,8 @@ export type StationUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   chargers?: Prisma.ChargerUncheckedUpdateManyWithoutStationNestedInput
   chargingSessions?: Prisma.ChargingSessionUncheckedUpdateManyWithoutStationNestedInput
+  images?: Prisma.StationImageUncheckedUpdateManyWithoutStationNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutStationNestedInput
 }
 
 export type StationCreateManyInput = {
@@ -500,12 +513,6 @@ export type StationListRelationFilter = {
 
 export type StationOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type StationOrderByRelevanceInput = {
-  fields: Prisma.StationOrderByRelevanceFieldEnum | Prisma.StationOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type StationCountOrderByAggregateInput = {
@@ -569,6 +576,11 @@ export type StationSumOrderByAggregateInput = {
 export type StationScalarRelationFilter = {
   is?: Prisma.StationWhereInput
   isNot?: Prisma.StationWhereInput
+}
+
+export type StationNullableScalarRelationFilter = {
+  is?: Prisma.StationWhereInput | null
+  isNot?: Prisma.StationWhereInput | null
 }
 
 export type StationCreateNestedManyWithoutCompanyInput = {
@@ -683,6 +695,36 @@ export type StationUpdateOneRequiredWithoutChargingSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.StationUpdateToOneWithWhereWithoutChargingSessionsInput, Prisma.StationUpdateWithoutChargingSessionsInput>, Prisma.StationUncheckedUpdateWithoutChargingSessionsInput>
 }
 
+export type StationCreateNestedOneWithoutAlertsInput = {
+  create?: Prisma.XOR<Prisma.StationCreateWithoutAlertsInput, Prisma.StationUncheckedCreateWithoutAlertsInput>
+  connectOrCreate?: Prisma.StationCreateOrConnectWithoutAlertsInput
+  connect?: Prisma.StationWhereUniqueInput
+}
+
+export type StationUpdateOneWithoutAlertsNestedInput = {
+  create?: Prisma.XOR<Prisma.StationCreateWithoutAlertsInput, Prisma.StationUncheckedCreateWithoutAlertsInput>
+  connectOrCreate?: Prisma.StationCreateOrConnectWithoutAlertsInput
+  upsert?: Prisma.StationUpsertWithoutAlertsInput
+  disconnect?: Prisma.StationWhereInput | boolean
+  delete?: Prisma.StationWhereInput | boolean
+  connect?: Prisma.StationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StationUpdateToOneWithWhereWithoutAlertsInput, Prisma.StationUpdateWithoutAlertsInput>, Prisma.StationUncheckedUpdateWithoutAlertsInput>
+}
+
+export type StationCreateNestedOneWithoutImagesInput = {
+  create?: Prisma.XOR<Prisma.StationCreateWithoutImagesInput, Prisma.StationUncheckedCreateWithoutImagesInput>
+  connectOrCreate?: Prisma.StationCreateOrConnectWithoutImagesInput
+  connect?: Prisma.StationWhereUniqueInput
+}
+
+export type StationUpdateOneRequiredWithoutImagesNestedInput = {
+  create?: Prisma.XOR<Prisma.StationCreateWithoutImagesInput, Prisma.StationUncheckedCreateWithoutImagesInput>
+  connectOrCreate?: Prisma.StationCreateOrConnectWithoutImagesInput
+  upsert?: Prisma.StationUpsertWithoutImagesInput
+  connect?: Prisma.StationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StationUpdateToOneWithWhereWithoutImagesInput, Prisma.StationUpdateWithoutImagesInput>, Prisma.StationUncheckedUpdateWithoutImagesInput>
+}
+
 export type StationCreateWithoutCompanyInput = {
   id?: string
   name: string
@@ -698,6 +740,8 @@ export type StationCreateWithoutCompanyInput = {
   tariff?: Prisma.TariffCreateNestedOneWithoutStationsInput
   chargers?: Prisma.ChargerCreateNestedManyWithoutStationInput
   chargingSessions?: Prisma.ChargingSessionCreateNestedManyWithoutStationInput
+  images?: Prisma.StationImageCreateNestedManyWithoutStationInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutStationInput
 }
 
 export type StationUncheckedCreateWithoutCompanyInput = {
@@ -715,6 +759,8 @@ export type StationUncheckedCreateWithoutCompanyInput = {
   updatedAt?: Date | string
   chargers?: Prisma.ChargerUncheckedCreateNestedManyWithoutStationInput
   chargingSessions?: Prisma.ChargingSessionUncheckedCreateNestedManyWithoutStationInput
+  images?: Prisma.StationImageUncheckedCreateNestedManyWithoutStationInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutStationInput
 }
 
 export type StationCreateOrConnectWithoutCompanyInput = {
@@ -724,7 +770,6 @@ export type StationCreateOrConnectWithoutCompanyInput = {
 
 export type StationCreateManyCompanyInputEnvelope = {
   data: Prisma.StationCreateManyCompanyInput | Prisma.StationCreateManyCompanyInput[]
-  skipDuplicates?: boolean
 }
 
 export type StationUpsertWithWhereUniqueWithoutCompanyInput = {
@@ -777,6 +822,8 @@ export type StationCreateWithoutChargersInput = {
   company: Prisma.CompanyCreateNestedOneWithoutStationsInput
   tariff?: Prisma.TariffCreateNestedOneWithoutStationsInput
   chargingSessions?: Prisma.ChargingSessionCreateNestedManyWithoutStationInput
+  images?: Prisma.StationImageCreateNestedManyWithoutStationInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutStationInput
 }
 
 export type StationUncheckedCreateWithoutChargersInput = {
@@ -794,6 +841,8 @@ export type StationUncheckedCreateWithoutChargersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   chargingSessions?: Prisma.ChargingSessionUncheckedCreateNestedManyWithoutStationInput
+  images?: Prisma.StationImageUncheckedCreateNestedManyWithoutStationInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutStationInput
 }
 
 export type StationCreateOrConnectWithoutChargersInput = {
@@ -827,6 +876,8 @@ export type StationUpdateWithoutChargersInput = {
   company?: Prisma.CompanyUpdateOneRequiredWithoutStationsNestedInput
   tariff?: Prisma.TariffUpdateOneWithoutStationsNestedInput
   chargingSessions?: Prisma.ChargingSessionUpdateManyWithoutStationNestedInput
+  images?: Prisma.StationImageUpdateManyWithoutStationNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutStationNestedInput
 }
 
 export type StationUncheckedUpdateWithoutChargersInput = {
@@ -844,6 +895,8 @@ export type StationUncheckedUpdateWithoutChargersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   chargingSessions?: Prisma.ChargingSessionUncheckedUpdateManyWithoutStationNestedInput
+  images?: Prisma.StationImageUncheckedUpdateManyWithoutStationNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutStationNestedInput
 }
 
 export type StationCreateWithoutTariffInput = {
@@ -861,6 +914,8 @@ export type StationCreateWithoutTariffInput = {
   company: Prisma.CompanyCreateNestedOneWithoutStationsInput
   chargers?: Prisma.ChargerCreateNestedManyWithoutStationInput
   chargingSessions?: Prisma.ChargingSessionCreateNestedManyWithoutStationInput
+  images?: Prisma.StationImageCreateNestedManyWithoutStationInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutStationInput
 }
 
 export type StationUncheckedCreateWithoutTariffInput = {
@@ -878,6 +933,8 @@ export type StationUncheckedCreateWithoutTariffInput = {
   updatedAt?: Date | string
   chargers?: Prisma.ChargerUncheckedCreateNestedManyWithoutStationInput
   chargingSessions?: Prisma.ChargingSessionUncheckedCreateNestedManyWithoutStationInput
+  images?: Prisma.StationImageUncheckedCreateNestedManyWithoutStationInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutStationInput
 }
 
 export type StationCreateOrConnectWithoutTariffInput = {
@@ -887,7 +944,6 @@ export type StationCreateOrConnectWithoutTariffInput = {
 
 export type StationCreateManyTariffInputEnvelope = {
   data: Prisma.StationCreateManyTariffInput | Prisma.StationCreateManyTariffInput[]
-  skipDuplicates?: boolean
 }
 
 export type StationUpsertWithWhereUniqueWithoutTariffInput = {
@@ -921,6 +977,8 @@ export type StationCreateWithoutChargingSessionsInput = {
   company: Prisma.CompanyCreateNestedOneWithoutStationsInput
   tariff?: Prisma.TariffCreateNestedOneWithoutStationsInput
   chargers?: Prisma.ChargerCreateNestedManyWithoutStationInput
+  images?: Prisma.StationImageCreateNestedManyWithoutStationInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutStationInput
 }
 
 export type StationUncheckedCreateWithoutChargingSessionsInput = {
@@ -938,6 +996,8 @@ export type StationUncheckedCreateWithoutChargingSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   chargers?: Prisma.ChargerUncheckedCreateNestedManyWithoutStationInput
+  images?: Prisma.StationImageUncheckedCreateNestedManyWithoutStationInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutStationInput
 }
 
 export type StationCreateOrConnectWithoutChargingSessionsInput = {
@@ -971,6 +1031,8 @@ export type StationUpdateWithoutChargingSessionsInput = {
   company?: Prisma.CompanyUpdateOneRequiredWithoutStationsNestedInput
   tariff?: Prisma.TariffUpdateOneWithoutStationsNestedInput
   chargers?: Prisma.ChargerUpdateManyWithoutStationNestedInput
+  images?: Prisma.StationImageUpdateManyWithoutStationNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutStationNestedInput
 }
 
 export type StationUncheckedUpdateWithoutChargingSessionsInput = {
@@ -988,6 +1050,192 @@ export type StationUncheckedUpdateWithoutChargingSessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   chargers?: Prisma.ChargerUncheckedUpdateManyWithoutStationNestedInput
+  images?: Prisma.StationImageUncheckedUpdateManyWithoutStationNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutStationNestedInput
+}
+
+export type StationCreateWithoutAlertsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  address: string
+  city: string
+  state: string
+  latitude?: number
+  longitude?: number
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutStationsInput
+  tariff?: Prisma.TariffCreateNestedOneWithoutStationsInput
+  chargers?: Prisma.ChargerCreateNestedManyWithoutStationInput
+  chargingSessions?: Prisma.ChargingSessionCreateNestedManyWithoutStationInput
+  images?: Prisma.StationImageCreateNestedManyWithoutStationInput
+}
+
+export type StationUncheckedCreateWithoutAlertsInput = {
+  id?: string
+  companyId: string
+  tariffId?: string | null
+  name: string
+  description?: string | null
+  address: string
+  city: string
+  state: string
+  latitude?: number
+  longitude?: number
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  chargers?: Prisma.ChargerUncheckedCreateNestedManyWithoutStationInput
+  chargingSessions?: Prisma.ChargingSessionUncheckedCreateNestedManyWithoutStationInput
+  images?: Prisma.StationImageUncheckedCreateNestedManyWithoutStationInput
+}
+
+export type StationCreateOrConnectWithoutAlertsInput = {
+  where: Prisma.StationWhereUniqueInput
+  create: Prisma.XOR<Prisma.StationCreateWithoutAlertsInput, Prisma.StationUncheckedCreateWithoutAlertsInput>
+}
+
+export type StationUpsertWithoutAlertsInput = {
+  update: Prisma.XOR<Prisma.StationUpdateWithoutAlertsInput, Prisma.StationUncheckedUpdateWithoutAlertsInput>
+  create: Prisma.XOR<Prisma.StationCreateWithoutAlertsInput, Prisma.StationUncheckedCreateWithoutAlertsInput>
+  where?: Prisma.StationWhereInput
+}
+
+export type StationUpdateToOneWithWhereWithoutAlertsInput = {
+  where?: Prisma.StationWhereInput
+  data: Prisma.XOR<Prisma.StationUpdateWithoutAlertsInput, Prisma.StationUncheckedUpdateWithoutAlertsInput>
+}
+
+export type StationUpdateWithoutAlertsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutStationsNestedInput
+  tariff?: Prisma.TariffUpdateOneWithoutStationsNestedInput
+  chargers?: Prisma.ChargerUpdateManyWithoutStationNestedInput
+  chargingSessions?: Prisma.ChargingSessionUpdateManyWithoutStationNestedInput
+  images?: Prisma.StationImageUpdateManyWithoutStationNestedInput
+}
+
+export type StationUncheckedUpdateWithoutAlertsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  tariffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  chargers?: Prisma.ChargerUncheckedUpdateManyWithoutStationNestedInput
+  chargingSessions?: Prisma.ChargingSessionUncheckedUpdateManyWithoutStationNestedInput
+  images?: Prisma.StationImageUncheckedUpdateManyWithoutStationNestedInput
+}
+
+export type StationCreateWithoutImagesInput = {
+  id?: string
+  name: string
+  description?: string | null
+  address: string
+  city: string
+  state: string
+  latitude?: number
+  longitude?: number
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutStationsInput
+  tariff?: Prisma.TariffCreateNestedOneWithoutStationsInput
+  chargers?: Prisma.ChargerCreateNestedManyWithoutStationInput
+  chargingSessions?: Prisma.ChargingSessionCreateNestedManyWithoutStationInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutStationInput
+}
+
+export type StationUncheckedCreateWithoutImagesInput = {
+  id?: string
+  companyId: string
+  tariffId?: string | null
+  name: string
+  description?: string | null
+  address: string
+  city: string
+  state: string
+  latitude?: number
+  longitude?: number
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  chargers?: Prisma.ChargerUncheckedCreateNestedManyWithoutStationInput
+  chargingSessions?: Prisma.ChargingSessionUncheckedCreateNestedManyWithoutStationInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutStationInput
+}
+
+export type StationCreateOrConnectWithoutImagesInput = {
+  where: Prisma.StationWhereUniqueInput
+  create: Prisma.XOR<Prisma.StationCreateWithoutImagesInput, Prisma.StationUncheckedCreateWithoutImagesInput>
+}
+
+export type StationUpsertWithoutImagesInput = {
+  update: Prisma.XOR<Prisma.StationUpdateWithoutImagesInput, Prisma.StationUncheckedUpdateWithoutImagesInput>
+  create: Prisma.XOR<Prisma.StationCreateWithoutImagesInput, Prisma.StationUncheckedCreateWithoutImagesInput>
+  where?: Prisma.StationWhereInput
+}
+
+export type StationUpdateToOneWithWhereWithoutImagesInput = {
+  where?: Prisma.StationWhereInput
+  data: Prisma.XOR<Prisma.StationUpdateWithoutImagesInput, Prisma.StationUncheckedUpdateWithoutImagesInput>
+}
+
+export type StationUpdateWithoutImagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutStationsNestedInput
+  tariff?: Prisma.TariffUpdateOneWithoutStationsNestedInput
+  chargers?: Prisma.ChargerUpdateManyWithoutStationNestedInput
+  chargingSessions?: Prisma.ChargingSessionUpdateManyWithoutStationNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutStationNestedInput
+}
+
+export type StationUncheckedUpdateWithoutImagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  tariffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  chargers?: Prisma.ChargerUncheckedUpdateManyWithoutStationNestedInput
+  chargingSessions?: Prisma.ChargingSessionUncheckedUpdateManyWithoutStationNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutStationNestedInput
 }
 
 export type StationCreateManyCompanyInput = {
@@ -1020,6 +1268,8 @@ export type StationUpdateWithoutCompanyInput = {
   tariff?: Prisma.TariffUpdateOneWithoutStationsNestedInput
   chargers?: Prisma.ChargerUpdateManyWithoutStationNestedInput
   chargingSessions?: Prisma.ChargingSessionUpdateManyWithoutStationNestedInput
+  images?: Prisma.StationImageUpdateManyWithoutStationNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutStationNestedInput
 }
 
 export type StationUncheckedUpdateWithoutCompanyInput = {
@@ -1037,6 +1287,8 @@ export type StationUncheckedUpdateWithoutCompanyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   chargers?: Prisma.ChargerUncheckedUpdateManyWithoutStationNestedInput
   chargingSessions?: Prisma.ChargingSessionUncheckedUpdateManyWithoutStationNestedInput
+  images?: Prisma.StationImageUncheckedUpdateManyWithoutStationNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutStationNestedInput
 }
 
 export type StationUncheckedUpdateManyWithoutCompanyInput = {
@@ -1084,6 +1336,8 @@ export type StationUpdateWithoutTariffInput = {
   company?: Prisma.CompanyUpdateOneRequiredWithoutStationsNestedInput
   chargers?: Prisma.ChargerUpdateManyWithoutStationNestedInput
   chargingSessions?: Prisma.ChargingSessionUpdateManyWithoutStationNestedInput
+  images?: Prisma.StationImageUpdateManyWithoutStationNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutStationNestedInput
 }
 
 export type StationUncheckedUpdateWithoutTariffInput = {
@@ -1101,6 +1355,8 @@ export type StationUncheckedUpdateWithoutTariffInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   chargers?: Prisma.ChargerUncheckedUpdateManyWithoutStationNestedInput
   chargingSessions?: Prisma.ChargingSessionUncheckedUpdateManyWithoutStationNestedInput
+  images?: Prisma.StationImageUncheckedUpdateManyWithoutStationNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutStationNestedInput
 }
 
 export type StationUncheckedUpdateManyWithoutTariffInput = {
@@ -1126,11 +1382,15 @@ export type StationUncheckedUpdateManyWithoutTariffInput = {
 export type StationCountOutputType = {
   chargers: number
   chargingSessions: number
+  images: number
+  alerts: number
 }
 
 export type StationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   chargers?: boolean | StationCountOutputTypeCountChargersArgs
   chargingSessions?: boolean | StationCountOutputTypeCountChargingSessionsArgs
+  images?: boolean | StationCountOutputTypeCountImagesArgs
+  alerts?: boolean | StationCountOutputTypeCountAlertsArgs
 }
 
 /**
@@ -1157,6 +1417,20 @@ export type StationCountOutputTypeCountChargingSessionsArgs<ExtArgs extends runt
   where?: Prisma.ChargingSessionWhereInput
 }
 
+/**
+ * StationCountOutputType without action
+ */
+export type StationCountOutputTypeCountImagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StationImageWhereInput
+}
+
+/**
+ * StationCountOutputType without action
+ */
+export type StationCountOutputTypeCountAlertsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AlertWhereInput
+}
+
 
 export type StationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1176,10 +1450,46 @@ export type StationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   tariff?: boolean | Prisma.Station$tariffArgs<ExtArgs>
   chargers?: boolean | Prisma.Station$chargersArgs<ExtArgs>
   chargingSessions?: boolean | Prisma.Station$chargingSessionsArgs<ExtArgs>
+  images?: boolean | Prisma.Station$imagesArgs<ExtArgs>
+  alerts?: boolean | Prisma.Station$alertsArgs<ExtArgs>
   _count?: boolean | Prisma.StationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["station"]>
 
+export type StationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  tariffId?: boolean
+  name?: boolean
+  description?: boolean
+  address?: boolean
+  city?: boolean
+  state?: boolean
+  latitude?: boolean
+  longitude?: boolean
+  status?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  tariff?: boolean | Prisma.Station$tariffArgs<ExtArgs>
+}, ExtArgs["result"]["station"]>
 
+export type StationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  tariffId?: boolean
+  name?: boolean
+  description?: boolean
+  address?: boolean
+  city?: boolean
+  state?: boolean
+  latitude?: boolean
+  longitude?: boolean
+  status?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  tariff?: boolean | Prisma.Station$tariffArgs<ExtArgs>
+}, ExtArgs["result"]["station"]>
 
 export type StationSelectScalar = {
   id?: boolean
@@ -1203,7 +1513,17 @@ export type StationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   tariff?: boolean | Prisma.Station$tariffArgs<ExtArgs>
   chargers?: boolean | Prisma.Station$chargersArgs<ExtArgs>
   chargingSessions?: boolean | Prisma.Station$chargingSessionsArgs<ExtArgs>
+  images?: boolean | Prisma.Station$imagesArgs<ExtArgs>
+  alerts?: boolean | Prisma.Station$alertsArgs<ExtArgs>
   _count?: boolean | Prisma.StationCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type StationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  tariff?: boolean | Prisma.Station$tariffArgs<ExtArgs>
+}
+export type StationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  tariff?: boolean | Prisma.Station$tariffArgs<ExtArgs>
 }
 
 export type $StationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1213,6 +1533,8 @@ export type $StationPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     tariff: Prisma.$TariffPayload<ExtArgs> | null
     chargers: Prisma.$ChargerPayload<ExtArgs>[]
     chargingSessions: Prisma.$ChargingSessionPayload<ExtArgs>[]
+    images: Prisma.$StationImagePayload<ExtArgs>[]
+    alerts: Prisma.$AlertPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1346,6 +1668,30 @@ export interface StationDelegate<ExtArgs extends runtime.Types.Extensions.Intern
   createMany<T extends StationCreateManyArgs>(args?: Prisma.SelectSubset<T, StationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Stations and returns the data saved in the database.
+   * @param {StationCreateManyAndReturnArgs} args - Arguments to create many Stations.
+   * @example
+   * // Create many Stations
+   * const station = await prisma.station.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Stations and only return the `id`
+   * const stationWithIdOnly = await prisma.station.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends StationCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, StationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Station.
    * @param {StationDeleteArgs} args - Arguments to delete one Station.
    * @example
@@ -1408,6 +1754,36 @@ export interface StationDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    * 
    */
   updateMany<T extends StationUpdateManyArgs>(args: Prisma.SelectSubset<T, StationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Stations and returns the data updated in the database.
+   * @param {StationUpdateManyAndReturnArgs} args - Arguments to update many Stations.
+   * @example
+   * // Update many Stations
+   * const station = await prisma.station.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Stations and only return the `id`
+   * const stationWithIdOnly = await prisma.station.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends StationUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, StationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Station.
@@ -1572,6 +1948,8 @@ export interface Prisma__StationClient<T, Null = never, ExtArgs extends runtime.
   tariff<T extends Prisma.Station$tariffArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Station$tariffArgs<ExtArgs>>): Prisma.Prisma__TariffClient<runtime.Types.Result.GetResult<Prisma.$TariffPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   chargers<T extends Prisma.Station$chargersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Station$chargersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChargerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   chargingSessions<T extends Prisma.Station$chargingSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Station$chargingSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChargingSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  images<T extends Prisma.Station$imagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Station$imagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StationImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  alerts<T extends Prisma.Station$alertsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Station$alertsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AlertPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1848,7 +2226,28 @@ export type StationCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data used to create many Stations.
    */
   data: Prisma.StationCreateManyInput | Prisma.StationCreateManyInput[]
-  skipDuplicates?: boolean
+}
+
+/**
+ * Station createManyAndReturn
+ */
+export type StationCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Station
+   */
+  select?: Prisma.StationSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Station
+   */
+  omit?: Prisma.StationOmit<ExtArgs> | null
+  /**
+   * The data used to create many Stations.
+   */
+  data: Prisma.StationCreateManyInput | Prisma.StationCreateManyInput[]
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StationIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1893,6 +2292,36 @@ export type StationUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Stations to update.
    */
   limit?: number
+}
+
+/**
+ * Station updateManyAndReturn
+ */
+export type StationUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Station
+   */
+  select?: Prisma.StationSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Station
+   */
+  omit?: Prisma.StationOmit<ExtArgs> | null
+  /**
+   * The data used to update Stations.
+   */
+  data: Prisma.XOR<Prisma.StationUpdateManyMutationInput, Prisma.StationUncheckedUpdateManyInput>
+  /**
+   * Filter which Stations to update
+   */
+  where?: Prisma.StationWhereInput
+  /**
+   * Limit how many Stations to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StationIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -2026,6 +2455,54 @@ export type Station$chargingSessionsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.ChargingSessionScalarFieldEnum | Prisma.ChargingSessionScalarFieldEnum[]
+}
+
+/**
+ * Station.images
+ */
+export type Station$imagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StationImage
+   */
+  select?: Prisma.StationImageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StationImage
+   */
+  omit?: Prisma.StationImageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StationImageInclude<ExtArgs> | null
+  where?: Prisma.StationImageWhereInput
+  orderBy?: Prisma.StationImageOrderByWithRelationInput | Prisma.StationImageOrderByWithRelationInput[]
+  cursor?: Prisma.StationImageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StationImageScalarFieldEnum | Prisma.StationImageScalarFieldEnum[]
+}
+
+/**
+ * Station.alerts
+ */
+export type Station$alertsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Alert
+   */
+  select?: Prisma.AlertSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Alert
+   */
+  omit?: Prisma.AlertOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AlertInclude<ExtArgs> | null
+  where?: Prisma.AlertWhereInput
+  orderBy?: Prisma.AlertOrderByWithRelationInput | Prisma.AlertOrderByWithRelationInput[]
+  cursor?: Prisma.AlertWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AlertScalarFieldEnum | Prisma.AlertScalarFieldEnum[]
 }
 
 /**

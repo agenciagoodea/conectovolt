@@ -68,3 +68,52 @@ export enum WithdrawalStatus {
   COMPLETED = 'COMPLETED',
   CANCELLED = 'CANCELLED',
 }
+
+export enum AlertSeverity {
+  INFO = 'INFO',
+  WARNING = 'WARNING',
+  ERROR = 'ERROR',
+  CRITICAL = 'CRITICAL',
+}
+
+export enum AlertType {
+  CHARGER_OFFLINE = 'CHARGER_OFFLINE',
+  CHARGER_FAULT = 'CHARGER_FAULT',
+  HEARTBEAT_TIMEOUT = 'HEARTBEAT_TIMEOUT',
+  PAYMENT_FAILED = 'PAYMENT_FAILED',
+  SESSION_STUCK = 'SESSION_STUCK',
+  SECURITY = 'SECURITY',
+  MAINTENANCE_DUE = 'MAINTENANCE_DUE',
+  SYSTEM = 'SYSTEM',
+}
+
+export enum MaintenanceType {
+  CORRECTIVE = 'CORRECTIVE',
+  PREVENTIVE = 'PREVENTIVE',
+  INSPECTION = 'INSPECTION',
+}
+
+export enum MaintenanceStatus {
+  OPEN = 'OPEN',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+}
+
+export enum MaintenancePriority {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  CRITICAL = 'CRITICAL',
+}
+
+export enum TelemetryType {
+  ENERGY = 'ENERGY',
+  POWER = 'POWER',
+  VOLTAGE = 'VOLTAGE',
+  CURRENT = 'CURRENT',
+  TEMPERATURE = 'TEMPERATURE',
+  STATUS = 'STATUS',
+  ERROR = 'ERROR',
+  HEARTBEAT = 'HEARTBEAT',
+}

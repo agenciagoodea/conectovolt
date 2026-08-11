@@ -42,8 +42,78 @@ export class StationsService {
         chargers: true,
         tariff: true,
         company: { select: { id: true, name: true } },
+        images: { orderBy: { isPrimary: 'desc' }, take: 1 },
       },
     });
+  }
+
+  async findNearby(
+    latitude: number,
+    longitude: number,
+    radiusKm = 50,
+    limit = 20,
+  ) {
+    const stations = await this.prisma.client.$queryRawUnsafe<
+      Array<{
+        id: string;
+        name: string;
+        address: string;
+        city: string;
+        state: string;
+        latitude: number;
+        longitude: number;
+        status: string;
+        distance_km: number;
+        company_name: string;
+        charger_count: bigint;
+        available_count: bigint;
+        tariff_name: string | null;
+        price_per_kwh: number | null;
+      }>
+    >(
+      `
+      SELECT 
+        s.id,
+        s.name,
+        s.address,
+        s.city,
+        s.state,
+        s.latitude,
+        s.longitude,
+        s.status,
+        c.name as company_name,
+        ROUND(
+          6371 * ACOS(
+            COS(RADIANS(?)) * COS(RADIANS(s.latitude)) *
+            COS(RADIANS(s.longitude) - RADIANS(?)) +
+            SIN(RADIANS(?)) * SIN(RADIANS(s.latitude))
+          ), 2
+        ) AS distance_km,
+        (SELECT COUNT(*) FROM chargers ch WHERE ch.station_id = s.id) AS charger_count,
+        (SELECT COUNT(*) FROM chargers ch WHERE ch.station_id = s.id AND ch.status = 'ONLINE') AS available_count,
+        t.name AS tariff_name,
+        t.price_per_kwh
+      FROM stations s
+      LEFT JOIN companies c ON c.id = s.company_id
+      LEFT JOIN tariffs t ON t.id = s.tariff_id
+      WHERE s.status = 'ACTIVE'
+      HAVING distance_km <= ?
+      ORDER BY distance_km ASC
+      LIMIT ?
+      `,
+      latitude,
+      longitude,
+      latitude,
+      radiusKm,
+      limit,
+    );
+
+    return stations.map((s) => ({
+      ...s,
+      chargerCount: Number(s.charger_count),
+      availableCount: Number(s.available_count),
+      distanceKm: Number(s.distance_km),
+    }));
   }
 
   async findById(id: string, user?: { role: string; companyId?: string }) {
@@ -53,6 +123,7 @@ export class StationsService {
         chargers: { include: { connectors: true } },
         tariff: true,
         company: true,
+        images: { orderBy: { isPrimary: 'desc' } },
       },
     });
 

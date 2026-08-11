@@ -254,6 +254,8 @@ export type CompanyWhereInput = {
   wallet?: Prisma.XOR<Prisma.WalletNullableScalarRelationFilter, Prisma.WalletWhereInput> | null
   commissions?: Prisma.CommissionListRelationFilter
   subscription?: Prisma.XOR<Prisma.SubscriptionNullableScalarRelationFilter, Prisma.SubscriptionWhereInput> | null
+  alerts?: Prisma.AlertListRelationFilter
+  maintenance?: Prisma.MaintenanceRecordListRelationFilter
 }
 
 export type CompanyOrderByWithRelationInput = {
@@ -272,7 +274,8 @@ export type CompanyOrderByWithRelationInput = {
   wallet?: Prisma.WalletOrderByWithRelationInput
   commissions?: Prisma.CommissionOrderByRelationAggregateInput
   subscription?: Prisma.SubscriptionOrderByWithRelationInput
-  _relevance?: Prisma.CompanyOrderByRelevanceInput
+  alerts?: Prisma.AlertOrderByRelationAggregateInput
+  maintenance?: Prisma.MaintenanceRecordOrderByRelationAggregateInput
 }
 
 export type CompanyWhereUniqueInput = Prisma.AtLeast<{
@@ -294,6 +297,8 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   wallet?: Prisma.XOR<Prisma.WalletNullableScalarRelationFilter, Prisma.WalletWhereInput> | null
   commissions?: Prisma.CommissionListRelationFilter
   subscription?: Prisma.XOR<Prisma.SubscriptionNullableScalarRelationFilter, Prisma.SubscriptionWhereInput> | null
+  alerts?: Prisma.AlertListRelationFilter
+  maintenance?: Prisma.MaintenanceRecordListRelationFilter
 }, "id" | "document">
 
 export type CompanyOrderByWithAggregationInput = {
@@ -344,6 +349,8 @@ export type CompanyCreateInput = {
   wallet?: Prisma.WalletCreateNestedOneWithoutCompanyInput
   commissions?: Prisma.CommissionCreateNestedManyWithoutCompanyInput
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutCompanyInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateInput = {
@@ -362,6 +369,8 @@ export type CompanyUncheckedCreateInput = {
   wallet?: Prisma.WalletUncheckedCreateNestedOneWithoutCompanyInput
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutCompanyInput
   subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutCompanyInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUpdateInput = {
@@ -380,6 +389,8 @@ export type CompanyUpdateInput = {
   wallet?: Prisma.WalletUpdateOneWithoutCompanyNestedInput
   commissions?: Prisma.CommissionUpdateManyWithoutCompanyNestedInput
   subscription?: Prisma.SubscriptionUpdateOneWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateInput = {
@@ -398,6 +409,8 @@ export type CompanyUncheckedUpdateInput = {
   wallet?: Prisma.WalletUncheckedUpdateOneWithoutCompanyNestedInput
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutCompanyNestedInput
   subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateManyInput = {
@@ -439,12 +452,6 @@ export type CompanyUncheckedUpdateManyInput = {
 export type CompanyNullableScalarRelationFilter = {
   is?: Prisma.CompanyWhereInput | null
   isNot?: Prisma.CompanyWhereInput | null
-}
-
-export type CompanyOrderByRelevanceInput = {
-  fields: Prisma.CompanyOrderByRelevanceFieldEnum | Prisma.CompanyOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type CompanyCountOrderByAggregateInput = {
@@ -590,6 +597,36 @@ export type CompanyUpdateOneRequiredWithoutSubscriptionNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutSubscriptionInput, Prisma.CompanyUpdateWithoutSubscriptionInput>, Prisma.CompanyUncheckedUpdateWithoutSubscriptionInput>
 }
 
+export type CompanyCreateNestedOneWithoutAlertsInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutAlertsInput, Prisma.CompanyUncheckedCreateWithoutAlertsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutAlertsInput
+  connect?: Prisma.CompanyWhereUniqueInput
+}
+
+export type CompanyUpdateOneWithoutAlertsNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutAlertsInput, Prisma.CompanyUncheckedCreateWithoutAlertsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutAlertsInput
+  upsert?: Prisma.CompanyUpsertWithoutAlertsInput
+  disconnect?: Prisma.CompanyWhereInput | boolean
+  delete?: Prisma.CompanyWhereInput | boolean
+  connect?: Prisma.CompanyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutAlertsInput, Prisma.CompanyUpdateWithoutAlertsInput>, Prisma.CompanyUncheckedUpdateWithoutAlertsInput>
+}
+
+export type CompanyCreateNestedOneWithoutMaintenanceInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutMaintenanceInput, Prisma.CompanyUncheckedCreateWithoutMaintenanceInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutMaintenanceInput
+  connect?: Prisma.CompanyWhereUniqueInput
+}
+
+export type CompanyUpdateOneRequiredWithoutMaintenanceNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutMaintenanceInput, Prisma.CompanyUncheckedCreateWithoutMaintenanceInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutMaintenanceInput
+  upsert?: Prisma.CompanyUpsertWithoutMaintenanceInput
+  connect?: Prisma.CompanyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutMaintenanceInput, Prisma.CompanyUpdateWithoutMaintenanceInput>, Prisma.CompanyUncheckedUpdateWithoutMaintenanceInput>
+}
+
 export type CompanyCreateWithoutUsersInput = {
   id?: string
   name: string
@@ -605,6 +642,8 @@ export type CompanyCreateWithoutUsersInput = {
   wallet?: Prisma.WalletCreateNestedOneWithoutCompanyInput
   commissions?: Prisma.CommissionCreateNestedManyWithoutCompanyInput
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutCompanyInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutUsersInput = {
@@ -622,6 +661,8 @@ export type CompanyUncheckedCreateWithoutUsersInput = {
   wallet?: Prisma.WalletUncheckedCreateNestedOneWithoutCompanyInput
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutCompanyInput
   subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutCompanyInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutUsersInput = {
@@ -655,6 +696,8 @@ export type CompanyUpdateWithoutUsersInput = {
   wallet?: Prisma.WalletUpdateOneWithoutCompanyNestedInput
   commissions?: Prisma.CommissionUpdateManyWithoutCompanyNestedInput
   subscription?: Prisma.SubscriptionUpdateOneWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutUsersInput = {
@@ -672,6 +715,8 @@ export type CompanyUncheckedUpdateWithoutUsersInput = {
   wallet?: Prisma.WalletUncheckedUpdateOneWithoutCompanyNestedInput
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutCompanyNestedInput
   subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutStationsInput = {
@@ -689,6 +734,8 @@ export type CompanyCreateWithoutStationsInput = {
   wallet?: Prisma.WalletCreateNestedOneWithoutCompanyInput
   commissions?: Prisma.CommissionCreateNestedManyWithoutCompanyInput
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutCompanyInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutStationsInput = {
@@ -706,6 +753,8 @@ export type CompanyUncheckedCreateWithoutStationsInput = {
   wallet?: Prisma.WalletUncheckedCreateNestedOneWithoutCompanyInput
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutCompanyInput
   subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutCompanyInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutStationsInput = {
@@ -739,6 +788,8 @@ export type CompanyUpdateWithoutStationsInput = {
   wallet?: Prisma.WalletUpdateOneWithoutCompanyNestedInput
   commissions?: Prisma.CommissionUpdateManyWithoutCompanyNestedInput
   subscription?: Prisma.SubscriptionUpdateOneWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutStationsInput = {
@@ -756,6 +807,8 @@ export type CompanyUncheckedUpdateWithoutStationsInput = {
   wallet?: Prisma.WalletUncheckedUpdateOneWithoutCompanyNestedInput
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutCompanyNestedInput
   subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutTariffsInput = {
@@ -773,6 +826,8 @@ export type CompanyCreateWithoutTariffsInput = {
   wallet?: Prisma.WalletCreateNestedOneWithoutCompanyInput
   commissions?: Prisma.CommissionCreateNestedManyWithoutCompanyInput
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutCompanyInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutTariffsInput = {
@@ -790,6 +845,8 @@ export type CompanyUncheckedCreateWithoutTariffsInput = {
   wallet?: Prisma.WalletUncheckedCreateNestedOneWithoutCompanyInput
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutCompanyInput
   subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutCompanyInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutTariffsInput = {
@@ -823,6 +880,8 @@ export type CompanyUpdateWithoutTariffsInput = {
   wallet?: Prisma.WalletUpdateOneWithoutCompanyNestedInput
   commissions?: Prisma.CommissionUpdateManyWithoutCompanyNestedInput
   subscription?: Prisma.SubscriptionUpdateOneWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutTariffsInput = {
@@ -840,6 +899,8 @@ export type CompanyUncheckedUpdateWithoutTariffsInput = {
   wallet?: Prisma.WalletUncheckedUpdateOneWithoutCompanyNestedInput
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutCompanyNestedInput
   subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutCommissionsInput = {
@@ -857,6 +918,8 @@ export type CompanyCreateWithoutCommissionsInput = {
   tariffs?: Prisma.TariffCreateNestedManyWithoutCompanyInput
   wallet?: Prisma.WalletCreateNestedOneWithoutCompanyInput
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutCompanyInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutCommissionsInput = {
@@ -874,6 +937,8 @@ export type CompanyUncheckedCreateWithoutCommissionsInput = {
   tariffs?: Prisma.TariffUncheckedCreateNestedManyWithoutCompanyInput
   wallet?: Prisma.WalletUncheckedCreateNestedOneWithoutCompanyInput
   subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutCompanyInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutCommissionsInput = {
@@ -907,6 +972,8 @@ export type CompanyUpdateWithoutCommissionsInput = {
   tariffs?: Prisma.TariffUpdateManyWithoutCompanyNestedInput
   wallet?: Prisma.WalletUpdateOneWithoutCompanyNestedInput
   subscription?: Prisma.SubscriptionUpdateOneWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutCommissionsInput = {
@@ -924,6 +991,8 @@ export type CompanyUncheckedUpdateWithoutCommissionsInput = {
   tariffs?: Prisma.TariffUncheckedUpdateManyWithoutCompanyNestedInput
   wallet?: Prisma.WalletUncheckedUpdateOneWithoutCompanyNestedInput
   subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutWalletInput = {
@@ -941,6 +1010,8 @@ export type CompanyCreateWithoutWalletInput = {
   tariffs?: Prisma.TariffCreateNestedManyWithoutCompanyInput
   commissions?: Prisma.CommissionCreateNestedManyWithoutCompanyInput
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutCompanyInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutWalletInput = {
@@ -958,6 +1029,8 @@ export type CompanyUncheckedCreateWithoutWalletInput = {
   tariffs?: Prisma.TariffUncheckedCreateNestedManyWithoutCompanyInput
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutCompanyInput
   subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutCompanyInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutWalletInput = {
@@ -991,6 +1064,8 @@ export type CompanyUpdateWithoutWalletInput = {
   tariffs?: Prisma.TariffUpdateManyWithoutCompanyNestedInput
   commissions?: Prisma.CommissionUpdateManyWithoutCompanyNestedInput
   subscription?: Prisma.SubscriptionUpdateOneWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutWalletInput = {
@@ -1008,6 +1083,8 @@ export type CompanyUncheckedUpdateWithoutWalletInput = {
   tariffs?: Prisma.TariffUncheckedUpdateManyWithoutCompanyNestedInput
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutCompanyNestedInput
   subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutSubscriptionInput = {
@@ -1025,6 +1102,8 @@ export type CompanyCreateWithoutSubscriptionInput = {
   tariffs?: Prisma.TariffCreateNestedManyWithoutCompanyInput
   wallet?: Prisma.WalletCreateNestedOneWithoutCompanyInput
   commissions?: Prisma.CommissionCreateNestedManyWithoutCompanyInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutSubscriptionInput = {
@@ -1042,6 +1121,8 @@ export type CompanyUncheckedCreateWithoutSubscriptionInput = {
   tariffs?: Prisma.TariffUncheckedCreateNestedManyWithoutCompanyInput
   wallet?: Prisma.WalletUncheckedCreateNestedOneWithoutCompanyInput
   commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutCompanyInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutSubscriptionInput = {
@@ -1075,6 +1156,8 @@ export type CompanyUpdateWithoutSubscriptionInput = {
   tariffs?: Prisma.TariffUpdateManyWithoutCompanyNestedInput
   wallet?: Prisma.WalletUpdateOneWithoutCompanyNestedInput
   commissions?: Prisma.CommissionUpdateManyWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutSubscriptionInput = {
@@ -1092,6 +1175,192 @@ export type CompanyUncheckedUpdateWithoutSubscriptionInput = {
   tariffs?: Prisma.TariffUncheckedUpdateManyWithoutCompanyNestedInput
   wallet?: Prisma.WalletUncheckedUpdateOneWithoutCompanyNestedInput
   commissions?: Prisma.CommissionUncheckedUpdateManyWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyCreateWithoutAlertsInput = {
+  id?: string
+  name: string
+  document: string
+  email?: string | null
+  phone?: string | null
+  status?: string
+  commissionPercent?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserCreateNestedManyWithoutCompanyInput
+  stations?: Prisma.StationCreateNestedManyWithoutCompanyInput
+  tariffs?: Prisma.TariffCreateNestedManyWithoutCompanyInput
+  wallet?: Prisma.WalletCreateNestedOneWithoutCompanyInput
+  commissions?: Prisma.CommissionCreateNestedManyWithoutCompanyInput
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyUncheckedCreateWithoutAlertsInput = {
+  id?: string
+  name: string
+  document: string
+  email?: string | null
+  phone?: string | null
+  status?: string
+  commissionPercent?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput
+  stations?: Prisma.StationUncheckedCreateNestedManyWithoutCompanyInput
+  tariffs?: Prisma.TariffUncheckedCreateNestedManyWithoutCompanyInput
+  wallet?: Prisma.WalletUncheckedCreateNestedOneWithoutCompanyInput
+  commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutCompanyInput
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutCompanyInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyCreateOrConnectWithoutAlertsInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutAlertsInput, Prisma.CompanyUncheckedCreateWithoutAlertsInput>
+}
+
+export type CompanyUpsertWithoutAlertsInput = {
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutAlertsInput, Prisma.CompanyUncheckedUpdateWithoutAlertsInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutAlertsInput, Prisma.CompanyUncheckedCreateWithoutAlertsInput>
+  where?: Prisma.CompanyWhereInput
+}
+
+export type CompanyUpdateToOneWithWhereWithoutAlertsInput = {
+  where?: Prisma.CompanyWhereInput
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutAlertsInput, Prisma.CompanyUncheckedUpdateWithoutAlertsInput>
+}
+
+export type CompanyUpdateWithoutAlertsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  document?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUpdateManyWithoutCompanyNestedInput
+  stations?: Prisma.StationUpdateManyWithoutCompanyNestedInput
+  tariffs?: Prisma.TariffUpdateManyWithoutCompanyNestedInput
+  wallet?: Prisma.WalletUpdateOneWithoutCompanyNestedInput
+  commissions?: Prisma.CommissionUpdateManyWithoutCompanyNestedInput
+  subscription?: Prisma.SubscriptionUpdateOneWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateWithoutAlertsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  document?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput
+  stations?: Prisma.StationUncheckedUpdateManyWithoutCompanyNestedInput
+  tariffs?: Prisma.TariffUncheckedUpdateManyWithoutCompanyNestedInput
+  wallet?: Prisma.WalletUncheckedUpdateOneWithoutCompanyNestedInput
+  commissions?: Prisma.CommissionUncheckedUpdateManyWithoutCompanyNestedInput
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutCompanyNestedInput
+  maintenance?: Prisma.MaintenanceRecordUncheckedUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyCreateWithoutMaintenanceInput = {
+  id?: string
+  name: string
+  document: string
+  email?: string | null
+  phone?: string | null
+  status?: string
+  commissionPercent?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserCreateNestedManyWithoutCompanyInput
+  stations?: Prisma.StationCreateNestedManyWithoutCompanyInput
+  tariffs?: Prisma.TariffCreateNestedManyWithoutCompanyInput
+  wallet?: Prisma.WalletCreateNestedOneWithoutCompanyInput
+  commissions?: Prisma.CommissionCreateNestedManyWithoutCompanyInput
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutCompanyInput
+  alerts?: Prisma.AlertCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyUncheckedCreateWithoutMaintenanceInput = {
+  id?: string
+  name: string
+  document: string
+  email?: string | null
+  phone?: string | null
+  status?: string
+  commissionPercent?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput
+  stations?: Prisma.StationUncheckedCreateNestedManyWithoutCompanyInput
+  tariffs?: Prisma.TariffUncheckedCreateNestedManyWithoutCompanyInput
+  wallet?: Prisma.WalletUncheckedCreateNestedOneWithoutCompanyInput
+  commissions?: Prisma.CommissionUncheckedCreateNestedManyWithoutCompanyInput
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutCompanyInput
+  alerts?: Prisma.AlertUncheckedCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyCreateOrConnectWithoutMaintenanceInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutMaintenanceInput, Prisma.CompanyUncheckedCreateWithoutMaintenanceInput>
+}
+
+export type CompanyUpsertWithoutMaintenanceInput = {
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutMaintenanceInput, Prisma.CompanyUncheckedUpdateWithoutMaintenanceInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutMaintenanceInput, Prisma.CompanyUncheckedCreateWithoutMaintenanceInput>
+  where?: Prisma.CompanyWhereInput
+}
+
+export type CompanyUpdateToOneWithWhereWithoutMaintenanceInput = {
+  where?: Prisma.CompanyWhereInput
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutMaintenanceInput, Prisma.CompanyUncheckedUpdateWithoutMaintenanceInput>
+}
+
+export type CompanyUpdateWithoutMaintenanceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  document?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUpdateManyWithoutCompanyNestedInput
+  stations?: Prisma.StationUpdateManyWithoutCompanyNestedInput
+  tariffs?: Prisma.TariffUpdateManyWithoutCompanyNestedInput
+  wallet?: Prisma.WalletUpdateOneWithoutCompanyNestedInput
+  commissions?: Prisma.CommissionUpdateManyWithoutCompanyNestedInput
+  subscription?: Prisma.SubscriptionUpdateOneWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateWithoutMaintenanceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  document?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput
+  stations?: Prisma.StationUncheckedUpdateManyWithoutCompanyNestedInput
+  tariffs?: Prisma.TariffUncheckedUpdateManyWithoutCompanyNestedInput
+  wallet?: Prisma.WalletUncheckedUpdateOneWithoutCompanyNestedInput
+  commissions?: Prisma.CommissionUncheckedUpdateManyWithoutCompanyNestedInput
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutCompanyNestedInput
+  alerts?: Prisma.AlertUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 
@@ -1104,6 +1373,8 @@ export type CompanyCountOutputType = {
   stations: number
   tariffs: number
   commissions: number
+  alerts: number
+  maintenance: number
 }
 
 export type CompanyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1111,6 +1382,8 @@ export type CompanyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   stations?: boolean | CompanyCountOutputTypeCountStationsArgs
   tariffs?: boolean | CompanyCountOutputTypeCountTariffsArgs
   commissions?: boolean | CompanyCountOutputTypeCountCommissionsArgs
+  alerts?: boolean | CompanyCountOutputTypeCountAlertsArgs
+  maintenance?: boolean | CompanyCountOutputTypeCountMaintenanceArgs
 }
 
 /**
@@ -1151,6 +1424,20 @@ export type CompanyCountOutputTypeCountCommissionsArgs<ExtArgs extends runtime.T
   where?: Prisma.CommissionWhereInput
 }
 
+/**
+ * CompanyCountOutputType without action
+ */
+export type CompanyCountOutputTypeCountAlertsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AlertWhereInput
+}
+
+/**
+ * CompanyCountOutputType without action
+ */
+export type CompanyCountOutputTypeCountMaintenanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MaintenanceRecordWhereInput
+}
+
 
 export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1168,10 +1455,34 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   wallet?: boolean | Prisma.Company$walletArgs<ExtArgs>
   commissions?: boolean | Prisma.Company$commissionsArgs<ExtArgs>
   subscription?: boolean | Prisma.Company$subscriptionArgs<ExtArgs>
+  alerts?: boolean | Prisma.Company$alertsArgs<ExtArgs>
+  maintenance?: boolean | Prisma.Company$maintenanceArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["company"]>
 
+export type CompanySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  name?: boolean
+  document?: boolean
+  email?: boolean
+  phone?: boolean
+  status?: boolean
+  commissionPercent?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+}, ExtArgs["result"]["company"]>
 
+export type CompanySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  name?: boolean
+  document?: boolean
+  email?: boolean
+  phone?: boolean
+  status?: boolean
+  commissionPercent?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+}, ExtArgs["result"]["company"]>
 
 export type CompanySelectScalar = {
   id?: boolean
@@ -1193,8 +1504,12 @@ export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   wallet?: boolean | Prisma.Company$walletArgs<ExtArgs>
   commissions?: boolean | Prisma.Company$commissionsArgs<ExtArgs>
   subscription?: boolean | Prisma.Company$subscriptionArgs<ExtArgs>
+  alerts?: boolean | Prisma.Company$alertsArgs<ExtArgs>
+  maintenance?: boolean | Prisma.Company$maintenanceArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }
+export type CompanyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type CompanyIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Company"
@@ -1205,6 +1520,8 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     wallet: Prisma.$WalletPayload<ExtArgs> | null
     commissions: Prisma.$CommissionPayload<ExtArgs>[]
     subscription: Prisma.$SubscriptionPayload<ExtArgs> | null
+    alerts: Prisma.$AlertPayload<ExtArgs>[]
+    maintenance: Prisma.$MaintenanceRecordPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1334,6 +1651,30 @@ export interface CompanyDelegate<ExtArgs extends runtime.Types.Extensions.Intern
   createMany<T extends CompanyCreateManyArgs>(args?: Prisma.SelectSubset<T, CompanyCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Companies and returns the data saved in the database.
+   * @param {CompanyCreateManyAndReturnArgs} args - Arguments to create many Companies.
+   * @example
+   * // Create many Companies
+   * const company = await prisma.company.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Companies and only return the `id`
+   * const companyWithIdOnly = await prisma.company.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends CompanyCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, CompanyCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Company.
    * @param {CompanyDeleteArgs} args - Arguments to delete one Company.
    * @example
@@ -1396,6 +1737,36 @@ export interface CompanyDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    * 
    */
   updateMany<T extends CompanyUpdateManyArgs>(args: Prisma.SelectSubset<T, CompanyUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Companies and returns the data updated in the database.
+   * @param {CompanyUpdateManyAndReturnArgs} args - Arguments to update many Companies.
+   * @example
+   * // Update many Companies
+   * const company = await prisma.company.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Companies and only return the `id`
+   * const companyWithIdOnly = await prisma.company.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends CompanyUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, CompanyUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Company.
@@ -1562,6 +1933,8 @@ export interface Prisma__CompanyClient<T, Null = never, ExtArgs extends runtime.
   wallet<T extends Prisma.Company$walletArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$walletArgs<ExtArgs>>): Prisma.Prisma__WalletClient<runtime.Types.Result.GetResult<Prisma.$WalletPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   commissions<T extends Prisma.Company$commissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$commissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   subscription<T extends Prisma.Company$subscriptionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$subscriptionArgs<ExtArgs>>): Prisma.Prisma__SubscriptionClient<runtime.Types.Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  alerts<T extends Prisma.Company$alertsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$alertsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AlertPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  maintenance<T extends Prisma.Company$maintenanceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$maintenanceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaintenanceRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1834,7 +2207,24 @@ export type CompanyCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data used to create many Companies.
    */
   data: Prisma.CompanyCreateManyInput | Prisma.CompanyCreateManyInput[]
-  skipDuplicates?: boolean
+}
+
+/**
+ * Company createManyAndReturn
+ */
+export type CompanyCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Company
+   */
+  select?: Prisma.CompanySelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Company
+   */
+  omit?: Prisma.CompanyOmit<ExtArgs> | null
+  /**
+   * The data used to create many Companies.
+   */
+  data: Prisma.CompanyCreateManyInput | Prisma.CompanyCreateManyInput[]
 }
 
 /**
@@ -1867,6 +2257,32 @@ export type CompanyUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
  * Company updateMany
  */
 export type CompanyUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * The data used to update Companies.
+   */
+  data: Prisma.XOR<Prisma.CompanyUpdateManyMutationInput, Prisma.CompanyUncheckedUpdateManyInput>
+  /**
+   * Filter which Companies to update
+   */
+  where?: Prisma.CompanyWhereInput
+  /**
+   * Limit how many Companies to update.
+   */
+  limit?: number
+}
+
+/**
+ * Company updateManyAndReturn
+ */
+export type CompanyUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Company
+   */
+  select?: Prisma.CompanySelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Company
+   */
+  omit?: Prisma.CompanyOmit<ExtArgs> | null
   /**
    * The data used to update Companies.
    */
@@ -2079,6 +2495,54 @@ export type Company$subscriptionArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   include?: Prisma.SubscriptionInclude<ExtArgs> | null
   where?: Prisma.SubscriptionWhereInput
+}
+
+/**
+ * Company.alerts
+ */
+export type Company$alertsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Alert
+   */
+  select?: Prisma.AlertSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Alert
+   */
+  omit?: Prisma.AlertOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AlertInclude<ExtArgs> | null
+  where?: Prisma.AlertWhereInput
+  orderBy?: Prisma.AlertOrderByWithRelationInput | Prisma.AlertOrderByWithRelationInput[]
+  cursor?: Prisma.AlertWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AlertScalarFieldEnum | Prisma.AlertScalarFieldEnum[]
+}
+
+/**
+ * Company.maintenance
+ */
+export type Company$maintenanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MaintenanceRecord
+   */
+  select?: Prisma.MaintenanceRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MaintenanceRecord
+   */
+  omit?: Prisma.MaintenanceRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MaintenanceRecordInclude<ExtArgs> | null
+  where?: Prisma.MaintenanceRecordWhereInput
+  orderBy?: Prisma.MaintenanceRecordOrderByWithRelationInput | Prisma.MaintenanceRecordOrderByWithRelationInput[]
+  cursor?: Prisma.MaintenanceRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MaintenanceRecordScalarFieldEnum | Prisma.MaintenanceRecordScalarFieldEnum[]
 }
 
 /**
