@@ -391,6 +391,10 @@ export class ChargingService {
       orderBy: { createdAt: 'desc' },
     });
 
-    return companyTariff || { name: 'Default', pricePerKwh: 2.5 };
+    if (!companyTariff) {
+      throw new BadRequestException('No active tariff found for this company. Cannot calculate charging cost.');
+    }
+
+    return companyTariff;
   }
 }

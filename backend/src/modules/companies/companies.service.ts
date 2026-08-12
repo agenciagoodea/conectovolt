@@ -141,17 +141,19 @@ export class CompaniesService {
         select: { id: true },
       });
       for (const c of chargers) {
-        await this.prisma.connector.deleteMany({ where: { chargerId: c.id } });
-        await this.prisma.chargingSession.updateMany({
+        const sessions = await this.prisma.chargingSession.findMany({
           where: { chargerId: c.id },
-          data: { chargerId: 'deleted' },
+          select: { id: true },
         });
+        for (const session of sessions) {
+          await this.prisma.commission.deleteMany({ where: { paymentId: session.id } });
+          await this.prisma.payment.deleteMany({ where: { sessionId: session.id } });
+        }
+        await this.prisma.chargingSession.deleteMany({ where: { chargerId: c.id } });
+        await this.prisma.connector.deleteMany({ where: { chargerId: c.id } });
         await this.prisma.charger.delete({ where: { id: c.id } });
       }
-      await this.prisma.chargingSession.updateMany({
-        where: { stationId: s.id },
-        data: { stationId: 'deleted' },
-      });
+      await this.prisma.chargingSession.deleteMany({ where: { stationId: s.id } });
       await this.prisma.station.delete({ where: { id: s.id } });
     }
 
