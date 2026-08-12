@@ -373,6 +373,7 @@ export class PaymentsService {
 
   async handleWebhook(
     data: {
+      id?: string | number;
       action?: string;
       data?: { id?: string | number };
       type?: string;
@@ -380,18 +381,26 @@ export class PaymentsService {
     },
     requestId?: string,
   ) {
-    this.logger.log(`Webhook received: ${JSON.stringify(data)}`);
+    this.logger.log(
+      `Webhook received (x-request-id: ${requestId || 'none'}): ${JSON.stringify(data)}`,
+    );
 
-    const eventType = data.type || data.action || 'unknown';
-    const resourceId = data.data?.id ? String(data.data.id) : undefined;
+    // 1. Extração rigorosa do identificador oficial da notificação (body.id)
+    const notificationId =
+      data.id !== undefined && data.id !== null ? String(data.id) : undefined;
+
+    if (!notificationId) {
+      this.logger.warn('Webhook rejected: missing notification body.id');
+      throw new BadRequestException('Missing notification id');
+    }
+
     const provider = 'MERCADO_PAGO';
-
-    // Determina o identificador único do evento para garantir idempotência formal
-    // Se o header x-request-id estiver presente, usa req_<requestId>
-    // Se ausente, compõe com tipo do evento + id do recurso + timestamp se disponível
-    const externalEventId = requestId
-      ? `req_${requestId}`
-      : `mp_${eventType}_${resourceId || 'no_resource'}_${Date.now()}`;
+    const externalEventId = notificationId;
+    const eventType = data.type || data.action || 'unknown';
+    const resourceId =
+      data.data?.id !== undefined && data.data?.id !== null
+        ? String(data.data.id)
+        : undefined;
 
     // Sanitiza o payload removendo campos sensíveis se existirem
     const sanitizedPayload = JSON.stringify(data, (key, value) => {
@@ -407,7 +416,7 @@ export class PaymentsService {
 
     let webhookEvent: { id: string; status: string } | null = null;
 
-    // 1. Tenta registrar o evento no banco (status RECEIVED)
+    // 2. Tenta registrar o evento no banco (status RECEIVED)
     try {
       webhookEvent = await this.prisma.webhookEvent.create({
         data: {
@@ -427,7 +436,7 @@ export class PaymentsService {
 
       if (isUniqueConflict) {
         this.logger.log(
-          `Duplicate WebhookEvent ignored (externalEventId: ${externalEventId})`,
+          `Existing WebhookEvent detected (externalEventId: ${externalEventId})`,
         );
 
         // Busca o registro existente para verificar o status
@@ -440,17 +449,28 @@ export class PaymentsService {
           },
         });
 
-        // Se já está PROCESSED ou PROCESSING, ignora reprocessamento (idempotência formal)
-        if (
-          existing &&
-          (existing.status === 'PROCESSED' || existing.status === 'PROCESSING')
-        ) {
-          return { received: true, idempotent: true };
-        }
+        if (existing) {
+          // Se já está PROCESSED -> ignora reprocessamento (resposta idempotente)
+          if (existing.status === 'PROCESSED') {
+            return { received: true, idempotent: true };
+          }
 
-        webhookEvent = existing;
+          // Se está em PROCESSING -> evita concorrência / processamento financeiro duplicado
+          if (existing.status === 'PROCESSING') {
+            return { received: true, processing: true };
+          }
+
+          // Se está FAILED -> PERMITE REPROCESSAMENTO (transiciona FAILED -> PROCESSING)
+          if (existing.status === 'FAILED') {
+            this.logger.log(
+              `Reprocessing FAILED WebhookEvent (id: ${existing.id}, externalEventId: ${externalEventId})`,
+            );
+            webhookEvent = existing;
+          }
+        }
       } else {
         this.logger.warn(`Failed to create WebhookEvent: ${err?.message}`);
+        throw error;
       }
     }
 

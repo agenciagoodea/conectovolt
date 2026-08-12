@@ -44,6 +44,10 @@ export class CreatePaymentDto {
 export class PaymentWebhookDto {
   @ApiPropertyOptional()
   @IsOptional()
+  id?: string | number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   action?: string;
 
