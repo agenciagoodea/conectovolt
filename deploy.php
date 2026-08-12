@@ -54,8 +54,8 @@ $output[] = "\n.env configurado";
 
 // Backend - Install & Build
 run("cd $backend && npm install");
-run("cd $backend && npx prisma generate --schema=prisma/schema.mysql.prisma");
-run("cd $backend && npx prisma db push --schema=prisma/schema.mysql.prisma");
+run("cd $backend && npx prisma generate");
+run("cd $backend && npx prisma migrate deploy");
 run("cd $backend && npm run build");
 
 // Frontend - Install & Build (com API URL correta)

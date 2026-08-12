@@ -9,7 +9,7 @@ COPY prisma/ ./prisma/
 COPY src/ ./src/
 COPY tsconfig.json tsconfig.build.json nest-cli.json ./
 
-RUN npx prisma generate --schema=prisma/schema.mysql.prisma
+RUN npx prisma generate
 RUN npm run build
 
 FROM node:22-alpine AS production
@@ -24,4 +24,4 @@ COPY --from=builder /app/prisma.config.ts ./
 
 EXPOSE 3000
 
-CMD sh -c "npx prisma migrate deploy --schema=prisma/schema.mysql.prisma && node dist/src/main.js"
+CMD sh -c "npx prisma migrate deploy && node dist/src/main.js"

@@ -16,12 +16,12 @@ cp "$BASE_DIR/backend/.env.production.local" "$BASE_DIR/backend/.env"
 bash "$BASE_DIR/ops/preflight-production.sh" "$BASE_DIR/backend/.env.production.local"
 cd $BASE_DIR/backend
 npm install
-npx prisma generate --schema=prisma/schema.mysql.prisma
-npx prisma migrate deploy --schema=prisma/schema.mysql.prisma
+npx prisma generate
+npx prisma migrate deploy
 npm run build
 
 echo "3. Executando Seed de dados no Banco MySQL..."
-npx prisma db seed --schema=prisma/schema.mysql.prisma
+npx prisma db seed
 
 echo "4. Instalando dependências e compilando o Frontend (Next.js)..."
 cd $BASE_DIR/frontend

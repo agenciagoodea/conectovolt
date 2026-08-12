@@ -345,45 +345,220 @@ Após configuração, o backend deverá possuir:
 ✅ Swagger funcionando.
 
 ✅ Estrutura modular criada.
+NODE_ENV=
+```
+
+---
+
+# Banco de Dados
+
+Inicialização:
+
+Criar banco PostgreSQL.
+
+Executar:
+
+Prisma Init.
+
+Criar schema inicial.
+
+Executar primeira migration.
+
+---
+
+# Configuração Prisma
+
+Obrigatório:
+
+- Schema organizado.
+- Migrations versionadas.
+- Seed inicial.
+
+---
+
+# Arquitetura dos Módulos
+
+Cada módulo deve seguir:
+
+```
+module/
+
+module.controller.ts
+
+module.service.ts
+
+module.repository.ts
+
+module.module.ts
+
+dto/
+
+entities/
+
+tests/
+
+```
+
+---
+
+# Primeiro Módulos do MVP
+
+Ordem de criação:
+
+## 1 - Auth
+
+Responsável:
+
+- Login.
+- Cadastro.
+- JWT.
+- Permissões.
+
+
+## 2 - Users
+
+Responsável:
+
+- Usuários.
+- Perfis.
+
+
+## 3 - Companies
+
+Responsável:
+
+- Empresas operadoras.
+
+
+## 4 - Stations
+
+Responsável:
+
+- Postos.
+
+
+## 5 - Chargers
+
+Responsável:
+
+- Equipamentos.
+
+
+## 6 - Charging
+
+Responsável:
+
+- Sessões.
+
+
+## 7 - Payments
+
+Responsável:
+
+- Pagamentos.
+
+
+## 8 - Commissions
+
+Responsável:
+
+- Comissão da plataforma.
+
+
+---
+
+# Padrão de Código
+
+Obrigatório:
+
+TypeScript Strict.
+
+Utilizar:
+
+- Interfaces.
+- DTOs.
+- Dependency Injection.
+- Exceptions NestJS.
+
+Evitar:
+
+- Any.
+- Código duplicado.
+- Funções gigantes.
+
+---
+
+# Tratamento de Erros
+
+Toda exceção deve retornar:
+
+- Código HTTP correto.
+- Mensagem clara.
+- Log interno.
+
+---
+
+# Logs
+
+Registrar:
+
+- Login.
+- Erros.
+- Pagamentos.
+- Alterações importantes.
+
+---
+
+# Swagger
+
+Disponível em:
+
+```
+/api/docs
+```
+
+Toda rota deve possuir:
+
+- Descrição.
+- Request.
+- Response.
+- Erros possíveis.
+
+---
+
+# Primeira Entrega Backend
+
+Após configuração, o backend deverá possuir:
+
+✅ Projeto NestJS funcionando.
+
+✅ Banco conectado.
+
+✅ Prisma configurado.
+
+✅ Swagger funcionando.
+
+✅ Estrutura modular criada.
 
 Ainda sem regras de negócio.
 
 ---
 
-# Suporte Multi-Banco (SQLite em Dev e MySQL em Produção)
+# Suporte ao Banco de Dados Oficial (MySQL / MariaDB)
 
-O backend possui suporte nativo a dois provedores de banco de dados:
+A plataforma utiliza **MySQL / MariaDB** como banco oficial em Desenvolvimento, Staging e Produção.
 
-### 1. Desenvolvimento (Local)
-- **Provedor:** SQLite
+- **Provedor:** MySQL
 - **Configuração no `.env`:**
   ```env
-  DB_PROVIDER=sqlite
-  DATABASE_URL="file:./prisma/dev.db"
+  DB_PROVIDER=mysql
+  DATABASE_URL="mysql://usuario:senha@host:3306/conectovolt"
   ```
-- **Schema:** `prisma/schema.prisma`
-- **Comandos:**
+- **Schema Único:** `prisma/schema.prisma`
+- **Migrations Oficiais:** `prisma/migrations_mysql/`
+- **Comandos Oficiais:**
   ```bash
   npm run prisma:generate
-  npm run prisma:migrate
+  npx prisma validate
+  npx prisma migrate status
   ```
-
----
-
-### 2. Produção (MySQL / cPanel)
-- **Provedor:** MySQL
-- **Configuração no `.env.production`:**
-  ```env
-  DB_PROVIDER=mysql
-  DATABASE_URL=mysql://usuario:senha@host_cpanel:3306/nome_banco
-  ```
-- **Schema:** `prisma/schema.mysql.prisma`
-- **Comandos de Migração/Geração para cPanel:**
-  ```bash
-  npm run prisma:generate:mysql
-  # Ou migração inicial:
-   npx prisma migrate dev --schema=prisma/schema.mysql.prisma --name init
-   ```
-
-Para comparar migrations MySQL localmente, defina também um banco de sombra isolado em `SHADOW_DATABASE_URL`. Nunca use o banco de produção como shadow database.
-

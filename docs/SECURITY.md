@@ -38,7 +38,7 @@ bash ops/preflight-production.sh backend/.env.production.local
 npm test -- --runInBand
 npm run test:e2e -- --runInBand
 npm audit --omit=dev --audit-level=high
-npx prisma migrate deploy --schema=prisma/schema.mysql.prisma
+npx prisma migrate deploy
 ```
 
 Also validate the critical driver flow with a real gateway sandbox and a registered charger.

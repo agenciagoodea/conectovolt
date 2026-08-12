@@ -28,12 +28,12 @@ curl.exe -k -s -u "%USER%:%PASS%" ^
 echo [3/5] Gerando Prisma Client MySQL...
 curl.exe -k -s -u "%USER%:%PASS%" ^
   "https://%HOST%/json-api/cpanel?cpanel_jsonapi_module=CommandManager&cpanel_jsonapi_func=execute&cpanel_jsonapi_version=1" ^
-  --data-urlencode "command=cd %BASEDIR%/backend && npx prisma generate --schema=prisma/schema.mysql.prisma && echo PRISMA_GEN_OK"
+  --data-urlencode "command=cd %BASEDIR%/backend && npx prisma generate && echo PRISMA_GEN_OK"
 
 echo [4/5] Aplicando migrations no banco MySQL...
 curl.exe -k -s -u "%USER%:%PASS%" ^
   "https://%HOST%/json-api/cpanel?cpanel_jsonapi_module=CommandManager&cpanel_jsonapi_func=execute&cpanel_jsonapi_version=1" ^
-  --data-urlencode "command=cd %BASEDIR%/backend && npx prisma migrate deploy --schema=prisma/schema.mysql.prisma && echo DB_MIGRATE_OK"
+  --data-urlencode "command=cd %BASEDIR%/backend && npx prisma migrate deploy && echo DB_MIGRATE_OK"
 
 echo [5/5] Compilando backend NestJS...
 curl.exe -k -s -u "%USER%:%PASS%" ^

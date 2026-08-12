@@ -47,5 +47,5 @@ if [ ! -f "$ROOT_DIR/backend/prisma/migrations_mysql/migration_lock.toml" ] ||
   exit 1
 fi
 
-(cd "$ROOT_DIR/backend" && npx prisma validate --schema=prisma/schema.mysql.prisma >/dev/null)
+(cd "$ROOT_DIR/backend" && npx prisma validate --schema=prisma/schema.prisma >/dev/null)
 echo "Production preflight passed"

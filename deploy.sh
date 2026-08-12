@@ -43,7 +43,7 @@ echo "Starting services..."
 docker compose -f docker-compose.prod.yml up -d
 
 echo "Running migrations..."
-docker compose -f docker-compose.prod.yml exec -T backend npx prisma migrate deploy --schema=prisma/schema.mysql.prisma
+docker compose -f docker-compose.prod.yml exec -T backend npx prisma migrate deploy
 
 echo ""
 echo "=== Deploy Complete ==="
