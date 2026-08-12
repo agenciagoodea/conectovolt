@@ -1,6 +1,6 @@
 import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MercadoPagoConfig, Payment } from 'mercadopago';
+import { MercadoPagoConfig, Payment, PaymentRefund } from 'mercadopago';
 
 @Injectable()
 export class MercadoPagoService {
@@ -139,16 +139,38 @@ export class MercadoPagoService {
     };
   }
 
+  /**
+   * Solicita o estorno total de um pagamento aprovado no Mercado Pago.
+   *
+   * Utiliza PaymentRefund.total() — operação de REFUND real, diferente de
+   * cancelamento (Payment.cancel). Cancelamentos se aplicam apenas a
+   * pagamentos ainda não processados/aprovados.
+   *
+   * Em desenvolvimento (sem token): retorna simulação apenas para facilitar
+   * testes locais. Em produção sem token: lança erro (assertNotProductionWithoutCredentials).
+   */
   async refundPayment(paymentId: number) {
     this.assertNotProductionWithoutCredentials();
 
     if (!this.isConfigured) {
-      return { id: paymentId, status: 'refunded' };
+      // Simulação permitida SOMENTE em desenvolvimento/teste
+      return this.simulateRefund(paymentId);
     }
 
-    const payment = new Payment(this.client!);
-    const result = await payment.cancel({ id: paymentId });
-    return { id: result.id, status: result.status };
+    const refund = new PaymentRefund(this.client!);
+    const result = await refund.total({ payment_id: paymentId });
+
+    this.logger.log(
+      `Refund created for payment ${paymentId}: refund_id=${result.id} status=${result.status}`,
+    );
+
+    return {
+      id: result.id,
+      paymentId: result.payment_id,
+      status: result.status,
+      amount: result.amount,
+      dateCreated: result.date_created,
+    };
   }
 
   private simulatePixPayment(amount: number, description: string) {
@@ -176,6 +198,24 @@ export class MercadoPagoService {
       id: simulatedId,
       status: 'approved',
       amount,
+      dateCreated: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Simulação de estorno para ambiente de DESENVOLVIMENTO e TESTE.
+   * NÃO deve ser executado em produção (bloqueado por assertNotProductionWithoutCredentials).
+   */
+  private simulateRefund(paymentId: number) {
+    const simulatedRefundId = Math.floor(Math.random() * 900000) + 100000;
+
+    this.logger.log(`[SIMULATED] Refund for payment ${paymentId}: refund_id=${simulatedRefundId}`);
+
+    return {
+      id: simulatedRefundId,
+      paymentId,
+      status: 'approved',
+      amount: null,
       dateCreated: new Date().toISOString(),
     };
   }

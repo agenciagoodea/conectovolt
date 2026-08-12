@@ -101,9 +101,11 @@ describe('MercadoPagoService — desenvolvimento sem token', () => {
     expect(result.status).toBe('approved');
   });
 
-  it('refundPayment deve retornar status refunded simulado', async () => {
-    const result = await service.refundPayment(0);
-    expect(result.status).toBe('refunded');
+  it('refundPayment deve retornar simulação de estorno em desenvolvimento', async () => {
+    const result = await service.refundPayment(123456);
+    expect(result.paymentId).toBe(123456);
+    expect(result.status).toBe('approved');
+    expect(result.id).toBeDefined();
   });
 
   it('isLive deve ser false', () => {
@@ -113,7 +115,6 @@ describe('MercadoPagoService — desenvolvimento sem token', () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Teste 3 — produção com token presente → fluxo real inicializado
-// (não chama a API externa — apenas verifica isLive e que nenhum erro é lançado)
 // ─────────────────────────────────────────────────────────────────────────────
 describe('MercadoPagoService — produção com token', () => {
   let service: MercadoPagoService;
@@ -130,8 +131,34 @@ describe('MercadoPagoService — produção com token', () => {
   });
 
   it('não deve lançar erro de configuração no construtor', () => {
-    // Se chegou até aqui sem lançar, o construtor passou com sucesso
     expect(service).toBeDefined();
+  });
+
+  it('refundPayment em produção com token deve chamar PaymentRefund.total() do SDK', async () => {
+    const { PaymentRefund } = await import('mercadopago');
+    const totalSpy = jest
+      .spyOn(PaymentRefund.prototype, 'total')
+      .mockResolvedValue({
+        id: 987654,
+        payment_id: 123456,
+        amount: 100,
+        status: 'approved',
+        date_created: '2026-08-12T12:00:00Z',
+        api_response: { status: 200, headers: {} },
+      } as any);
+
+    const result = await service.refundPayment(123456);
+
+    expect(totalSpy).toHaveBeenCalledWith({ payment_id: 123456 });
+    expect(result).toEqual({
+      id: 987654,
+      paymentId: 123456,
+      status: 'approved',
+      amount: 100,
+      dateCreated: '2026-08-12T12:00:00Z',
+    });
+
+    totalSpy.mockRestore();
   });
 });
 

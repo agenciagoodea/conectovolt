@@ -281,16 +281,22 @@ export class PaymentsService {
       throw new BadRequestException('Only approved payments can be refunded');
     }
 
-    if (this.mercadoPagoService.isLive) {
-      const externalId = Number(payment.externalId);
-      if (!Number.isInteger(externalId)) {
-        throw new BadRequestException(
-          'Payment has no valid gateway transaction',
-        );
-      }
-      await this.mercadoPagoService.refundPayment(externalId);
+    // Valida que existe um ID externo numérico antes de chamar o gateway.
+    // O externalId é armazenado como string; precisamos de um inteiro válido.
+    const externalId = Number(payment.externalId);
+    if (!Number.isInteger(externalId) || externalId <= 0) {
+      throw new BadRequestException(
+        'Payment has no valid gateway transaction ID for refund',
+      );
     }
 
+    // Solicita o estorno ao gateway ANTES de alterar qualquer estado interno.
+    // MercadoPagoService.refundPayment() usa PaymentRefund.total() (estorno real).
+    // Em produção sem credencial: lança InternalServerErrorException.
+    // Em desenvolvimento sem token: retorna simulação.
+    await this.mercadoPagoService.refundPayment(externalId);
+
+    // Gateway confirmou o estorno — agora atualiza o estado interno.
     return this.prisma.client.$transaction(async (tx) => {
       if (payment.commission) {
         const wallet = await tx.wallet.findUnique({
@@ -318,6 +324,7 @@ export class PaymentsService {
       });
     });
   }
+
 
   async handleWebhook(data: {
     action?: string;

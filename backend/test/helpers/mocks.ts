@@ -127,6 +127,7 @@ export const mockMercadoPagoService = {
   createPixPayment: jest.fn(),
   createCreditCardPayment: jest.fn(),
   getPaymentStatus: jest.fn(),
+  refundPayment: jest.fn(),
 };
 
 export const mockCommissionsService = {

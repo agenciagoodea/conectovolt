@@ -154,35 +154,94 @@ describe('PaymentsService', () => {
   });
 
   describe('refundPayment', () => {
-    it('should refund approved payment', async () => {
+    it('should call gateway first and update status to REFUNDED when gateway succeeds', async () => {
       prisma.payment.findUnique.mockResolvedValue({
         id: 'payment-1',
+        externalId: '123456',
         status: 'APPROVED',
+        session: { station: { companyId: 'company-1' } },
+        commission: { operatorAmount: 95 },
+      });
+      mockMercadoPagoService.refundPayment.mockResolvedValue({
+        id: 999,
+        paymentId: 123456,
+        status: 'approved',
+      });
+      prisma.wallet.findUnique.mockResolvedValue({
+        id: 'wallet-1',
+        companyId: 'company-1',
+        balance: 100,
       });
       prisma.payment.update.mockResolvedValue({
         id: 'payment-1',
         status: 'REFUNDED',
       });
 
-      expect((await service.refundPayment('payment-1')).status).toBe(
-        'REFUNDED',
-      );
+      const result = await service.refundPayment('payment-1');
+
+      // Gateway deve ser chamado primeiro com o ID numérico
+      expect(mockMercadoPagoService.refundPayment).toHaveBeenCalledWith(123456);
+      // Status deve ser atualizado para REFUNDED
+      expect(result.status).toBe('REFUNDED');
     });
 
-    it('should throw if not approved', async () => {
+    it('should NOT update status to REFUNDED if gateway rejects or throws error', async () => {
       prisma.payment.findUnique.mockResolvedValue({
         id: 'payment-1',
+        externalId: '123456',
+        status: 'APPROVED',
+        session: { station: { companyId: 'company-1' } },
+        commission: { operatorAmount: 95 },
+      });
+      mockMercadoPagoService.refundPayment.mockRejectedValue(
+        new Error('Gateway refund failed'),
+      );
+
+      await expect(service.refundPayment('payment-1')).rejects.toThrow(
+        'Gateway refund failed',
+      );
+
+      // O banco de dados NÃO deve ter sido modificado (update não chamado)
+      expect(prisma.payment.update).not.toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException if payment is not in APPROVED status', async () => {
+      prisma.payment.findUnique.mockResolvedValue({
+        id: 'payment-1',
+        externalId: '123456',
         status: 'PENDING',
       });
+
       await expect(service.refundPayment('payment-1')).rejects.toThrow(
         BadRequestException,
       );
+      expect(mockMercadoPagoService.refundPayment).not.toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException if externalId is invalid or missing', async () => {
+      prisma.payment.findUnique.mockResolvedValue({
+        id: 'payment-1',
+        externalId: 'invalid-id',
+        status: 'APPROVED',
+      });
+
+      await expect(service.refundPayment('payment-1')).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(mockMercadoPagoService.refundPayment).not.toHaveBeenCalled();
     });
   });
 
   describe('handleWebhook', () => {
     it('should approve on webhook notification', async () => {
       prisma.payment.findFirst.mockResolvedValue({
+        id: 'payment-1',
+        amount: 100,
+        status: 'PENDING',
+        externalId: 'mp-123',
+        session: { station: { companyId: 'comp-1' } },
+      });
+      prisma.payment.findUnique.mockResolvedValue({
         id: 'payment-1',
         amount: 100,
         status: 'PENDING',
