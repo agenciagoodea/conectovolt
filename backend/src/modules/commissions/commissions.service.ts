@@ -8,25 +8,26 @@ export class CommissionsService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async calculate(paymentId: string) {
+  async calculate(paymentId: string, outerTx?: any) {
     this.logger.log(`Calculating commission for payment ${paymentId}`);
-    const payment = await this.prisma.payment.findUnique({
-      where: { id: paymentId },
-      include: {
-        session: { include: { station: { include: { company: true } } } },
-      },
-    });
-    if (!payment) throw new Error('Payment not found');
 
-    const station = payment.session.station;
-    const percentage = Number(
-      payment.session.station.company.commissionPercent ??
-        this.DEFAULT_COMMISSION,
-    );
-    const platformAmount = (Number(payment.amount) * percentage) / 100;
-    const operatorAmount = Number(payment.amount) - platformAmount;
+    const runInTx = async (tx: any) => {
+      const payment = await tx.payment.findUnique({
+        where: { id: paymentId },
+        include: {
+          session: { include: { station: { include: { company: true } } } },
+        },
+      });
+      if (!payment) throw new Error('Payment not found');
 
-    return this.prisma.client.$transaction(async (tx) => {
+      const station = payment.session.station;
+      const percentage = Number(
+        payment.session.station.company.commissionPercent ??
+          this.DEFAULT_COMMISSION,
+      );
+      const platformAmount = (Number(payment.amount) * percentage) / 100;
+      const operatorAmount = Number(payment.amount) - platformAmount;
+
       const existingCommission = await tx.commission.findUnique({
         where: { paymentId },
       });
@@ -65,7 +66,12 @@ export class CommissionsService {
       });
 
       return commission;
-    });
+    };
+
+    if (outerTx) {
+      return runInTx(outerTx);
+    }
+    return this.prisma.client.$transaction(runInTx);
   }
 
   async findAll(companyId?: string) {

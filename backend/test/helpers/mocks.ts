@@ -66,6 +66,7 @@ export const mockPrismaService = {
     findFirst: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
+    updateMany: jest.fn().mockResolvedValue({ count: 1 }),
   },
   commission: {
     findUnique: jest.fn(),
@@ -138,4 +139,8 @@ export const mockCommissionsService = {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockPrismaService.client.$transaction.mockImplementation(
+    (callback: (transaction: typeof mockPrismaService) => unknown) =>
+      callback(mockPrismaService),
+  );
 });

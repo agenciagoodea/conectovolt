@@ -209,33 +209,68 @@ export class PaymentsService {
     }
 
     if (payment.status === 'APPROVED') {
-      throw new BadRequestException('Payment is already approved');
+      this.logger.log(`Payment ${paymentId} is already approved.`);
+      return payment;
     }
 
-    // A payment is only marked as approved after its commission and operator
-    // credit have been recorded. A retry can therefore safely complete a
-    // previously interrupted approval.
-    await this.commissionsService.calculate(paymentId);
+    const approvedPayment = await this.prisma.client.$transaction(
+      async (tx) => {
+        const current = await tx.payment.findUnique({
+          where: { id: paymentId },
+          include: { session: { include: { station: true } } },
+        });
 
-    const updatedPayment = await this.prisma.payment.update({
-      where: { id: paymentId },
-      data: {
-        status: 'APPROVED',
-        externalId: externalId || payment.externalId,
-        paidAt: new Date(),
+        if (!current) {
+          throw new NotFoundException('Payment not found');
+        }
+
+        if (current.status === 'APPROVED') {
+          return current;
+        }
+
+        const updateResult = await tx.payment.updateMany({
+          where: {
+            id: paymentId,
+            status: { not: 'APPROVED' },
+          },
+          data: {
+            status: 'APPROVED',
+            externalId: externalId || current.externalId,
+            paidAt: new Date(),
+          },
+        });
+
+        if (updateResult && updateResult.count === 0) {
+          const reFetched = await tx.payment.findUnique({
+            where: { id: paymentId },
+            include: { session: { include: { station: true } } },
+          });
+          return { ...current, ...reFetched, status: 'APPROVED' };
+        }
+
+        await this.commissionsService.calculate(paymentId, tx);
+
+        const updated = await tx.payment.findUnique({
+          where: { id: paymentId },
+          include: { session: { include: { station: true } } },
+        });
+
+        return { ...current, ...updated, status: 'APPROVED' };
       },
-    });
+    );
 
-    this.logger.log(`Payment approved: ${paymentId} - R$${payment.amount}`);
+    this.logger.log(
+      `Payment approved: ${paymentId} - R$${approvedPayment.amount}`,
+    );
 
     // Audit log
     try {
       await this.auditService.log({
-        userId: payment.session?.userId,
+        userId: approvedPayment.session?.userId,
         action: 'PAYMENT_APPROVED',
         entity: 'Payment',
         entityId: paymentId,
-        newValue: { amount: payment.amount, status: 'APPROVED' },
+        newValue: { amount: approvedPayment.amount, status: 'APPROVED' },
       });
     } catch {
       this.logger.warn(`Failed to write audit log for payment ${paymentId}`);
@@ -244,15 +279,15 @@ export class PaymentsService {
     // Send notification
     try {
       const notif = this.auditService.notifications.paymentApproved(
-        payment.session?.userId || '',
-        Number(payment.amount),
+        approvedPayment.session?.userId || '',
+        Number(approvedPayment.amount),
       );
       await this.notificationsService.create(notif);
     } catch {
       this.logger.warn(`Failed to send notification for payment ${paymentId}`);
     }
 
-    return updatedPayment;
+    return approvedPayment;
   }
 
   async failPayment(paymentId: string) {
@@ -260,6 +295,16 @@ export class PaymentsService {
       where: { id: paymentId },
     });
     if (!payment) throw new NotFoundException('Payment not found');
+
+    if (payment.status === 'FAILED') {
+      return payment;
+    }
+
+    if (payment.status === 'APPROVED' || payment.status === 'REFUNDED') {
+      throw new BadRequestException(
+        `Cannot mark payment as failed when it is already in ${payment.status} status`,
+      );
+    }
 
     return this.prisma.payment.update({
       where: { id: paymentId },
