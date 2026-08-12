@@ -27,11 +27,11 @@ export type AggregateCompany = {
 }
 
 export type CompanyAvgAggregateOutputType = {
-  commissionPercent: number | null
+  commissionPercent: runtime.Decimal | null
 }
 
 export type CompanySumAggregateOutputType = {
-  commissionPercent: number | null
+  commissionPercent: runtime.Decimal | null
 }
 
 export type CompanyMinAggregateOutputType = {
@@ -42,7 +42,7 @@ export type CompanyMinAggregateOutputType = {
   phone: string | null
   logoUrl: string | null
   status: string | null
-  commissionPercent: number | null
+  commissionPercent: runtime.Decimal | null
   cep: string | null
   street: string | null
   number: string | null
@@ -62,7 +62,7 @@ export type CompanyMaxAggregateOutputType = {
   phone: string | null
   logoUrl: string | null
   status: string | null
-  commissionPercent: number | null
+  commissionPercent: runtime.Decimal | null
   cep: string | null
   street: string | null
   number: string | null
@@ -259,7 +259,7 @@ export type CompanyGroupByOutputType = {
   phone: string | null
   logoUrl: string | null
   status: string
-  commissionPercent: number
+  commissionPercent: runtime.Decimal
   cep: string | null
   street: string | null
   number: string | null
@@ -302,7 +302,7 @@ export type CompanyWhereInput = {
   phone?: Prisma.StringNullableFilter<"Company"> | string | null
   logoUrl?: Prisma.StringNullableFilter<"Company"> | string | null
   status?: Prisma.StringFilter<"Company"> | string
-  commissionPercent?: Prisma.FloatFilter<"Company"> | number
+  commissionPercent?: Prisma.DecimalFilter<"Company"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.StringNullableFilter<"Company"> | string | null
   street?: Prisma.StringNullableFilter<"Company"> | string | null
   number?: Prisma.StringNullableFilter<"Company"> | string | null
@@ -362,7 +362,7 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   phone?: Prisma.StringNullableFilter<"Company"> | string | null
   logoUrl?: Prisma.StringNullableFilter<"Company"> | string | null
   status?: Prisma.StringFilter<"Company"> | string
-  commissionPercent?: Prisma.FloatFilter<"Company"> | number
+  commissionPercent?: Prisma.DecimalFilter<"Company"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.StringNullableFilter<"Company"> | string | null
   street?: Prisma.StringNullableFilter<"Company"> | string | null
   number?: Prisma.StringNullableFilter<"Company"> | string | null
@@ -418,7 +418,7 @@ export type CompanyScalarWhereWithAggregatesInput = {
   phone?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
   logoUrl?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"Company"> | string
-  commissionPercent?: Prisma.FloatWithAggregatesFilter<"Company"> | number
+  commissionPercent?: Prisma.DecimalWithAggregatesFilter<"Company"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
   street?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
   number?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
@@ -438,7 +438,7 @@ export type CompanyCreateInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -466,7 +466,7 @@ export type CompanyUncheckedCreateInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -494,7 +494,7 @@ export type CompanyUpdateInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -522,7 +522,7 @@ export type CompanyUncheckedUpdateInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -550,7 +550,7 @@ export type CompanyCreateManyInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -570,7 +570,7 @@ export type CompanyUpdateManyMutationInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -590,7 +590,7 @@ export type CompanyUncheckedUpdateManyInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -702,12 +702,12 @@ export type CompanyUpdateOneWithoutUsersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutUsersInput, Prisma.CompanyUpdateWithoutUsersInput>, Prisma.CompanyUncheckedUpdateWithoutUsersInput>
 }
 
-export type FloatFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
+export type DecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type CompanyCreateNestedOneWithoutStationsInput = {
@@ -818,7 +818,7 @@ export type CompanyCreateWithoutUsersInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -845,7 +845,7 @@ export type CompanyUncheckedCreateWithoutUsersInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -888,7 +888,7 @@ export type CompanyUpdateWithoutUsersInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -915,7 +915,7 @@ export type CompanyUncheckedUpdateWithoutUsersInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -942,7 +942,7 @@ export type CompanyCreateWithoutStationsInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -969,7 +969,7 @@ export type CompanyUncheckedCreateWithoutStationsInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -1012,7 +1012,7 @@ export type CompanyUpdateWithoutStationsInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1039,7 +1039,7 @@ export type CompanyUncheckedUpdateWithoutStationsInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1066,7 +1066,7 @@ export type CompanyCreateWithoutTariffsInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -1093,7 +1093,7 @@ export type CompanyUncheckedCreateWithoutTariffsInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -1136,7 +1136,7 @@ export type CompanyUpdateWithoutTariffsInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1163,7 +1163,7 @@ export type CompanyUncheckedUpdateWithoutTariffsInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1190,7 +1190,7 @@ export type CompanyCreateWithoutCommissionsInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -1217,7 +1217,7 @@ export type CompanyUncheckedCreateWithoutCommissionsInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -1260,7 +1260,7 @@ export type CompanyUpdateWithoutCommissionsInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1287,7 +1287,7 @@ export type CompanyUncheckedUpdateWithoutCommissionsInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1314,7 +1314,7 @@ export type CompanyCreateWithoutWalletInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -1341,7 +1341,7 @@ export type CompanyUncheckedCreateWithoutWalletInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -1384,7 +1384,7 @@ export type CompanyUpdateWithoutWalletInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1411,7 +1411,7 @@ export type CompanyUncheckedUpdateWithoutWalletInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1438,7 +1438,7 @@ export type CompanyCreateWithoutSubscriptionInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -1465,7 +1465,7 @@ export type CompanyUncheckedCreateWithoutSubscriptionInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -1508,7 +1508,7 @@ export type CompanyUpdateWithoutSubscriptionInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1535,7 +1535,7 @@ export type CompanyUncheckedUpdateWithoutSubscriptionInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1562,7 +1562,7 @@ export type CompanyCreateWithoutAlertsInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -1589,7 +1589,7 @@ export type CompanyUncheckedCreateWithoutAlertsInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -1632,7 +1632,7 @@ export type CompanyUpdateWithoutAlertsInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1659,7 +1659,7 @@ export type CompanyUncheckedUpdateWithoutAlertsInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1686,7 +1686,7 @@ export type CompanyCreateWithoutMaintenanceInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -1713,7 +1713,7 @@ export type CompanyUncheckedCreateWithoutMaintenanceInput = {
   phone?: string | null
   logoUrl?: string | null
   status?: string
-  commissionPercent?: number
+  commissionPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: string | null
   street?: string | null
   number?: string | null
@@ -1756,7 +1756,7 @@ export type CompanyUpdateWithoutMaintenanceInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1783,7 +1783,7 @@ export type CompanyUncheckedUpdateWithoutMaintenanceInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  commissionPercent?: Prisma.FloatFieldUpdateOperationsInput | number
+  commissionPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   cep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1962,7 +1962,7 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     phone: string | null
     logoUrl: string | null
     status: string
-    commissionPercent: number
+    commissionPercent: runtime.Decimal
     cep: string | null
     street: string | null
     number: string | null
@@ -2356,7 +2356,7 @@ export interface CompanyFieldRefs {
   readonly phone: Prisma.FieldRef<"Company", 'String'>
   readonly logoUrl: Prisma.FieldRef<"Company", 'String'>
   readonly status: Prisma.FieldRef<"Company", 'String'>
-  readonly commissionPercent: Prisma.FieldRef<"Company", 'Float'>
+  readonly commissionPercent: Prisma.FieldRef<"Company", 'Decimal'>
   readonly cep: Prisma.FieldRef<"Company", 'String'>
   readonly street: Prisma.FieldRef<"Company", 'String'>
   readonly number: Prisma.FieldRef<"Company", 'String'>

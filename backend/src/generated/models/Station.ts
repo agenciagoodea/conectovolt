@@ -632,6 +632,14 @@ export type StationUncheckedUpdateManyWithoutCompanyNestedInput = {
   deleteMany?: Prisma.StationScalarWhereInput | Prisma.StationScalarWhereInput[]
 }
 
+export type FloatFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type StationCreateNestedOneWithoutChargersInput = {
   create?: Prisma.XOR<Prisma.StationCreateWithoutChargersInput, Prisma.StationUncheckedCreateWithoutChargersInput>
   connectOrCreate?: Prisma.StationCreateOrConnectWithoutChargersInput

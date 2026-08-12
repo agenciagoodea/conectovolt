@@ -30,16 +30,16 @@ export type PlatformUsageAvgAggregateOutputType = {
   stations: number | null
   chargers: number | null
   sessions: number | null
-  revenue: number | null
-  commission: number | null
+  revenue: runtime.Decimal | null
+  commission: runtime.Decimal | null
 }
 
 export type PlatformUsageSumAggregateOutputType = {
   stations: number | null
   chargers: number | null
   sessions: number | null
-  revenue: number | null
-  commission: number | null
+  revenue: runtime.Decimal | null
+  commission: runtime.Decimal | null
 }
 
 export type PlatformUsageMinAggregateOutputType = {
@@ -49,8 +49,8 @@ export type PlatformUsageMinAggregateOutputType = {
   stations: number | null
   chargers: number | null
   sessions: number | null
-  revenue: number | null
-  commission: number | null
+  revenue: runtime.Decimal | null
+  commission: runtime.Decimal | null
   createdAt: Date | null
 }
 
@@ -61,8 +61,8 @@ export type PlatformUsageMaxAggregateOutputType = {
   stations: number | null
   chargers: number | null
   sessions: number | null
-  revenue: number | null
-  commission: number | null
+  revenue: runtime.Decimal | null
+  commission: runtime.Decimal | null
   createdAt: Date | null
 }
 
@@ -226,8 +226,8 @@ export type PlatformUsageGroupByOutputType = {
   stations: number
   chargers: number
   sessions: number
-  revenue: number
-  commission: number
+  revenue: runtime.Decimal
+  commission: runtime.Decimal
   createdAt: Date
   _count: PlatformUsageCountAggregateOutputType | null
   _avg: PlatformUsageAvgAggregateOutputType | null
@@ -261,8 +261,8 @@ export type PlatformUsageWhereInput = {
   stations?: Prisma.IntFilter<"PlatformUsage"> | number
   chargers?: Prisma.IntFilter<"PlatformUsage"> | number
   sessions?: Prisma.IntFilter<"PlatformUsage"> | number
-  revenue?: Prisma.FloatFilter<"PlatformUsage"> | number
-  commission?: Prisma.FloatFilter<"PlatformUsage"> | number
+  revenue?: Prisma.DecimalFilter<"PlatformUsage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  commission?: Prisma.DecimalFilter<"PlatformUsage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"PlatformUsage"> | Date | string
 }
 
@@ -290,8 +290,8 @@ export type PlatformUsageWhereUniqueInput = Prisma.AtLeast<{
   stations?: Prisma.IntFilter<"PlatformUsage"> | number
   chargers?: Prisma.IntFilter<"PlatformUsage"> | number
   sessions?: Prisma.IntFilter<"PlatformUsage"> | number
-  revenue?: Prisma.FloatFilter<"PlatformUsage"> | number
-  commission?: Prisma.FloatFilter<"PlatformUsage"> | number
+  revenue?: Prisma.DecimalFilter<"PlatformUsage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  commission?: Prisma.DecimalFilter<"PlatformUsage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"PlatformUsage"> | Date | string
 }, "id" | "companyId_month">
 
@@ -322,8 +322,8 @@ export type PlatformUsageScalarWhereWithAggregatesInput = {
   stations?: Prisma.IntWithAggregatesFilter<"PlatformUsage"> | number
   chargers?: Prisma.IntWithAggregatesFilter<"PlatformUsage"> | number
   sessions?: Prisma.IntWithAggregatesFilter<"PlatformUsage"> | number
-  revenue?: Prisma.FloatWithAggregatesFilter<"PlatformUsage"> | number
-  commission?: Prisma.FloatWithAggregatesFilter<"PlatformUsage"> | number
+  revenue?: Prisma.DecimalWithAggregatesFilter<"PlatformUsage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  commission?: Prisma.DecimalWithAggregatesFilter<"PlatformUsage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PlatformUsage"> | Date | string
 }
 
@@ -334,8 +334,8 @@ export type PlatformUsageCreateInput = {
   stations?: number
   chargers?: number
   sessions?: number
-  revenue?: number
-  commission?: number
+  revenue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  commission?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
@@ -346,8 +346,8 @@ export type PlatformUsageUncheckedCreateInput = {
   stations?: number
   chargers?: number
   sessions?: number
-  revenue?: number
-  commission?: number
+  revenue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  commission?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
@@ -358,8 +358,8 @@ export type PlatformUsageUpdateInput = {
   stations?: Prisma.IntFieldUpdateOperationsInput | number
   chargers?: Prisma.IntFieldUpdateOperationsInput | number
   sessions?: Prisma.IntFieldUpdateOperationsInput | number
-  revenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  commission?: Prisma.FloatFieldUpdateOperationsInput | number
+  revenue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  commission?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -370,8 +370,8 @@ export type PlatformUsageUncheckedUpdateInput = {
   stations?: Prisma.IntFieldUpdateOperationsInput | number
   chargers?: Prisma.IntFieldUpdateOperationsInput | number
   sessions?: Prisma.IntFieldUpdateOperationsInput | number
-  revenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  commission?: Prisma.FloatFieldUpdateOperationsInput | number
+  revenue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  commission?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -382,8 +382,8 @@ export type PlatformUsageCreateManyInput = {
   stations?: number
   chargers?: number
   sessions?: number
-  revenue?: number
-  commission?: number
+  revenue?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  commission?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
@@ -394,8 +394,8 @@ export type PlatformUsageUpdateManyMutationInput = {
   stations?: Prisma.IntFieldUpdateOperationsInput | number
   chargers?: Prisma.IntFieldUpdateOperationsInput | number
   sessions?: Prisma.IntFieldUpdateOperationsInput | number
-  revenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  commission?: Prisma.FloatFieldUpdateOperationsInput | number
+  revenue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  commission?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -406,8 +406,8 @@ export type PlatformUsageUncheckedUpdateManyInput = {
   stations?: Prisma.IntFieldUpdateOperationsInput | number
   chargers?: Prisma.IntFieldUpdateOperationsInput | number
   sessions?: Prisma.IntFieldUpdateOperationsInput | number
-  revenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  commission?: Prisma.FloatFieldUpdateOperationsInput | number
+  revenue?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  commission?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -514,8 +514,8 @@ export type $PlatformUsagePayload<ExtArgs extends runtime.Types.Extensions.Inter
     stations: number
     chargers: number
     sessions: number
-    revenue: number
-    commission: number
+    revenue: runtime.Decimal
+    commission: runtime.Decimal
     createdAt: Date
   }, ExtArgs["result"]["platformUsage"]>
   composites: {}
@@ -892,8 +892,8 @@ export interface PlatformUsageFieldRefs {
   readonly stations: Prisma.FieldRef<"PlatformUsage", 'Int'>
   readonly chargers: Prisma.FieldRef<"PlatformUsage", 'Int'>
   readonly sessions: Prisma.FieldRef<"PlatformUsage", 'Int'>
-  readonly revenue: Prisma.FieldRef<"PlatformUsage", 'Float'>
-  readonly commission: Prisma.FieldRef<"PlatformUsage", 'Float'>
+  readonly revenue: Prisma.FieldRef<"PlatformUsage", 'Decimal'>
+  readonly commission: Prisma.FieldRef<"PlatformUsage", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"PlatformUsage", 'DateTime'>
 }
     

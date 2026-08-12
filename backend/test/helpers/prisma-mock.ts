@@ -1,3 +1,52 @@
+export class MockDecimal {
+  private val: number;
+  constructor(v: any) {
+    this.val = typeof v === 'number' ? v : parseFloat(String(v));
+  }
+  mul(other: any) {
+    const res = (this.val * Number(other)).toFixed(6);
+    return new MockDecimal(parseFloat(res));
+  }
+  div(other: any) {
+    const res = (this.val / Number(other)).toFixed(6);
+    return new MockDecimal(parseFloat(res));
+  }
+  sub(other: any) {
+    const res = (this.val - Number(other)).toFixed(6);
+    return new MockDecimal(parseFloat(res));
+  }
+  add(other: any) {
+    const res = (this.val + Number(other)).toFixed(6);
+    return new MockDecimal(parseFloat(res));
+  }
+  toDecimalPlaces(dp: number) {
+    return new MockDecimal(Number(this.val.toFixed(dp)));
+  }
+  lt(other: any) {
+    return this.val < Number(other);
+  }
+  gte(other: any) {
+    return this.val >= Number(other);
+  }
+  toNumber() {
+    return this.val;
+  }
+  toString() {
+    return String(this.val);
+  }
+  valueOf() {
+    return this.val;
+  }
+  [Symbol.toPrimitive]() {
+    return this.val;
+  }
+  ROUND_HALF_UP = 1;
+}
+
+export const Prisma = {
+  Decimal: MockDecimal,
+};
+
 export const PrismaClient = jest.fn().mockImplementation(() => ({
   $connect: jest.fn(),
   $disconnect: jest.fn(),

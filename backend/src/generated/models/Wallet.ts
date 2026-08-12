@@ -27,17 +27,17 @@ export type AggregateWallet = {
 }
 
 export type WalletAvgAggregateOutputType = {
-  balance: number | null
+  balance: runtime.Decimal | null
 }
 
 export type WalletSumAggregateOutputType = {
-  balance: number | null
+  balance: runtime.Decimal | null
 }
 
 export type WalletMinAggregateOutputType = {
   id: string | null
   companyId: string | null
-  balance: number | null
+  balance: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -45,7 +45,7 @@ export type WalletMinAggregateOutputType = {
 export type WalletMaxAggregateOutputType = {
   id: string | null
   companyId: string | null
-  balance: number | null
+  balance: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -182,7 +182,7 @@ export type WalletGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 export type WalletGroupByOutputType = {
   id: string
   companyId: string
-  balance: number
+  balance: runtime.Decimal
   createdAt: Date
   updatedAt: Date
   _count: WalletCountAggregateOutputType | null
@@ -213,7 +213,7 @@ export type WalletWhereInput = {
   NOT?: Prisma.WalletWhereInput | Prisma.WalletWhereInput[]
   id?: Prisma.StringFilter<"Wallet"> | string
   companyId?: Prisma.StringFilter<"Wallet"> | string
-  balance?: Prisma.FloatFilter<"Wallet"> | number
+  balance?: Prisma.DecimalFilter<"Wallet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Wallet"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Wallet"> | Date | string
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
@@ -237,7 +237,7 @@ export type WalletWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.WalletWhereInput | Prisma.WalletWhereInput[]
   OR?: Prisma.WalletWhereInput[]
   NOT?: Prisma.WalletWhereInput | Prisma.WalletWhereInput[]
-  balance?: Prisma.FloatFilter<"Wallet"> | number
+  balance?: Prisma.DecimalFilter<"Wallet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Wallet"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Wallet"> | Date | string
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
@@ -263,14 +263,14 @@ export type WalletScalarWhereWithAggregatesInput = {
   NOT?: Prisma.WalletScalarWhereWithAggregatesInput | Prisma.WalletScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Wallet"> | string
   companyId?: Prisma.StringWithAggregatesFilter<"Wallet"> | string
-  balance?: Prisma.FloatWithAggregatesFilter<"Wallet"> | number
+  balance?: Prisma.DecimalWithAggregatesFilter<"Wallet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Wallet"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Wallet"> | Date | string
 }
 
 export type WalletCreateInput = {
   id?: string
-  balance?: number
+  balance?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutWalletInput
@@ -280,7 +280,7 @@ export type WalletCreateInput = {
 export type WalletUncheckedCreateInput = {
   id?: string
   companyId: string
-  balance?: number
+  balance?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutWalletInput
@@ -288,7 +288,7 @@ export type WalletUncheckedCreateInput = {
 
 export type WalletUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  balance?: Prisma.FloatFieldUpdateOperationsInput | number
+  balance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutWalletNestedInput
@@ -298,7 +298,7 @@ export type WalletUpdateInput = {
 export type WalletUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
-  balance?: Prisma.FloatFieldUpdateOperationsInput | number
+  balance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutWalletNestedInput
@@ -307,14 +307,14 @@ export type WalletUncheckedUpdateInput = {
 export type WalletCreateManyInput = {
   id?: string
   companyId: string
-  balance?: number
+  balance?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type WalletUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  balance?: Prisma.FloatFieldUpdateOperationsInput | number
+  balance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -322,7 +322,7 @@ export type WalletUpdateManyMutationInput = {
 export type WalletUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
-  balance?: Prisma.FloatFieldUpdateOperationsInput | number
+  balance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -423,7 +423,7 @@ export type WalletUpdateOneRequiredWithoutTransactionsNestedInput = {
 
 export type WalletCreateWithoutCompanyInput = {
   id?: string
-  balance?: number
+  balance?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutWalletInput
@@ -431,7 +431,7 @@ export type WalletCreateWithoutCompanyInput = {
 
 export type WalletUncheckedCreateWithoutCompanyInput = {
   id?: string
-  balance?: number
+  balance?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutWalletInput
@@ -455,7 +455,7 @@ export type WalletUpdateToOneWithWhereWithoutCompanyInput = {
 
 export type WalletUpdateWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  balance?: Prisma.FloatFieldUpdateOperationsInput | number
+  balance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutWalletNestedInput
@@ -463,7 +463,7 @@ export type WalletUpdateWithoutCompanyInput = {
 
 export type WalletUncheckedUpdateWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  balance?: Prisma.FloatFieldUpdateOperationsInput | number
+  balance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutWalletNestedInput
@@ -471,7 +471,7 @@ export type WalletUncheckedUpdateWithoutCompanyInput = {
 
 export type WalletCreateWithoutTransactionsInput = {
   id?: string
-  balance?: number
+  balance?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutWalletInput
@@ -480,7 +480,7 @@ export type WalletCreateWithoutTransactionsInput = {
 export type WalletUncheckedCreateWithoutTransactionsInput = {
   id?: string
   companyId: string
-  balance?: number
+  balance?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -503,7 +503,7 @@ export type WalletUpdateToOneWithWhereWithoutTransactionsInput = {
 
 export type WalletUpdateWithoutTransactionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  balance?: Prisma.FloatFieldUpdateOperationsInput | number
+  balance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutWalletNestedInput
@@ -512,7 +512,7 @@ export type WalletUpdateWithoutTransactionsInput = {
 export type WalletUncheckedUpdateWithoutTransactionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
-  balance?: Prisma.FloatFieldUpdateOperationsInput | number
+  balance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -585,7 +585,7 @@ export type $WalletPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     companyId: string
-    balance: number
+    balance: runtime.Decimal
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["wallet"]>
@@ -961,7 +961,7 @@ export interface Prisma__WalletClient<T, Null = never, ExtArgs extends runtime.T
 export interface WalletFieldRefs {
   readonly id: Prisma.FieldRef<"Wallet", 'String'>
   readonly companyId: Prisma.FieldRef<"Wallet", 'String'>
-  readonly balance: Prisma.FieldRef<"Wallet", 'Float'>
+  readonly balance: Prisma.FieldRef<"Wallet", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"Wallet", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Wallet", 'DateTime'>
 }

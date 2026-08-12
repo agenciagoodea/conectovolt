@@ -28,12 +28,12 @@ export type AggregateChargingSession = {
 
 export type ChargingSessionAvgAggregateOutputType = {
   energyKwh: number | null
-  amount: number | null
+  amount: runtime.Decimal | null
 }
 
 export type ChargingSessionSumAggregateOutputType = {
   energyKwh: number | null
-  amount: number | null
+  amount: runtime.Decimal | null
 }
 
 export type ChargingSessionMinAggregateOutputType = {
@@ -47,7 +47,7 @@ export type ChargingSessionMinAggregateOutputType = {
   startTime: Date | null
   endTime: Date | null
   energyKwh: number | null
-  amount: number | null
+  amount: runtime.Decimal | null
   status: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -64,7 +64,7 @@ export type ChargingSessionMaxAggregateOutputType = {
   startTime: Date | null
   endTime: Date | null
   energyKwh: number | null
-  amount: number | null
+  amount: runtime.Decimal | null
   status: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -248,7 +248,7 @@ export type ChargingSessionGroupByOutputType = {
   startTime: Date
   endTime: Date | null
   energyKwh: number
-  amount: number
+  amount: runtime.Decimal
   status: string
   createdAt: Date
   updatedAt: Date
@@ -288,7 +288,7 @@ export type ChargingSessionWhereInput = {
   startTime?: Prisma.DateTimeFilter<"ChargingSession"> | Date | string
   endTime?: Prisma.DateTimeNullableFilter<"ChargingSession"> | Date | string | null
   energyKwh?: Prisma.FloatFilter<"ChargingSession"> | number
-  amount?: Prisma.FloatFilter<"ChargingSession"> | number
+  amount?: Prisma.DecimalFilter<"ChargingSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFilter<"ChargingSession"> | string
   createdAt?: Prisma.DateTimeFilter<"ChargingSession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ChargingSession"> | Date | string
@@ -342,7 +342,7 @@ export type ChargingSessionWhereUniqueInput = Prisma.AtLeast<{
   startTime?: Prisma.DateTimeFilter<"ChargingSession"> | Date | string
   endTime?: Prisma.DateTimeNullableFilter<"ChargingSession"> | Date | string | null
   energyKwh?: Prisma.FloatFilter<"ChargingSession"> | number
-  amount?: Prisma.FloatFilter<"ChargingSession"> | number
+  amount?: Prisma.DecimalFilter<"ChargingSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFilter<"ChargingSession"> | string
   createdAt?: Prisma.DateTimeFilter<"ChargingSession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ChargingSession"> | Date | string
@@ -392,7 +392,7 @@ export type ChargingSessionScalarWhereWithAggregatesInput = {
   startTime?: Prisma.DateTimeWithAggregatesFilter<"ChargingSession"> | Date | string
   endTime?: Prisma.DateTimeNullableWithAggregatesFilter<"ChargingSession"> | Date | string | null
   energyKwh?: Prisma.FloatWithAggregatesFilter<"ChargingSession"> | number
-  amount?: Prisma.FloatWithAggregatesFilter<"ChargingSession"> | number
+  amount?: Prisma.DecimalWithAggregatesFilter<"ChargingSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringWithAggregatesFilter<"ChargingSession"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ChargingSession"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ChargingSession"> | Date | string
@@ -403,7 +403,7 @@ export type ChargingSessionCreateInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -428,7 +428,7 @@ export type ChargingSessionUncheckedCreateInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -441,7 +441,7 @@ export type ChargingSessionUpdateInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -466,7 +466,7 @@ export type ChargingSessionUncheckedUpdateInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -485,7 +485,7 @@ export type ChargingSessionCreateManyInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -496,7 +496,7 @@ export type ChargingSessionUpdateManyMutationInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -513,7 +513,7 @@ export type ChargingSessionUncheckedUpdateManyInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -897,7 +897,7 @@ export type ChargingSessionCreateWithoutUserInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -920,7 +920,7 @@ export type ChargingSessionUncheckedCreateWithoutUserInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -968,7 +968,7 @@ export type ChargingSessionScalarWhereInput = {
   startTime?: Prisma.DateTimeFilter<"ChargingSession"> | Date | string
   endTime?: Prisma.DateTimeNullableFilter<"ChargingSession"> | Date | string | null
   energyKwh?: Prisma.FloatFilter<"ChargingSession"> | number
-  amount?: Prisma.FloatFilter<"ChargingSession"> | number
+  amount?: Prisma.DecimalFilter<"ChargingSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFilter<"ChargingSession"> | string
   createdAt?: Prisma.DateTimeFilter<"ChargingSession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ChargingSession"> | Date | string
@@ -979,7 +979,7 @@ export type ChargingSessionCreateWithoutStationInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1002,7 +1002,7 @@ export type ChargingSessionUncheckedCreateWithoutStationInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1041,7 +1041,7 @@ export type ChargingSessionCreateWithoutChargerInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1064,7 +1064,7 @@ export type ChargingSessionUncheckedCreateWithoutChargerInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1103,7 +1103,7 @@ export type ChargingSessionCreateWithoutConnectorInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1126,7 +1126,7 @@ export type ChargingSessionUncheckedCreateWithoutConnectorInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1165,7 +1165,7 @@ export type ChargingSessionCreateWithoutVehicleInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1188,7 +1188,7 @@ export type ChargingSessionUncheckedCreateWithoutVehicleInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1227,7 +1227,7 @@ export type ChargingSessionCreateWithoutTariffInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1250,7 +1250,7 @@ export type ChargingSessionUncheckedCreateWithoutTariffInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1289,7 +1289,7 @@ export type ChargingSessionCreateWithoutPaymentInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1313,7 +1313,7 @@ export type ChargingSessionUncheckedCreateWithoutPaymentInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1341,7 +1341,7 @@ export type ChargingSessionUpdateWithoutPaymentInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1365,7 +1365,7 @@ export type ChargingSessionUncheckedUpdateWithoutPaymentInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1377,7 +1377,7 @@ export type ChargingSessionCreateWithoutTelemetryInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1401,7 +1401,7 @@ export type ChargingSessionUncheckedCreateWithoutTelemetryInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1429,7 +1429,7 @@ export type ChargingSessionUpdateWithoutTelemetryInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1453,7 +1453,7 @@ export type ChargingSessionUncheckedUpdateWithoutTelemetryInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1470,7 +1470,7 @@ export type ChargingSessionCreateManyUserInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1481,7 +1481,7 @@ export type ChargingSessionUpdateWithoutUserInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1504,7 +1504,7 @@ export type ChargingSessionUncheckedUpdateWithoutUserInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1522,7 +1522,7 @@ export type ChargingSessionUncheckedUpdateManyWithoutUserInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1538,7 +1538,7 @@ export type ChargingSessionCreateManyStationInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1549,7 +1549,7 @@ export type ChargingSessionUpdateWithoutStationInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1572,7 +1572,7 @@ export type ChargingSessionUncheckedUpdateWithoutStationInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1590,7 +1590,7 @@ export type ChargingSessionUncheckedUpdateManyWithoutStationInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1606,7 +1606,7 @@ export type ChargingSessionCreateManyChargerInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1617,7 +1617,7 @@ export type ChargingSessionUpdateWithoutChargerInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1640,7 +1640,7 @@ export type ChargingSessionUncheckedUpdateWithoutChargerInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1658,7 +1658,7 @@ export type ChargingSessionUncheckedUpdateManyWithoutChargerInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1674,7 +1674,7 @@ export type ChargingSessionCreateManyConnectorInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1685,7 +1685,7 @@ export type ChargingSessionUpdateWithoutConnectorInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1708,7 +1708,7 @@ export type ChargingSessionUncheckedUpdateWithoutConnectorInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1726,7 +1726,7 @@ export type ChargingSessionUncheckedUpdateManyWithoutConnectorInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1742,7 +1742,7 @@ export type ChargingSessionCreateManyVehicleInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1753,7 +1753,7 @@ export type ChargingSessionUpdateWithoutVehicleInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1776,7 +1776,7 @@ export type ChargingSessionUncheckedUpdateWithoutVehicleInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1794,7 +1794,7 @@ export type ChargingSessionUncheckedUpdateManyWithoutVehicleInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1810,7 +1810,7 @@ export type ChargingSessionCreateManyTariffInput = {
   startTime?: Date | string
   endTime?: Date | string | null
   energyKwh?: number
-  amount?: number
+  amount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1821,7 +1821,7 @@ export type ChargingSessionUpdateWithoutTariffInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1844,7 +1844,7 @@ export type ChargingSessionUncheckedUpdateWithoutTariffInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1862,7 +1862,7 @@ export type ChargingSessionUncheckedUpdateManyWithoutTariffInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   energyKwh?: Prisma.FloatFieldUpdateOperationsInput | number
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1980,7 +1980,7 @@ export type $ChargingSessionPayload<ExtArgs extends runtime.Types.Extensions.Int
     startTime: Date
     endTime: Date | null
     energyKwh: number
-    amount: number
+    amount: runtime.Decimal
     status: string
     createdAt: Date
     updatedAt: Date
@@ -2371,7 +2371,7 @@ export interface ChargingSessionFieldRefs {
   readonly startTime: Prisma.FieldRef<"ChargingSession", 'DateTime'>
   readonly endTime: Prisma.FieldRef<"ChargingSession", 'DateTime'>
   readonly energyKwh: Prisma.FieldRef<"ChargingSession", 'Float'>
-  readonly amount: Prisma.FieldRef<"ChargingSession", 'Float'>
+  readonly amount: Prisma.FieldRef<"ChargingSession", 'Decimal'>
   readonly status: Prisma.FieldRef<"ChargingSession", 'String'>
   readonly createdAt: Prisma.FieldRef<"ChargingSession", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ChargingSession", 'DateTime'>

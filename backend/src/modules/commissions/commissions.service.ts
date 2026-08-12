@@ -1,4 +1,5 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Prisma } from '../../generated/client';
 import { PrismaService } from '../../database/prisma.service';
 
 @Injectable()
@@ -21,12 +22,19 @@ export class CommissionsService {
       if (!payment) throw new Error('Payment not found');
 
       const station = payment.session.station;
-      const percentage = Number(
+      const paymentAmount = new Prisma.Decimal(payment.amount);
+      const percentage = new Prisma.Decimal(
         payment.session.station.company.commissionPercent ??
           this.DEFAULT_COMMISSION,
       );
-      const platformAmount = (Number(payment.amount) * percentage) / 100;
-      const operatorAmount = Number(payment.amount) - platformAmount;
+
+      const platformAmount = paymentAmount
+        .mul(percentage)
+        .div(100)
+        .toDecimalPlaces(2, Prisma.Decimal.ROUND_HALF_UP);
+      const operatorAmount = paymentAmount
+        .sub(platformAmount)
+        .toDecimalPlaces(2, Prisma.Decimal.ROUND_HALF_UP);
 
       const existingCommission = await tx.commission.findUnique({
         where: { paymentId },
@@ -86,7 +94,7 @@ export class CommissionsService {
     const wallet = await this.prisma.wallet.findUnique({
       where: { companyId },
     });
-    return { balance: wallet?.balance || 0 };
+    return { balance: wallet?.balance ? Number(wallet.balance) : 0 };
   }
 
   async requestWithdrawal(companyId: string, amount: number) {
@@ -100,8 +108,12 @@ export class CommissionsService {
       where: { companyId },
     });
     if (!wallet) throw new BadRequestException('Wallet not found');
-    if (Number(wallet.balance) < amount)
+    const balanceDecimal = new Prisma.Decimal(wallet.balance);
+    const amountDecimal = new Prisma.Decimal(amount);
+
+    if (balanceDecimal.lt(amountDecimal)) {
       throw new BadRequestException('Insufficient balance');
+    }
 
     await this.prisma.client.$transaction(async (tx) => {
       // The conditional update prevents two concurrent withdrawals from
@@ -119,7 +131,7 @@ export class CommissionsService {
         data: {
           walletId: wallet.id,
           type: 'WITHDRAWAL',
-          amount,
+          amount: amountDecimal,
           description: 'Saque solicitado',
         },
       });

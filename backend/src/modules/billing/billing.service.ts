@@ -1,4 +1,5 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
+import { Prisma } from '../../generated/client';
 import { PrismaService } from '../../database/prisma.service';
 
 @Injectable()
@@ -133,6 +134,11 @@ export class BillingService {
       }),
     ]);
 
+    const opAmount = new Prisma.Decimal(stats._sum.operatorAmount || 0);
+    const platAmount = new Prisma.Decimal(stats._sum.platformAmount || 0);
+    const revenue = opAmount.add(platAmount);
+    const commission = platAmount;
+
     const existing = await this.prisma.platformUsage.findUnique({
       where: { companyId_month: { companyId, month } },
     });
@@ -144,9 +150,8 @@ export class BillingService {
           stations,
           chargers,
           sessions,
-          revenue:
-            (stats._sum.operatorAmount || 0) + (stats._sum.platformAmount || 0),
-          commission: stats._sum.platformAmount || 0,
+          revenue,
+          commission,
         },
       });
     } else {
@@ -157,9 +162,8 @@ export class BillingService {
           stations,
           chargers,
           sessions,
-          revenue:
-            (stats._sum.operatorAmount || 0) + (stats._sum.platformAmount || 0),
-          commission: stats._sum.platformAmount || 0,
+          revenue,
+          commission,
         },
       });
     }

@@ -27,18 +27,18 @@ export type AggregateTariff = {
 }
 
 export type TariffAvgAggregateOutputType = {
-  pricePerKwh: number | null
+  pricePerKwh: runtime.Decimal | null
 }
 
 export type TariffSumAggregateOutputType = {
-  pricePerKwh: number | null
+  pricePerKwh: runtime.Decimal | null
 }
 
 export type TariffMinAggregateOutputType = {
   id: string | null
   companyId: string | null
   name: string | null
-  pricePerKwh: number | null
+  pricePerKwh: runtime.Decimal | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -48,7 +48,7 @@ export type TariffMaxAggregateOutputType = {
   id: string | null
   companyId: string | null
   name: string | null
-  pricePerKwh: number | null
+  pricePerKwh: runtime.Decimal | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -195,7 +195,7 @@ export type TariffGroupByOutputType = {
   id: string
   companyId: string
   name: string
-  pricePerKwh: number
+  pricePerKwh: runtime.Decimal
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -228,7 +228,7 @@ export type TariffWhereInput = {
   id?: Prisma.StringFilter<"Tariff"> | string
   companyId?: Prisma.StringFilter<"Tariff"> | string
   name?: Prisma.StringFilter<"Tariff"> | string
-  pricePerKwh?: Prisma.FloatFilter<"Tariff"> | number
+  pricePerKwh?: Prisma.DecimalFilter<"Tariff"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFilter<"Tariff"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Tariff"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tariff"> | Date | string
@@ -258,7 +258,7 @@ export type TariffWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.TariffWhereInput | Prisma.TariffWhereInput[]
   companyId?: Prisma.StringFilter<"Tariff"> | string
   name?: Prisma.StringFilter<"Tariff"> | string
-  pricePerKwh?: Prisma.FloatFilter<"Tariff"> | number
+  pricePerKwh?: Prisma.DecimalFilter<"Tariff"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFilter<"Tariff"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Tariff"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tariff"> | Date | string
@@ -289,7 +289,7 @@ export type TariffScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Tariff"> | string
   companyId?: Prisma.StringWithAggregatesFilter<"Tariff"> | string
   name?: Prisma.StringWithAggregatesFilter<"Tariff"> | string
-  pricePerKwh?: Prisma.FloatWithAggregatesFilter<"Tariff"> | number
+  pricePerKwh?: Prisma.DecimalWithAggregatesFilter<"Tariff"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolWithAggregatesFilter<"Tariff"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Tariff"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Tariff"> | Date | string
@@ -298,7 +298,7 @@ export type TariffScalarWhereWithAggregatesInput = {
 export type TariffCreateInput = {
   id?: string
   name: string
-  pricePerKwh: number
+  pricePerKwh: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -311,7 +311,7 @@ export type TariffUncheckedCreateInput = {
   id?: string
   companyId: string
   name: string
-  pricePerKwh: number
+  pricePerKwh: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -322,7 +322,7 @@ export type TariffUncheckedCreateInput = {
 export type TariffUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  pricePerKwh?: Prisma.FloatFieldUpdateOperationsInput | number
+  pricePerKwh?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -335,7 +335,7 @@ export type TariffUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  pricePerKwh?: Prisma.FloatFieldUpdateOperationsInput | number
+  pricePerKwh?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -347,7 +347,7 @@ export type TariffCreateManyInput = {
   id?: string
   companyId: string
   name: string
-  pricePerKwh: number
+  pricePerKwh: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -356,7 +356,7 @@ export type TariffCreateManyInput = {
 export type TariffUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  pricePerKwh?: Prisma.FloatFieldUpdateOperationsInput | number
+  pricePerKwh?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -366,7 +366,7 @@ export type TariffUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  pricePerKwh?: Prisma.FloatFieldUpdateOperationsInput | number
+  pricePerKwh?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -508,7 +508,7 @@ export type TariffUpdateOneWithoutChargingSessionsNestedInput = {
 export type TariffCreateWithoutCompanyInput = {
   id?: string
   name: string
-  pricePerKwh: number
+  pricePerKwh: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -519,7 +519,7 @@ export type TariffCreateWithoutCompanyInput = {
 export type TariffUncheckedCreateWithoutCompanyInput = {
   id?: string
   name: string
-  pricePerKwh: number
+  pricePerKwh: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -560,7 +560,7 @@ export type TariffScalarWhereInput = {
   id?: Prisma.StringFilter<"Tariff"> | string
   companyId?: Prisma.StringFilter<"Tariff"> | string
   name?: Prisma.StringFilter<"Tariff"> | string
-  pricePerKwh?: Prisma.FloatFilter<"Tariff"> | number
+  pricePerKwh?: Prisma.DecimalFilter<"Tariff"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFilter<"Tariff"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Tariff"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tariff"> | Date | string
@@ -569,7 +569,7 @@ export type TariffScalarWhereInput = {
 export type TariffCreateWithoutStationsInput = {
   id?: string
   name: string
-  pricePerKwh: number
+  pricePerKwh: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -581,7 +581,7 @@ export type TariffUncheckedCreateWithoutStationsInput = {
   id?: string
   companyId: string
   name: string
-  pricePerKwh: number
+  pricePerKwh: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -607,7 +607,7 @@ export type TariffUpdateToOneWithWhereWithoutStationsInput = {
 export type TariffUpdateWithoutStationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  pricePerKwh?: Prisma.FloatFieldUpdateOperationsInput | number
+  pricePerKwh?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -619,7 +619,7 @@ export type TariffUncheckedUpdateWithoutStationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  pricePerKwh?: Prisma.FloatFieldUpdateOperationsInput | number
+  pricePerKwh?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -629,7 +629,7 @@ export type TariffUncheckedUpdateWithoutStationsInput = {
 export type TariffCreateWithoutChargingSessionsInput = {
   id?: string
   name: string
-  pricePerKwh: number
+  pricePerKwh: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -641,7 +641,7 @@ export type TariffUncheckedCreateWithoutChargingSessionsInput = {
   id?: string
   companyId: string
   name: string
-  pricePerKwh: number
+  pricePerKwh: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -667,7 +667,7 @@ export type TariffUpdateToOneWithWhereWithoutChargingSessionsInput = {
 export type TariffUpdateWithoutChargingSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  pricePerKwh?: Prisma.FloatFieldUpdateOperationsInput | number
+  pricePerKwh?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -679,7 +679,7 @@ export type TariffUncheckedUpdateWithoutChargingSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  pricePerKwh?: Prisma.FloatFieldUpdateOperationsInput | number
+  pricePerKwh?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -689,7 +689,7 @@ export type TariffUncheckedUpdateWithoutChargingSessionsInput = {
 export type TariffCreateManyCompanyInput = {
   id?: string
   name: string
-  pricePerKwh: number
+  pricePerKwh: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -698,7 +698,7 @@ export type TariffCreateManyCompanyInput = {
 export type TariffUpdateWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  pricePerKwh?: Prisma.FloatFieldUpdateOperationsInput | number
+  pricePerKwh?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -709,7 +709,7 @@ export type TariffUpdateWithoutCompanyInput = {
 export type TariffUncheckedUpdateWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  pricePerKwh?: Prisma.FloatFieldUpdateOperationsInput | number
+  pricePerKwh?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -720,7 +720,7 @@ export type TariffUncheckedUpdateWithoutCompanyInput = {
 export type TariffUncheckedUpdateManyWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  pricePerKwh?: Prisma.FloatFieldUpdateOperationsInput | number
+  pricePerKwh?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -811,7 +811,7 @@ export type $TariffPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     id: string
     companyId: string
     name: string
-    pricePerKwh: number
+    pricePerKwh: runtime.Decimal
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -1190,7 +1190,7 @@ export interface TariffFieldRefs {
   readonly id: Prisma.FieldRef<"Tariff", 'String'>
   readonly companyId: Prisma.FieldRef<"Tariff", 'String'>
   readonly name: Prisma.FieldRef<"Tariff", 'String'>
-  readonly pricePerKwh: Prisma.FieldRef<"Tariff", 'Float'>
+  readonly pricePerKwh: Prisma.FieldRef<"Tariff", 'Decimal'>
   readonly isActive: Prisma.FieldRef<"Tariff", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Tariff", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Tariff", 'DateTime'>

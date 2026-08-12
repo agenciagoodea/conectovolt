@@ -27,24 +27,24 @@ export type AggregateCommission = {
 }
 
 export type CommissionAvgAggregateOutputType = {
-  percentage: number | null
-  platformAmount: number | null
-  operatorAmount: number | null
+  percentage: runtime.Decimal | null
+  platformAmount: runtime.Decimal | null
+  operatorAmount: runtime.Decimal | null
 }
 
 export type CommissionSumAggregateOutputType = {
-  percentage: number | null
-  platformAmount: number | null
-  operatorAmount: number | null
+  percentage: runtime.Decimal | null
+  platformAmount: runtime.Decimal | null
+  operatorAmount: runtime.Decimal | null
 }
 
 export type CommissionMinAggregateOutputType = {
   id: string | null
   paymentId: string | null
   companyId: string | null
-  percentage: number | null
-  platformAmount: number | null
-  operatorAmount: number | null
+  percentage: runtime.Decimal | null
+  platformAmount: runtime.Decimal | null
+  operatorAmount: runtime.Decimal | null
   createdAt: Date | null
 }
 
@@ -52,9 +52,9 @@ export type CommissionMaxAggregateOutputType = {
   id: string | null
   paymentId: string | null
   companyId: string | null
-  percentage: number | null
-  platformAmount: number | null
-  operatorAmount: number | null
+  percentage: runtime.Decimal | null
+  platformAmount: runtime.Decimal | null
+  operatorAmount: runtime.Decimal | null
   createdAt: Date | null
 }
 
@@ -203,9 +203,9 @@ export type CommissionGroupByOutputType = {
   id: string
   paymentId: string
   companyId: string
-  percentage: number
-  platformAmount: number
-  operatorAmount: number
+  percentage: runtime.Decimal
+  platformAmount: runtime.Decimal
+  operatorAmount: runtime.Decimal
   createdAt: Date
   _count: CommissionCountAggregateOutputType | null
   _avg: CommissionAvgAggregateOutputType | null
@@ -236,9 +236,9 @@ export type CommissionWhereInput = {
   id?: Prisma.StringFilter<"Commission"> | string
   paymentId?: Prisma.StringFilter<"Commission"> | string
   companyId?: Prisma.StringFilter<"Commission"> | string
-  percentage?: Prisma.FloatFilter<"Commission"> | number
-  platformAmount?: Prisma.FloatFilter<"Commission"> | number
-  operatorAmount?: Prisma.FloatFilter<"Commission"> | number
+  percentage?: Prisma.DecimalFilter<"Commission"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: Prisma.DecimalFilter<"Commission"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: Prisma.DecimalFilter<"Commission"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Commission"> | Date | string
   payment?: Prisma.XOR<Prisma.PaymentScalarRelationFilter, Prisma.PaymentWhereInput>
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
@@ -264,9 +264,9 @@ export type CommissionWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.CommissionWhereInput[]
   NOT?: Prisma.CommissionWhereInput | Prisma.CommissionWhereInput[]
   companyId?: Prisma.StringFilter<"Commission"> | string
-  percentage?: Prisma.FloatFilter<"Commission"> | number
-  platformAmount?: Prisma.FloatFilter<"Commission"> | number
-  operatorAmount?: Prisma.FloatFilter<"Commission"> | number
+  percentage?: Prisma.DecimalFilter<"Commission"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: Prisma.DecimalFilter<"Commission"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: Prisma.DecimalFilter<"Commission"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Commission"> | Date | string
   payment?: Prisma.XOR<Prisma.PaymentScalarRelationFilter, Prisma.PaymentWhereInput>
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
@@ -294,17 +294,17 @@ export type CommissionScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Commission"> | string
   paymentId?: Prisma.StringWithAggregatesFilter<"Commission"> | string
   companyId?: Prisma.StringWithAggregatesFilter<"Commission"> | string
-  percentage?: Prisma.FloatWithAggregatesFilter<"Commission"> | number
-  platformAmount?: Prisma.FloatWithAggregatesFilter<"Commission"> | number
-  operatorAmount?: Prisma.FloatWithAggregatesFilter<"Commission"> | number
+  percentage?: Prisma.DecimalWithAggregatesFilter<"Commission"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: Prisma.DecimalWithAggregatesFilter<"Commission"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: Prisma.DecimalWithAggregatesFilter<"Commission"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Commission"> | Date | string
 }
 
 export type CommissionCreateInput = {
   id?: string
-  percentage?: number
-  platformAmount?: number
-  operatorAmount?: number
+  percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   payment: Prisma.PaymentCreateNestedOneWithoutCommissionInput
   company: Prisma.CompanyCreateNestedOneWithoutCommissionsInput
@@ -314,17 +314,17 @@ export type CommissionUncheckedCreateInput = {
   id?: string
   paymentId: string
   companyId: string
-  percentage?: number
-  platformAmount?: number
-  operatorAmount?: number
+  percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
 export type CommissionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  percentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  platformAmount?: Prisma.FloatFieldUpdateOperationsInput | number
-  operatorAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  percentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payment?: Prisma.PaymentUpdateOneRequiredWithoutCommissionNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutCommissionsNestedInput
@@ -334,9 +334,9 @@ export type CommissionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   paymentId?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
-  percentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  platformAmount?: Prisma.FloatFieldUpdateOperationsInput | number
-  operatorAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  percentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -344,17 +344,17 @@ export type CommissionCreateManyInput = {
   id?: string
   paymentId: string
   companyId: string
-  percentage?: number
-  platformAmount?: number
-  operatorAmount?: number
+  percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
 export type CommissionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  percentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  platformAmount?: Prisma.FloatFieldUpdateOperationsInput | number
-  operatorAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  percentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -362,9 +362,9 @@ export type CommissionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   paymentId?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
-  percentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  platformAmount?: Prisma.FloatFieldUpdateOperationsInput | number
-  operatorAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  percentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -507,9 +507,9 @@ export type CommissionUncheckedUpdateOneWithoutPaymentNestedInput = {
 
 export type CommissionCreateWithoutCompanyInput = {
   id?: string
-  percentage?: number
-  platformAmount?: number
-  operatorAmount?: number
+  percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   payment: Prisma.PaymentCreateNestedOneWithoutCommissionInput
 }
@@ -517,9 +517,9 @@ export type CommissionCreateWithoutCompanyInput = {
 export type CommissionUncheckedCreateWithoutCompanyInput = {
   id?: string
   paymentId: string
-  percentage?: number
-  platformAmount?: number
-  operatorAmount?: number
+  percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
@@ -556,17 +556,17 @@ export type CommissionScalarWhereInput = {
   id?: Prisma.StringFilter<"Commission"> | string
   paymentId?: Prisma.StringFilter<"Commission"> | string
   companyId?: Prisma.StringFilter<"Commission"> | string
-  percentage?: Prisma.FloatFilter<"Commission"> | number
-  platformAmount?: Prisma.FloatFilter<"Commission"> | number
-  operatorAmount?: Prisma.FloatFilter<"Commission"> | number
+  percentage?: Prisma.DecimalFilter<"Commission"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: Prisma.DecimalFilter<"Commission"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: Prisma.DecimalFilter<"Commission"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Commission"> | Date | string
 }
 
 export type CommissionCreateWithoutPaymentInput = {
   id?: string
-  percentage?: number
-  platformAmount?: number
-  operatorAmount?: number
+  percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutCommissionsInput
 }
@@ -574,9 +574,9 @@ export type CommissionCreateWithoutPaymentInput = {
 export type CommissionUncheckedCreateWithoutPaymentInput = {
   id?: string
   companyId: string
-  percentage?: number
-  platformAmount?: number
-  operatorAmount?: number
+  percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
@@ -598,9 +598,9 @@ export type CommissionUpdateToOneWithWhereWithoutPaymentInput = {
 
 export type CommissionUpdateWithoutPaymentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  percentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  platformAmount?: Prisma.FloatFieldUpdateOperationsInput | number
-  operatorAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  percentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutCommissionsNestedInput
 }
@@ -608,26 +608,26 @@ export type CommissionUpdateWithoutPaymentInput = {
 export type CommissionUncheckedUpdateWithoutPaymentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
-  percentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  platformAmount?: Prisma.FloatFieldUpdateOperationsInput | number
-  operatorAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  percentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CommissionCreateManyCompanyInput = {
   id?: string
   paymentId: string
-  percentage?: number
-  platformAmount?: number
-  operatorAmount?: number
+  percentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
 export type CommissionUpdateWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  percentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  platformAmount?: Prisma.FloatFieldUpdateOperationsInput | number
-  operatorAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  percentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payment?: Prisma.PaymentUpdateOneRequiredWithoutCommissionNestedInput
 }
@@ -635,18 +635,18 @@ export type CommissionUpdateWithoutCompanyInput = {
 export type CommissionUncheckedUpdateWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   paymentId?: Prisma.StringFieldUpdateOperationsInput | string
-  percentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  platformAmount?: Prisma.FloatFieldUpdateOperationsInput | number
-  operatorAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  percentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CommissionUncheckedUpdateManyWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   paymentId?: Prisma.StringFieldUpdateOperationsInput | string
-  percentage?: Prisma.FloatFieldUpdateOperationsInput | number
-  platformAmount?: Prisma.FloatFieldUpdateOperationsInput | number
-  operatorAmount?: Prisma.FloatFieldUpdateOperationsInput | number
+  percentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platformAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  operatorAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -692,9 +692,9 @@ export type $CommissionPayload<ExtArgs extends runtime.Types.Extensions.Internal
     id: string
     paymentId: string
     companyId: string
-    percentage: number
-    platformAmount: number
-    operatorAmount: number
+    percentage: runtime.Decimal
+    platformAmount: runtime.Decimal
+    operatorAmount: runtime.Decimal
     createdAt: Date
   }, ExtArgs["result"]["commission"]>
   composites: {}
@@ -1070,9 +1070,9 @@ export interface CommissionFieldRefs {
   readonly id: Prisma.FieldRef<"Commission", 'String'>
   readonly paymentId: Prisma.FieldRef<"Commission", 'String'>
   readonly companyId: Prisma.FieldRef<"Commission", 'String'>
-  readonly percentage: Prisma.FieldRef<"Commission", 'Float'>
-  readonly platformAmount: Prisma.FieldRef<"Commission", 'Float'>
-  readonly operatorAmount: Prisma.FieldRef<"Commission", 'Float'>
+  readonly percentage: Prisma.FieldRef<"Commission", 'Decimal'>
+  readonly platformAmount: Prisma.FieldRef<"Commission", 'Decimal'>
+  readonly operatorAmount: Prisma.FieldRef<"Commission", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"Commission", 'DateTime'>
 }
     

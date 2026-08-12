@@ -27,11 +27,11 @@ export type AggregateMaintenanceRecord = {
 }
 
 export type MaintenanceRecordAvgAggregateOutputType = {
-  cost: number | null
+  cost: runtime.Decimal | null
 }
 
 export type MaintenanceRecordSumAggregateOutputType = {
-  cost: number | null
+  cost: runtime.Decimal | null
 }
 
 export type MaintenanceRecordMinAggregateOutputType = {
@@ -46,7 +46,7 @@ export type MaintenanceRecordMinAggregateOutputType = {
   scheduledAt: Date | null
   completedAt: Date | null
   assignedTo: string | null
-  cost: number | null
+  cost: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -63,7 +63,7 @@ export type MaintenanceRecordMaxAggregateOutputType = {
   scheduledAt: Date | null
   completedAt: Date | null
   assignedTo: string | null
-  cost: number | null
+  cost: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -245,7 +245,7 @@ export type MaintenanceRecordGroupByOutputType = {
   scheduledAt: Date | null
   completedAt: Date | null
   assignedTo: string | null
-  cost: number
+  cost: runtime.Decimal
   createdAt: Date
   updatedAt: Date
   _count: MaintenanceRecordCountAggregateOutputType | null
@@ -285,7 +285,7 @@ export type MaintenanceRecordWhereInput = {
   scheduledAt?: Prisma.DateTimeNullableFilter<"MaintenanceRecord"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"MaintenanceRecord"> | Date | string | null
   assignedTo?: Prisma.StringNullableFilter<"MaintenanceRecord"> | string | null
-  cost?: Prisma.FloatFilter<"MaintenanceRecord"> | number
+  cost?: Prisma.DecimalFilter<"MaintenanceRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"MaintenanceRecord"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MaintenanceRecord"> | Date | string
   charger?: Prisma.XOR<Prisma.ChargerScalarRelationFilter, Prisma.ChargerWhereInput>
@@ -327,7 +327,7 @@ export type MaintenanceRecordWhereUniqueInput = Prisma.AtLeast<{
   scheduledAt?: Prisma.DateTimeNullableFilter<"MaintenanceRecord"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"MaintenanceRecord"> | Date | string | null
   assignedTo?: Prisma.StringNullableFilter<"MaintenanceRecord"> | string | null
-  cost?: Prisma.FloatFilter<"MaintenanceRecord"> | number
+  cost?: Prisma.DecimalFilter<"MaintenanceRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"MaintenanceRecord"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MaintenanceRecord"> | Date | string
   charger?: Prisma.XOR<Prisma.ChargerScalarRelationFilter, Prisma.ChargerWhereInput>
@@ -371,7 +371,7 @@ export type MaintenanceRecordScalarWhereWithAggregatesInput = {
   scheduledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"MaintenanceRecord"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"MaintenanceRecord"> | Date | string | null
   assignedTo?: Prisma.StringNullableWithAggregatesFilter<"MaintenanceRecord"> | string | null
-  cost?: Prisma.FloatWithAggregatesFilter<"MaintenanceRecord"> | number
+  cost?: Prisma.DecimalWithAggregatesFilter<"MaintenanceRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"MaintenanceRecord"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"MaintenanceRecord"> | Date | string
 }
@@ -386,7 +386,7 @@ export type MaintenanceRecordCreateInput = {
   scheduledAt?: Date | string | null
   completedAt?: Date | string | null
   assignedTo?: string | null
-  cost?: number
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   charger: Prisma.ChargerCreateNestedOneWithoutMaintenanceInput
@@ -405,7 +405,7 @@ export type MaintenanceRecordUncheckedCreateInput = {
   scheduledAt?: Date | string | null
   completedAt?: Date | string | null
   assignedTo?: string | null
-  cost?: number
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -420,7 +420,7 @@ export type MaintenanceRecordUpdateInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cost?: Prisma.FloatFieldUpdateOperationsInput | number
+  cost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   charger?: Prisma.ChargerUpdateOneRequiredWithoutMaintenanceNestedInput
@@ -439,7 +439,7 @@ export type MaintenanceRecordUncheckedUpdateInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cost?: Prisma.FloatFieldUpdateOperationsInput | number
+  cost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -456,7 +456,7 @@ export type MaintenanceRecordCreateManyInput = {
   scheduledAt?: Date | string | null
   completedAt?: Date | string | null
   assignedTo?: string | null
-  cost?: number
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -471,7 +471,7 @@ export type MaintenanceRecordUpdateManyMutationInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cost?: Prisma.FloatFieldUpdateOperationsInput | number
+  cost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -488,7 +488,7 @@ export type MaintenanceRecordUncheckedUpdateManyInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cost?: Prisma.FloatFieldUpdateOperationsInput | number
+  cost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -662,7 +662,7 @@ export type MaintenanceRecordCreateWithoutCompanyInput = {
   scheduledAt?: Date | string | null
   completedAt?: Date | string | null
   assignedTo?: string | null
-  cost?: number
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   charger: Prisma.ChargerCreateNestedOneWithoutMaintenanceInput
@@ -679,7 +679,7 @@ export type MaintenanceRecordUncheckedCreateWithoutCompanyInput = {
   scheduledAt?: Date | string | null
   completedAt?: Date | string | null
   assignedTo?: string | null
-  cost?: number
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -725,7 +725,7 @@ export type MaintenanceRecordScalarWhereInput = {
   scheduledAt?: Prisma.DateTimeNullableFilter<"MaintenanceRecord"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"MaintenanceRecord"> | Date | string | null
   assignedTo?: Prisma.StringNullableFilter<"MaintenanceRecord"> | string | null
-  cost?: Prisma.FloatFilter<"MaintenanceRecord"> | number
+  cost?: Prisma.DecimalFilter<"MaintenanceRecord"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"MaintenanceRecord"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MaintenanceRecord"> | Date | string
 }
@@ -740,7 +740,7 @@ export type MaintenanceRecordCreateWithoutChargerInput = {
   scheduledAt?: Date | string | null
   completedAt?: Date | string | null
   assignedTo?: string | null
-  cost?: number
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutMaintenanceInput
@@ -757,7 +757,7 @@ export type MaintenanceRecordUncheckedCreateWithoutChargerInput = {
   scheduledAt?: Date | string | null
   completedAt?: Date | string | null
   assignedTo?: string | null
-  cost?: number
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -799,7 +799,7 @@ export type MaintenanceRecordCreateManyCompanyInput = {
   scheduledAt?: Date | string | null
   completedAt?: Date | string | null
   assignedTo?: string | null
-  cost?: number
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -814,7 +814,7 @@ export type MaintenanceRecordUpdateWithoutCompanyInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cost?: Prisma.FloatFieldUpdateOperationsInput | number
+  cost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   charger?: Prisma.ChargerUpdateOneRequiredWithoutMaintenanceNestedInput
@@ -831,7 +831,7 @@ export type MaintenanceRecordUncheckedUpdateWithoutCompanyInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cost?: Prisma.FloatFieldUpdateOperationsInput | number
+  cost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -847,7 +847,7 @@ export type MaintenanceRecordUncheckedUpdateManyWithoutCompanyInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cost?: Prisma.FloatFieldUpdateOperationsInput | number
+  cost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -863,7 +863,7 @@ export type MaintenanceRecordCreateManyChargerInput = {
   scheduledAt?: Date | string | null
   completedAt?: Date | string | null
   assignedTo?: string | null
-  cost?: number
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -878,7 +878,7 @@ export type MaintenanceRecordUpdateWithoutChargerInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cost?: Prisma.FloatFieldUpdateOperationsInput | number
+  cost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutMaintenanceNestedInput
@@ -895,7 +895,7 @@ export type MaintenanceRecordUncheckedUpdateWithoutChargerInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cost?: Prisma.FloatFieldUpdateOperationsInput | number
+  cost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -911,7 +911,7 @@ export type MaintenanceRecordUncheckedUpdateManyWithoutChargerInput = {
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cost?: Prisma.FloatFieldUpdateOperationsInput | number
+  cost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -980,7 +980,7 @@ export type $MaintenanceRecordPayload<ExtArgs extends runtime.Types.Extensions.I
     scheduledAt: Date | null
     completedAt: Date | null
     assignedTo: string | null
-    cost: number
+    cost: runtime.Decimal
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["maintenanceRecord"]>
@@ -1365,7 +1365,7 @@ export interface MaintenanceRecordFieldRefs {
   readonly scheduledAt: Prisma.FieldRef<"MaintenanceRecord", 'DateTime'>
   readonly completedAt: Prisma.FieldRef<"MaintenanceRecord", 'DateTime'>
   readonly assignedTo: Prisma.FieldRef<"MaintenanceRecord", 'String'>
-  readonly cost: Prisma.FieldRef<"MaintenanceRecord", 'Float'>
+  readonly cost: Prisma.FieldRef<"MaintenanceRecord", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"MaintenanceRecord", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"MaintenanceRecord", 'DateTime'>
 }

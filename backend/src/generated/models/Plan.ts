@@ -27,14 +27,14 @@ export type AggregatePlan = {
 }
 
 export type PlanAvgAggregateOutputType = {
-  price: number | null
+  price: runtime.Decimal | null
   maxStations: number | null
   maxChargers: number | null
   maxUsers: number | null
 }
 
 export type PlanSumAggregateOutputType = {
-  price: number | null
+  price: runtime.Decimal | null
   maxStations: number | null
   maxChargers: number | null
   maxUsers: number | null
@@ -44,7 +44,7 @@ export type PlanMinAggregateOutputType = {
   id: string | null
   name: string | null
   description: string | null
-  price: number | null
+  price: runtime.Decimal | null
   maxStations: number | null
   maxChargers: number | null
   maxUsers: number | null
@@ -57,7 +57,7 @@ export type PlanMaxAggregateOutputType = {
   id: string | null
   name: string | null
   description: string | null
-  price: number | null
+  price: runtime.Decimal | null
   maxStations: number | null
   maxChargers: number | null
   maxUsers: number | null
@@ -225,7 +225,7 @@ export type PlanGroupByOutputType = {
   id: string
   name: string
   description: string | null
-  price: number
+  price: runtime.Decimal
   maxStations: number
   maxChargers: number
   maxUsers: number
@@ -261,7 +261,7 @@ export type PlanWhereInput = {
   id?: Prisma.StringFilter<"Plan"> | string
   name?: Prisma.StringFilter<"Plan"> | string
   description?: Prisma.StringNullableFilter<"Plan"> | string | null
-  price?: Prisma.FloatFilter<"Plan"> | number
+  price?: Prisma.DecimalFilter<"Plan"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   maxStations?: Prisma.IntFilter<"Plan"> | number
   maxChargers?: Prisma.IntFilter<"Plan"> | number
   maxUsers?: Prisma.IntFilter<"Plan"> | number
@@ -293,7 +293,7 @@ export type PlanWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.PlanWhereInput[]
   NOT?: Prisma.PlanWhereInput | Prisma.PlanWhereInput[]
   description?: Prisma.StringNullableFilter<"Plan"> | string | null
-  price?: Prisma.FloatFilter<"Plan"> | number
+  price?: Prisma.DecimalFilter<"Plan"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   maxStations?: Prisma.IntFilter<"Plan"> | number
   maxChargers?: Prisma.IntFilter<"Plan"> | number
   maxUsers?: Prisma.IntFilter<"Plan"> | number
@@ -328,7 +328,7 @@ export type PlanScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Plan"> | string
   name?: Prisma.StringWithAggregatesFilter<"Plan"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Plan"> | string | null
-  price?: Prisma.FloatWithAggregatesFilter<"Plan"> | number
+  price?: Prisma.DecimalWithAggregatesFilter<"Plan"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   maxStations?: Prisma.IntWithAggregatesFilter<"Plan"> | number
   maxChargers?: Prisma.IntWithAggregatesFilter<"Plan"> | number
   maxUsers?: Prisma.IntWithAggregatesFilter<"Plan"> | number
@@ -341,7 +341,7 @@ export type PlanCreateInput = {
   id?: string
   name: string
   description?: string | null
-  price?: number
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   maxStations?: number
   maxChargers?: number
   maxUsers?: number
@@ -355,7 +355,7 @@ export type PlanUncheckedCreateInput = {
   id?: string
   name: string
   description?: string | null
-  price?: number
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   maxStations?: number
   maxChargers?: number
   maxUsers?: number
@@ -369,7 +369,7 @@ export type PlanUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   maxStations?: Prisma.IntFieldUpdateOperationsInput | number
   maxChargers?: Prisma.IntFieldUpdateOperationsInput | number
   maxUsers?: Prisma.IntFieldUpdateOperationsInput | number
@@ -383,7 +383,7 @@ export type PlanUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   maxStations?: Prisma.IntFieldUpdateOperationsInput | number
   maxChargers?: Prisma.IntFieldUpdateOperationsInput | number
   maxUsers?: Prisma.IntFieldUpdateOperationsInput | number
@@ -397,7 +397,7 @@ export type PlanCreateManyInput = {
   id?: string
   name: string
   description?: string | null
-  price?: number
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   maxStations?: number
   maxChargers?: number
   maxUsers?: number
@@ -410,7 +410,7 @@ export type PlanUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   maxStations?: Prisma.IntFieldUpdateOperationsInput | number
   maxChargers?: Prisma.IntFieldUpdateOperationsInput | number
   maxUsers?: Prisma.IntFieldUpdateOperationsInput | number
@@ -423,7 +423,7 @@ export type PlanUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   maxStations?: Prisma.IntFieldUpdateOperationsInput | number
   maxChargers?: Prisma.IntFieldUpdateOperationsInput | number
   maxUsers?: Prisma.IntFieldUpdateOperationsInput | number
@@ -522,7 +522,7 @@ export type PlanCreateWithoutSubscriptionsInput = {
   id?: string
   name: string
   description?: string | null
-  price?: number
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   maxStations?: number
   maxChargers?: number
   maxUsers?: number
@@ -535,7 +535,7 @@ export type PlanUncheckedCreateWithoutSubscriptionsInput = {
   id?: string
   name: string
   description?: string | null
-  price?: number
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   maxStations?: number
   maxChargers?: number
   maxUsers?: number
@@ -564,7 +564,7 @@ export type PlanUpdateWithoutSubscriptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   maxStations?: Prisma.IntFieldUpdateOperationsInput | number
   maxChargers?: Prisma.IntFieldUpdateOperationsInput | number
   maxUsers?: Prisma.IntFieldUpdateOperationsInput | number
@@ -577,7 +577,7 @@ export type PlanUncheckedUpdateWithoutSubscriptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   maxStations?: Prisma.IntFieldUpdateOperationsInput | number
   maxChargers?: Prisma.IntFieldUpdateOperationsInput | number
   maxUsers?: Prisma.IntFieldUpdateOperationsInput | number
@@ -662,7 +662,7 @@ export type $PlanPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: string
     name: string
     description: string | null
-    price: number
+    price: runtime.Decimal
     maxStations: number
     maxChargers: number
     maxUsers: number
@@ -1042,7 +1042,7 @@ export interface PlanFieldRefs {
   readonly id: Prisma.FieldRef<"Plan", 'String'>
   readonly name: Prisma.FieldRef<"Plan", 'String'>
   readonly description: Prisma.FieldRef<"Plan", 'String'>
-  readonly price: Prisma.FieldRef<"Plan", 'Float'>
+  readonly price: Prisma.FieldRef<"Plan", 'Decimal'>
   readonly maxStations: Prisma.FieldRef<"Plan", 'Int'>
   readonly maxChargers: Prisma.FieldRef<"Plan", 'Int'>
   readonly maxUsers: Prisma.FieldRef<"Plan", 'Int'>

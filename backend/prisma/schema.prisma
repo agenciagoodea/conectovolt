@@ -37,7 +37,7 @@ model Company {
   phone     String?
   logoUrl   String?  @map("logo_url")
   status    String   @default("PENDING")
-  commissionPercent Float @default(5.0) @map("commission_percent")
+  commissionPercent Decimal @default(5.00) @db.Decimal(5, 2) @map("commission_percent")
   cep       String?
   street    String?
   number    String?
@@ -144,7 +144,7 @@ model Tariff {
   id          String   @id @default(cuid())
   companyId   String   @map("company_id")
   name        String
-  pricePerKwh Float    @map("price_per_kwh")
+  pricePerKwh Decimal  @db.Decimal(10, 4) @map("price_per_kwh")
   isActive    Boolean  @default(true) @map("is_active")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -168,7 +168,7 @@ model ChargingSession {
   startTime   DateTime  @default(now()) @map("start_time")
   endTime     DateTime? @map("end_time")
   energyKwh   Float     @default(0) @map("energy_kwh")
-  amount      Float     @default(0)
+  amount      Decimal   @default(0) @db.Decimal(10, 2)
   status      String    @default("PENDING")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
@@ -193,7 +193,7 @@ model Payment {
   sessionId  String    @unique @map("session_id")
   gateway    String
   externalId String?   @unique @map("external_id")
-  amount     Float     @default(0)
+  amount     Decimal   @default(0) @db.Decimal(10, 2)
   status     String    @default("PENDING")
   paidAt     DateTime? @map("paid_at")
   createdAt  DateTime  @default(now()) @map("created_at")
@@ -210,9 +210,9 @@ model Commission {
   id             String   @id @default(cuid())
   paymentId      String   @unique @map("payment_id")
   companyId      String   @map("company_id")
-  percentage     Float    @default(5.00)
-  platformAmount Float    @default(0) @map("platform_amount")
-  operatorAmount Float    @default(0) @map("operator_amount")
+  percentage     Decimal  @default(5.00) @db.Decimal(5, 2)
+  platformAmount Decimal  @default(0) @db.Decimal(10, 2) @map("platform_amount")
+  operatorAmount Decimal  @default(0) @db.Decimal(10, 2) @map("operator_amount")
   createdAt      DateTime @default(now()) @map("created_at")
 
   payment Payment @relation(fields: [paymentId], references: [id])
@@ -225,7 +225,7 @@ model Commission {
 model Wallet {
   id        String   @id @default(cuid())
   companyId String   @unique @map("company_id")
-  balance   Float    @default(0)
+  balance   Decimal  @default(0) @db.Decimal(10, 2)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -239,7 +239,7 @@ model Transaction {
   id          String   @id @default(cuid())
   walletId    String   @map("wallet_id")
   type        String
-  amount      Float    @default(0)
+  amount      Decimal  @default(0) @db.Decimal(10, 2)
   description String?
   createdAt   DateTime @default(now()) @map("created_at")
 
@@ -288,7 +288,7 @@ model Plan {
   id          String   @id @default(cuid())
   name        String   @unique
   description String?
-  price       Float    @default(0)
+  price       Decimal  @default(0) @db.Decimal(10, 2)
   maxStations Int      @default(1) @map("max_stations")
   maxChargers Int      @default(1) @map("max_chargers")
   maxUsers    Int      @default(1) @map("max_users")
@@ -325,8 +325,8 @@ model PlatformUsage {
   stations   Int      @default(0)
   chargers   Int      @default(0)
   sessions   Int      @default(0)
-  revenue    Float    @default(0)
-  commission Float    @default(0)
+  revenue    Decimal  @default(0) @db.Decimal(10, 2)
+  commission Decimal  @default(0) @db.Decimal(10, 2)
   createdAt  DateTime @default(now()) @map("created_at")
 
   @@unique([companyId, month])
@@ -396,7 +396,7 @@ model MaintenanceRecord {
   scheduledAt DateTime? @map("scheduled_at")
   completedAt DateTime? @map("completed_at")
   assignedTo  String?   @map("assigned_to")
-  cost        Float     @default(0)
+  cost        Decimal   @default(0) @db.Decimal(10, 2)
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
