@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 
@@ -7,15 +7,23 @@ export class MercadoPagoService {
   private readonly logger = new Logger(MercadoPagoService.name);
   private client: MercadoPagoConfig | null = null;
   private isConfigured = false;
+  private readonly isProduction: boolean;
 
   constructor(private readonly configService: ConfigService) {
     const accessToken = this.configService.get<string>(
       'MERCADO_PAGO_ACCESS_TOKEN',
     );
+    const nodeEnv = this.configService.get<string>('NODE_ENV') ?? process.env.NODE_ENV ?? 'development';
+    this.isProduction = nodeEnv === 'production';
+
     if (accessToken) {
       this.client = new MercadoPagoConfig({ accessToken });
       this.isConfigured = true;
       this.logger.log('Mercado Pago configured');
+    } else if (this.isProduction) {
+      this.logger.error(
+        'MERCADO_PAGO_ACCESS_TOKEN is not configured. Payment simulation is not allowed in production.',
+      );
     } else {
       this.logger.warn(
         'Mercado Pago not configured (MERCADO_PAGO_ACCESS_TOKEN missing). Using simulation mode.',
@@ -27,11 +35,28 @@ export class MercadoPagoService {
     return this.isConfigured;
   }
 
+  /**
+   * Garante que simulação não ocorra em produção.
+   * Lança InternalServerErrorException se o ambiente for produção e o token estiver ausente.
+   */
+  private assertNotProductionWithoutCredentials(): void {
+    if (this.isProduction && !this.isConfigured) {
+      this.logger.error(
+        'Payment attempted in production without MERCADO_PAGO_ACCESS_TOKEN configured.',
+      );
+      throw new InternalServerErrorException(
+        'Payment gateway is not configured. Contact the system administrator.',
+      );
+    }
+  }
+
   async createPixPayment(
     amount: number,
     description: string,
     payerEmail: string,
   ) {
+    this.assertNotProductionWithoutCredentials();
+
     if (!this.isConfigured) {
       return this.simulatePixPayment(amount, description);
     }
@@ -68,6 +93,8 @@ export class MercadoPagoService {
     installments: number = 1,
     paymentMethodId = 'mastercard',
   ) {
+    this.assertNotProductionWithoutCredentials();
+
     if (!this.isConfigured) {
       return this.simulateCardPayment(amount, description);
     }
@@ -95,6 +122,8 @@ export class MercadoPagoService {
   }
 
   async getPaymentStatus(paymentId: number) {
+    this.assertNotProductionWithoutCredentials();
+
     if (!this.isConfigured) {
       return { id: paymentId, status: 'approved' };
     }
@@ -111,6 +140,8 @@ export class MercadoPagoService {
   }
 
   async refundPayment(paymentId: number) {
+    this.assertNotProductionWithoutCredentials();
+
     if (!this.isConfigured) {
       return { id: paymentId, status: 'refunded' };
     }
