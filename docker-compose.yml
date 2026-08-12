@@ -1,20 +1,21 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: conectovolt-postgres
+  mysql:
+    image: mysql:8.0
+    container_name: conectovolt-mysql
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-conectovolt}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-conectovolt}
+      MYSQL_USER: ${MYSQL_USER:-conectovolt}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-conectovolt}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${MYSQL_PORT:-3306}:3306"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-conectovolt}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -35,5 +36,5 @@ services:
       retries: 5
 
 volumes:
-  postgres_data:
+  mysql_data:
   redis_data:

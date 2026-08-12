@@ -80,7 +80,7 @@ Criar uma primeira versão funcional que permita:
 * NestJS
 * TypeScript
 * Prisma ORM
-* MySQL em produção (SQLite disponível para desenvolvimento local)
+* MySQL / MariaDB (produção, staging e desenvolvimento)
 * Redis
 * WebSocket
 
