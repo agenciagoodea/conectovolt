@@ -5,12 +5,18 @@ dotenv.config();
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import express from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const server = express();
+  server.use(express.json({ limit: '10mb' }));
+  server.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
   const logger = new Logger('Bootstrap');
 
   app.setGlobalPrefix('api/v1');

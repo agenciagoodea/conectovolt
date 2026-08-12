@@ -16,6 +16,7 @@ type OcppMessage = [number, string, ...unknown[]];
 export class OcppServer implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(OcppServer.name);
   private wss: WebSocketServer | null = null;
+  private pingInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(
     private readonly configService: ConfigService,
@@ -41,6 +42,8 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
 
           this.ocppService.trackConnection(ocppId, ws);
 
+          (ws as any).isAlive = true;
+
           ws.on('message', (data: RawData) => {
             void this.handleMessage(ocppId, ws, data);
           });
@@ -57,11 +60,22 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
           });
 
           ws.on('pong', () => {
-            // Keep-alive
+            (ws as any).isAlive = true;
           });
         });
 
         this.logger.log(`OCPP WebSocket server listening on ${host}:${port}`);
+
+        this.pingInterval = setInterval(() => {
+          this.wss?.clients.forEach((ws) => {
+            if ((ws as any).isAlive === false) {
+              this.logger.warn(`Terminating unresponsive WebSocket`);
+              return ws.terminate();
+            }
+            (ws as any).isAlive = false;
+            ws.ping();
+          });
+        }, 30000);
       } else {
         this.logger.log(
           'OCPP standalone port disabled for Passenger environment',
@@ -76,6 +90,9 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
   }
 
   onModuleDestroy() {
+    if (this.pingInterval) {
+      clearInterval(this.pingInterval);
+    }
     if (this.wss) {
       this.wss.close();
       this.logger.log('OCPP WebSocket server closed');
@@ -87,7 +104,8 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
     const match = url.match(/[?&]identifier=([^&]+)/);
     if (match) return match[1];
 
-    const pathParts = url.split('/').filter(Boolean);
+    const path = url.split('?')[0];
+    const pathParts = path.split('/').filter(Boolean);
     if (pathParts.length > 0 && pathParts[pathParts.length - 1]) {
       return pathParts[pathParts.length - 1];
     }
@@ -106,15 +124,15 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
 
     const header = req.headers['x-ocpp-token'] || req.headers.authorization;
     const value = Array.isArray(header) ? header[0] : header;
-    if (!value) return false;
 
-    let receivedToken = value;
-    if (value.startsWith('Bearer ')) {
-      receivedToken = value.slice('Bearer '.length);
-    } else if (value.startsWith('Basic ')) {
+    let receivedToken = value || '';
+
+    if (receivedToken.startsWith('Bearer ')) {
+      receivedToken = receivedToken.slice('Bearer '.length);
+    } else if (receivedToken.startsWith('Basic ')) {
       try {
         const credentials = Buffer.from(
-          value.slice('Basic '.length),
+          receivedToken.slice('Basic '.length),
           'base64',
         ).toString('utf8');
         receivedToken = credentials.slice(credentials.indexOf(':') + 1);
@@ -123,7 +141,15 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    return receivedToken === expectedToken;
+    if (receivedToken && receivedToken === expectedToken) return true;
+
+    const url = req.url || '';
+    const tokenMatch = url.match(/[?&](?:token|X-OCPP-Token)=([^&]+)/i);
+    if (tokenMatch) {
+      return tokenMatch[1] === expectedToken;
+    }
+
+    return false;
   }
 
   private async handleMessage(ocppId: string, ws: WebSocket, data: RawData) {

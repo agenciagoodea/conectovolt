@@ -283,6 +283,7 @@ export type PlanOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   subscriptions?: Prisma.SubscriptionOrderByRelationAggregateInput
+  _relevance?: Prisma.PlanOrderByRelevanceInput
 }
 
 export type PlanWhereUniqueInput = Prisma.AtLeast<{
@@ -429,6 +430,12 @@ export type PlanUncheckedUpdateManyInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PlanOrderByRelevanceInput = {
+  fields: Prisma.PlanOrderByRelevanceFieldEnum | Prisma.PlanOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type PlanCountOrderByAggregateInput = {
@@ -625,31 +632,7 @@ export type PlanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   _count?: boolean | Prisma.PlanCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["plan"]>
 
-export type PlanSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  name?: boolean
-  description?: boolean
-  price?: boolean
-  maxStations?: boolean
-  maxChargers?: boolean
-  maxUsers?: boolean
-  isActive?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-}, ExtArgs["result"]["plan"]>
 
-export type PlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  name?: boolean
-  description?: boolean
-  price?: boolean
-  maxStations?: boolean
-  maxChargers?: boolean
-  maxUsers?: boolean
-  isActive?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-}, ExtArgs["result"]["plan"]>
 
 export type PlanSelectScalar = {
   id?: boolean
@@ -669,8 +652,6 @@ export type PlanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   subscriptions?: boolean | Prisma.Plan$subscriptionsArgs<ExtArgs>
   _count?: boolean | Prisma.PlanCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type PlanIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type PlanIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $PlanPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Plan"
@@ -806,30 +787,6 @@ export interface PlanDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
   createMany<T extends PlanCreateManyArgs>(args?: Prisma.SelectSubset<T, PlanCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many Plans and returns the data saved in the database.
-   * @param {PlanCreateManyAndReturnArgs} args - Arguments to create many Plans.
-   * @example
-   * // Create many Plans
-   * const plan = await prisma.plan.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many Plans and only return the `id`
-   * const planWithIdOnly = await prisma.plan.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends PlanCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, PlanCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a Plan.
    * @param {PlanDeleteArgs} args - Arguments to delete one Plan.
    * @example
@@ -892,36 +849,6 @@ export interface PlanDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
    * 
    */
   updateMany<T extends PlanUpdateManyArgs>(args: Prisma.SelectSubset<T, PlanUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more Plans and returns the data updated in the database.
-   * @param {PlanUpdateManyAndReturnArgs} args - Arguments to update many Plans.
-   * @example
-   * // Update many Plans
-   * const plan = await prisma.plan.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more Plans and only return the `id`
-   * const planWithIdOnly = await prisma.plan.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends PlanUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, PlanUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Plan.
@@ -1356,24 +1283,7 @@ export type PlanCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * The data used to create many Plans.
    */
   data: Prisma.PlanCreateManyInput | Prisma.PlanCreateManyInput[]
-}
-
-/**
- * Plan createManyAndReturn
- */
-export type PlanCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Plan
-   */
-  select?: Prisma.PlanSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Plan
-   */
-  omit?: Prisma.PlanOmit<ExtArgs> | null
-  /**
-   * The data used to create many Plans.
-   */
-  data: Prisma.PlanCreateManyInput | Prisma.PlanCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1406,32 +1316,6 @@ export type PlanUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
  * Plan updateMany
  */
 export type PlanUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * The data used to update Plans.
-   */
-  data: Prisma.XOR<Prisma.PlanUpdateManyMutationInput, Prisma.PlanUncheckedUpdateManyInput>
-  /**
-   * Filter which Plans to update
-   */
-  where?: Prisma.PlanWhereInput
-  /**
-   * Limit how many Plans to update.
-   */
-  limit?: number
-}
-
-/**
- * Plan updateManyAndReturn
- */
-export type PlanUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Plan
-   */
-  select?: Prisma.PlanSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Plan
-   */
-  omit?: Prisma.PlanOmit<ExtArgs> | null
   /**
    * The data used to update Plans.
    */

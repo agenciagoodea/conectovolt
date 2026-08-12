@@ -29,10 +29,12 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
         });
       } else if (provider === 'mysql') {
         const { PrismaMariaDb } = await import('@prisma/adapter-mariadb');
-        const dbUrl = (process.env.DATABASE_URL || '').replace(
+        let dbUrl = (process.env.DATABASE_URL || '').replace(
           /^mysql:\/\//,
           'mariadb://',
         );
+        const separator = dbUrl.includes('?') ? '&' : '?';
+        dbUrl += `${separator}connectTimeout=5000&acquireTimeout=10000`;
         const adapter = new PrismaMariaDb(dbUrl);
         this._client = new PrismaClient({
           adapter,

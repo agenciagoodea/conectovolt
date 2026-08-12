@@ -97,6 +97,13 @@ export class ChargersController {
     return this.chargersService.getConnectedChargers(user);
   }
 
+  @Get('telemetry')
+  @Roles('SUPER_ADMIN', 'OPERATOR')
+  @ApiOperation({ summary: 'Buscar telemetria em tempo real de todos os conectores' })
+  getTelemetry() {
+    return this.chargersService.getConnectorTelemetry();
+  }
+
   @Get(':id/test-connection')
   @Roles('SUPER_ADMIN', 'OPERATOR')
   @ApiOperation({

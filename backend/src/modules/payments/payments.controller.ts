@@ -66,6 +66,18 @@ export class PaymentsController {
     return this.paymentsService.findById(id, user);
   }
 
+  @Get(':id/receipt')
+  @ApiOperation({ summary: 'Gerar comprovante de pagamento' })
+  async getReceipt(
+    @Param('id') id: string,
+    @CurrentUser() user: { id: string; role: string; companyId?: string },
+  ): Promise<unknown> {
+    if (!user?.id) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+    return this.paymentsService.getReceipt(id, user);
+  }
+
   @Patch(':id/approve')
   @Roles('SUPER_ADMIN')
   @ApiOperation({ summary: 'Aprovar pagamento manualmente (Super Admin)' })

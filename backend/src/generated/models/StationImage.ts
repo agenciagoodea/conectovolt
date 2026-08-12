@@ -192,6 +192,7 @@ export type StationImageOrderByWithRelationInput = {
   isPrimary?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   station?: Prisma.StationOrderByWithRelationInput
+  _relevance?: Prisma.StationImageOrderByRelevanceInput
 }
 
 export type StationImageWhereUniqueInput = Prisma.AtLeast<{
@@ -293,6 +294,12 @@ export type StationImageOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type StationImageOrderByRelevanceInput = {
+  fields: Prisma.StationImageOrderByRelevanceFieldEnum | Prisma.StationImageOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
+}
+
 export type StationImageCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   stationId?: Prisma.SortOrder
@@ -380,6 +387,7 @@ export type StationImageCreateOrConnectWithoutStationInput = {
 
 export type StationImageCreateManyStationInputEnvelope = {
   data: Prisma.StationImageCreateManyStationInput | Prisma.StationImageCreateManyStationInput[]
+  skipDuplicates?: boolean
 }
 
 export type StationImageUpsertWithWhereUniqueWithoutStationInput = {
@@ -448,23 +456,7 @@ export type StationImageSelect<ExtArgs extends runtime.Types.Extensions.Internal
   station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stationImage"]>
 
-export type StationImageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  stationId?: boolean
-  url?: boolean
-  isPrimary?: boolean
-  createdAt?: boolean
-  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["stationImage"]>
 
-export type StationImageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  stationId?: boolean
-  url?: boolean
-  isPrimary?: boolean
-  createdAt?: boolean
-  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["stationImage"]>
 
 export type StationImageSelectScalar = {
   id?: boolean
@@ -476,12 +468,6 @@ export type StationImageSelectScalar = {
 
 export type StationImageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "stationId" | "url" | "isPrimary" | "createdAt", ExtArgs["result"]["stationImage"]>
 export type StationImageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
-}
-export type StationImageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
-}
-export type StationImageIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   station?: boolean | Prisma.StationDefaultArgs<ExtArgs>
 }
 
@@ -614,30 +600,6 @@ export interface StationImageDelegate<ExtArgs extends runtime.Types.Extensions.I
   createMany<T extends StationImageCreateManyArgs>(args?: Prisma.SelectSubset<T, StationImageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many StationImages and returns the data saved in the database.
-   * @param {StationImageCreateManyAndReturnArgs} args - Arguments to create many StationImages.
-   * @example
-   * // Create many StationImages
-   * const stationImage = await prisma.stationImage.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many StationImages and only return the `id`
-   * const stationImageWithIdOnly = await prisma.stationImage.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends StationImageCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, StationImageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StationImagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a StationImage.
    * @param {StationImageDeleteArgs} args - Arguments to delete one StationImage.
    * @example
@@ -700,36 +662,6 @@ export interface StationImageDelegate<ExtArgs extends runtime.Types.Extensions.I
    * 
    */
   updateMany<T extends StationImageUpdateManyArgs>(args: Prisma.SelectSubset<T, StationImageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more StationImages and returns the data updated in the database.
-   * @param {StationImageUpdateManyAndReturnArgs} args - Arguments to update many StationImages.
-   * @example
-   * // Update many StationImages
-   * const stationImage = await prisma.stationImage.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more StationImages and only return the `id`
-   * const stationImageWithIdOnly = await prisma.stationImage.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends StationImageUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, StationImageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StationImagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one StationImage.
@@ -1159,28 +1091,7 @@ export type StationImageCreateManyArgs<ExtArgs extends runtime.Types.Extensions.
    * The data used to create many StationImages.
    */
   data: Prisma.StationImageCreateManyInput | Prisma.StationImageCreateManyInput[]
-}
-
-/**
- * StationImage createManyAndReturn
- */
-export type StationImageCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the StationImage
-   */
-  select?: Prisma.StationImageSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the StationImage
-   */
-  omit?: Prisma.StationImageOmit<ExtArgs> | null
-  /**
-   * The data used to create many StationImages.
-   */
-  data: Prisma.StationImageCreateManyInput | Prisma.StationImageCreateManyInput[]
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.StationImageIncludeCreateManyAndReturn<ExtArgs> | null
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1225,36 +1136,6 @@ export type StationImageUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many StationImages to update.
    */
   limit?: number
-}
-
-/**
- * StationImage updateManyAndReturn
- */
-export type StationImageUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the StationImage
-   */
-  select?: Prisma.StationImageSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the StationImage
-   */
-  omit?: Prisma.StationImageOmit<ExtArgs> | null
-  /**
-   * The data used to update StationImages.
-   */
-  data: Prisma.XOR<Prisma.StationImageUpdateManyMutationInput, Prisma.StationImageUncheckedUpdateManyInput>
-  /**
-   * Filter which StationImages to update
-   */
-  where?: Prisma.StationImageWhereInput
-  /**
-   * Limit how many StationImages to update.
-   */
-  limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.StationImageIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

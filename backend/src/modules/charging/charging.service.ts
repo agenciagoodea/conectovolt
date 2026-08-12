@@ -13,6 +13,7 @@ import {
   StopChargingDto,
 } from './dto/charging.dto';
 import { ChargingGateway } from './gateways/charging.gateway';
+import { OcppService } from '../ocpp/ocpp.service';
 
 @Injectable()
 export class ChargingService {
@@ -21,6 +22,7 @@ export class ChargingService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly chargingGateway: ChargingGateway,
+    private readonly ocppService: OcppService,
   ) {}
 
   async start(userId: string, dto: StartChargingDto) {
@@ -118,11 +120,24 @@ export class ChargingService {
       startTime: session.startTime,
     });
 
+    const connectorNumber = dto.connectorId
+      ? parseInt(dto.connectorId.split('-connector-').pop() || '1', 10) || 1
+      : 1;
+
+    let ocppSent = false;
+    if (charger.ocppId) {
+      ocppSent = this.ocppService.sendRemoteStartTransaction(
+        charger.ocppId,
+        userId,
+        connectorNumber,
+      );
+    }
+
     this.logger.log(
-      `Charging started: session=${session.id}, user=${userId}, charger=${dto.chargerId}`,
+      `Charging started: session=${session.id}, user=${userId}, charger=${dto.chargerId}, ocpp=${ocppSent ? 'sent' : 'charger offline'}`,
     );
 
-    return session;
+    return { ...session, ocppRemoteStart: ocppSent };
   }
 
   private async assertSessionOwner(sessionId: string, userId: string) {
@@ -204,7 +219,7 @@ export class ChargingService {
       include: {
         user: { select: { id: true, name: true } },
         station: { select: { id: true, name: true } },
-        charger: { select: { id: true, serialNumber: true } },
+        charger: { select: { id: true, serialNumber: true, ocppId: true } },
         connector: true,
       },
     });
@@ -214,6 +229,15 @@ export class ChargingService {
         where: { id: session.connectorId },
         data: { status: 'AVAILABLE' },
       });
+    }
+
+    const txId = this.ocppService.getTransactionIdForSession(sessionId);
+    let ocppSent = false;
+    if (txId !== null && updated.charger?.ocppId) {
+      ocppSent = this.ocppService.sendRemoteStopTransaction(
+        updated.charger.ocppId,
+        txId,
+      );
     }
 
     this.chargingGateway.emitSessionCompleted({
@@ -228,13 +252,14 @@ export class ChargingService {
     });
 
     this.logger.log(
-      `Charging completed: session=${session.id}, energy=${dto.energyKwh}kWh, amount=R$${amount}`,
+      `Charging completed: session=${session.id}, energy=${dto.energyKwh}kWh, amount=R$${amount}, ocpp=${ocppSent ? 'sent' : 'n/a'}`,
     );
 
     return {
       ...updated,
       tariff: tariff.name,
       pricePerKwh: Number(tariff.pricePerKwh),
+      ocppRemoteStop: ocppSent,
       durationMinutes: updated.endTime
         ? Math.round(
             (updated.endTime.getTime() - updated.startTime.getTime()) / 60000,

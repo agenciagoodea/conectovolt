@@ -1,0 +1,98 @@
+[31m[Nest] 29976  - [39m10/08/2026, 20:13:03 [31m  ERROR[39m [38;5;3m[HttpExceptionFilter] [39m[31mPOST /api/v1/auth/login - 400 - 
+Invalid `this.prisma.user.findUnique()` invocation in
+D:\www\conectovolt\backend\src\modules\auth\auth.service.ts:75:41
+
+  72 }
+  73 
+  74 async login(dto: LoginDto) {
+→ 75   const user = await this.prisma.user.findUnique(
+Database error. Code: `45028`. Message: `pool timeout: failed to retrieve a connection from pool after 10001ms
+    (pool connections: active=0 idle=0 limit=10)`[39m
+PrismaClientKnownRequestError: 
+Invalid `this.prisma.user.findUnique()` invocation in
+D:\www\conectovolt\backend\src\modules\auth\auth.service.ts:75:41
+
+  72 }
+  73 
+  74 async login(dto: LoginDto) {
+→ 75   const user = await this.prisma.user.findUnique(
+Database error. Code: `45028`. Message: `pool timeout: failed to retrieve a connection from pool after 10001ms
+    (pool connections: active=0 idle=0 limit=10)`
+    at Jr.handleRequestError (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Jr.handleAndLogRequestError (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Jr.request (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async a (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:1014:24)
+    at async AuthService.login (D:\www\conectovolt\backend\src\modules\auth\auth.service.ts:75:18)
+[31m[Nest] 29976  - [39m11/08/2026, 09:47:39 [31m  ERROR[39m [38;5;3m[HttpExceptionFilter] [39m[31mGET /api/v1/auth/profile - 401 - Unauthorized[39m
+UnauthorizedException: Unauthorized
+    at JwtAuthGuard.handleRequest (D:\www\conectovolt\backend\node_modules\@nestjs\passport\dist\auth.guard.js:60:30)
+    at D:\www\conectovolt\backend\node_modules\@nestjs\passport\dist\auth.guard.js:44:124
+    at D:\www\conectovolt\backend\node_modules\@nestjs\passport\dist\auth.guard.js:83:24
+    at allFailed (D:\www\conectovolt\backend\node_modules\passport\lib\middleware\authenticate.js:110:18)
+    at attempt (D:\www\conectovolt\backend\node_modules\passport\lib\middleware\authenticate.js:183:28)
+    at strategy.fail (D:\www\conectovolt\backend\node_modules\passport\lib\middleware\authenticate.js:314:9)
+    at D:\www\conectovolt\backend\node_modules\passport-jwt\lib\strategy.js:106:33
+    at D:\www\conectovolt\backend\node_modules\jsonwebtoken\verify.js:171:14
+    at getSecret (D:\www\conectovolt\backend\node_modules\jsonwebtoken\verify.js:97:14)
+    at module.exports [as verify] (D:\www\conectovolt\backend\node_modules\jsonwebtoken\verify.js:101:10)
+[31m[Nest] 29976  - [39m11/08/2026, 09:47:39 [31m  ERROR[39m [38;5;3m[HttpExceptionFilter] [39m[31mPOST /api/v1/auth/refresh - 401 - Invalid refresh token[39m
+UnauthorizedException: Invalid refresh token
+    at AuthService.refreshToken (D:\www\conectovolt\backend\src\modules\auth\auth.service.ts:126:13)
+    at AuthController.refreshToken (D:\www\conectovolt\backend\src\modules\auth\auth.controller.ts:44:29)
+    at D:\www\conectovolt\backend\node_modules\@nestjs\core\router\router-execution-context.js:38:29
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[31m[Nest] 29976  - [39m11/08/2026, 09:47:52 [31m  ERROR[39m [38;5;3m[HttpExceptionFilter] [39m[31mPOST /api/v1/auth/login - 400 - 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+Database error. Code: `45028`. Message: `pool timeout: failed to retrieve a connection from pool after 10007ms
+    (pool connections: active=0 idle=0 limit=10)`[39m
+PrismaClientKnownRequestError: 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+Database error. Code: `45028`. Message: `pool timeout: failed to retrieve a connection from pool after 10007ms
+    (pool connections: active=0 idle=0 limit=10)`
+    at Jr.handleRequestError (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Jr.handleAndLogRequestError (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Jr.request (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async a (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:1014:24)
+    at async AuthService.login (D:\www\conectovolt\backend\src\modules\auth\auth.service.ts:75:18)
+[31m[Nest] 29976  - [39m11/08/2026, 09:53:58 [31m  ERROR[39m [38;5;3m[HttpExceptionFilter] [39m[31mPOST /api/v1/auth/login - 400 - 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+Database error. Code: `45028`. Message: `pool timeout: failed to retrieve a connection from pool after 10012ms
+    (pool connections: active=0 idle=0 limit=10)`[39m
+PrismaClientKnownRequestError: 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+Database error. Code: `45028`. Message: `pool timeout: failed to retrieve a connection from pool after 10012ms
+    (pool connections: active=0 idle=0 limit=10)`
+    at Jr.handleRequestError (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Jr.handleAndLogRequestError (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Jr.request (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async a (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:1014:24)
+    at async AuthService.login (D:\www\conectovolt\backend\src\modules\auth\auth.service.ts:75:18)
+[31m[Nest] 29976  - [39m11/08/2026, 10:07:47 [31m  ERROR[39m [38;5;3m[HttpExceptionFilter] [39m[31mPOST /api/v1/auth/login - 400 - 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+Database error. Code: `45028`. Message: `pool timeout: failed to retrieve a connection from pool after 10015ms
+    (pool connections: active=0 idle=0 limit=10)`[39m
+PrismaClientKnownRequestError: 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+Database error. Code: `45028`. Message: `pool timeout: failed to retrieve a connection from pool after 10015ms
+    (pool connections: active=0 idle=0 limit=10)`
+    at Jr.handleRequestError (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at Jr.handleAndLogRequestError (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Jr.request (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async a (D:\www\conectovolt\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:1014:24)
+    at async AuthService.login (D:\www\conectovolt\backend\src\modules\auth\auth.service.ts:75:18)

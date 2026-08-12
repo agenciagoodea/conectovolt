@@ -27,6 +27,41 @@ export class CreateCompanyDto {
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  cep?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  street?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  number?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  complement?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  neighborhood?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  state?: string;
 }
 
 export class UpdateCompanyDto {
@@ -45,6 +80,41 @@ export class UpdateCompanyDto {
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  cep?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  street?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  number?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  complement?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  neighborhood?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  state?: string;
 }
 
 export class AdminUpdateCompanyDto extends UpdateCompanyDto {

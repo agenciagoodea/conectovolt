@@ -19,6 +19,14 @@ export class OcppService {
   private transactionSessions = new Map<number, string>();
   private transactionMeterStarts = new Map<number, number>();
   private heartbeatTimestamps = new Map<string, Date>();
+  private connectorTelemetry = new Map<string, {
+    powerKw: number;
+    energyKwh: number;
+    voltage: number;
+    current: number;
+    frequency: number;
+    timestamp: number;
+  }>();
   private heartbeatCheckInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(
@@ -88,20 +96,68 @@ export class OcppService {
     }
   }
 
-  trackConnection(ocppId: string, ws: WebSocket) {
+  async trackConnection(ocppId: string, ws: WebSocket) {
     this.chargerConnections.set(ocppId, ws);
+    this.heartbeatTimestamps.set(ocppId, new Date());
     this.logger.log(`Charger connected: ${ocppId}`);
-    void this.broadcastChargerStatus(ocppId, 'ONLINE');
+
+    try {
+      const charger = await this.prisma.charger.findUnique({
+        where: { ocppId },
+        select: { id: true, status: true },
+      });
+      if (charger) {
+        if (charger.status !== 'ONLINE') {
+          await this.prisma.charger.update({
+            where: { ocppId },
+            data: { status: 'ONLINE' },
+          });
+        }
+        this.chargingGateway?.emitChargerStatusUpdate(charger.id, 'ONLINE');
+      }
+    } catch {
+      /* ignore */
+    }
   }
 
-  removeConnection(ocppId: string) {
+  async removeConnection(ocppId: string) {
     this.chargerConnections.delete(ocppId);
+    this.heartbeatTimestamps.delete(ocppId);
     this.logger.log(`Charger disconnected: ${ocppId}`);
-    void this.broadcastChargerStatus(ocppId, 'OFFLINE');
+
+    try {
+      const charger = await this.prisma.charger.findUnique({
+        where: { ocppId },
+        select: { id: true, status: true },
+      });
+      if (charger) {
+        if (charger.status !== 'OFFLINE') {
+          await this.prisma.charger.update({
+            where: { ocppId },
+            data: { status: 'OFFLINE' },
+          });
+        }
+        this.chargingGateway?.emitChargerStatusUpdate(charger.id, 'OFFLINE');
+      }
+    } catch {
+      /* ignore */
+    }
   }
 
   getConnection(ocppId: string): WebSocket | undefined {
     return this.chargerConnections.get(ocppId);
+  }
+
+  getConnectorTelemetry(connectorId: string) {
+    return this.connectorTelemetry.get(connectorId) || null;
+  }
+
+  getAllConnectorTelemetry() {
+    const result: Record<string, ReturnType<typeof this.getConnectorTelemetry>> = {};
+    for (const [k, v] of this.connectorTelemetry) {
+      result[k] = v;
+    }
+    return result;
   }
 
   async handleBootNotification(
@@ -251,31 +307,77 @@ export class OcppService {
     const charger = await this.prisma.charger.findUnique({ where: { ocppId } });
     if (!charger) return {};
 
+    const connectorId = `${charger.id}-connector-${p.connectorId}`;
+    let powerKw = 0;
+    let energyKwh = 0;
+    let voltage = 0;
+    let current = 0;
+    let frequency = 0;
+
     for (const mv of p.meterValue) {
       for (const sv of mv.sampledValue) {
-        if (
-          sv.measurand === 'Energy.Active.Import.Register' ||
-          sv.measurand === 'Energy.Active.Import.Interval'
-        ) {
-          const energyKwh = parseFloat(sv.value) / 1000;
-          const activeSession = await this.prisma.chargingSession.findFirst({
-            where: { chargerId: charger.id, status: 'ACTIVE' },
-            orderBy: { startTime: 'desc' },
-          });
-          if (activeSession) {
-            const reportedEnergy =
-              sv.unit === 'kWh' ? parseFloat(sv.value) : energyKwh;
-            await this.prisma.chargingSession.update({
-              where: { id: activeSession.id },
-              data: {
-                energyKwh: Math.max(
-                  Number(activeSession.energyKwh),
-                  reportedEnergy,
-                ),
-              },
-            });
-          }
+        const val = parseFloat(sv.value);
+        switch (sv.measurand) {
+          case 'Power.Active.Import':
+            powerKw = sv.unit === 'W' ? val / 1000 : val;
+            break;
+          case 'Energy.Active.Import.Register':
+          case 'Energy.Active.Import.Interval':
+            energyKwh = sv.unit === 'kWh' ? val : val / 1000;
+            break;
+          case 'Voltage':
+            voltage = val;
+            break;
+          case 'Current.Import':
+            current = val;
+            break;
+          case 'Frequency':
+            frequency = val;
+            break;
         }
+      }
+    }
+
+    const now = Date.now();
+    this.connectorTelemetry.set(connectorId, {
+      powerKw, energyKwh, voltage, current, frequency, timestamp: now,
+    });
+
+    this.chargingGateway?.emitConnectorTelemetry(charger.id, connectorId, {
+      powerKw, energyKwh, voltage, current, frequency, timestamp: now,
+    });
+
+    if (energyKwh > 0) {
+      const activeSession = await this.prisma.chargingSession.findFirst({
+        where: { chargerId: charger.id, status: 'ACTIVE' },
+        orderBy: { startTime: 'desc' },
+      });
+      if (activeSession) {
+        const newEnergy = Math.max(Number(activeSession.energyKwh), energyKwh);
+
+        const station = await this.prisma.station.findUnique({
+          where: { id: activeSession.stationId },
+          include: { tariff: true },
+        });
+        const pricePerKwh = station?.tariff?.isActive
+          ? Number(station.tariff.pricePerKwh)
+          : 2.5;
+        const currentAmount = newEnergy * pricePerKwh;
+
+        await this.prisma.chargingSession.update({
+          where: { id: activeSession.id },
+          data: { energyKwh: newEnergy, amount: currentAmount },
+        });
+
+        this.chargingGateway?.emitSessionUpdate({
+          sessionId: activeSession.id,
+          userId: activeSession.userId,
+          chargerId: charger.id,
+          status: 'ACTIVE',
+          energyKwh: newEnergy,
+          amount: currentAmount,
+          startTime: activeSession.startTime,
+        });
       }
     }
 
@@ -313,18 +415,31 @@ export class OcppService {
         where: { chargerId: charger.id },
       }));
 
-    const session = await this.prisma.chargingSession.create({
-      data: {
-        userId: user.id,
-        chargerId: charger.id,
-        connectorId: connector?.id,
-        stationId: charger.stationId,
-        status: 'ACTIVE',
-        startTime: new Date(p.timestamp),
-        energyKwh: 0,
-        amount: 0,
-      },
+    const existingSession = await this.prisma.chargingSession.findFirst({
+      where: { chargerId: charger.id, status: 'ACTIVE' },
+      orderBy: { startTime: 'desc' },
     });
+
+    let session;
+    if (existingSession) {
+      session = existingSession;
+      this.logger.log(
+        `Reusing existing active session ${session.id} for charger ${charger.id}`,
+      );
+    } else {
+      session = await this.prisma.chargingSession.create({
+        data: {
+          userId: user.id,
+          chargerId: charger.id,
+          connectorId: connector?.id,
+          stationId: charger.stationId,
+          status: 'ACTIVE',
+          startTime: new Date(p.timestamp),
+          energyKwh: 0,
+          amount: 0,
+        },
+      });
+    }
 
     if (connector) {
       await this.prisma.connector.update({
@@ -336,6 +451,16 @@ export class OcppService {
     const transactionId = Date.now();
     this.transactionSessions.set(transactionId, session.id);
     this.transactionMeterStarts.set(transactionId, p.meterStart);
+
+    this.chargingGateway?.emitSessionStarted({
+      sessionId: session.id,
+      userId: user.id,
+      chargerId: charger.id,
+      status: 'ACTIVE',
+      energyKwh: 0,
+      amount: 0,
+      startTime: session.startTime,
+    });
 
     return { transactionId, idTagInfo: { status: 'Accepted' } };
   }
@@ -369,13 +494,14 @@ export class OcppService {
     const tariff = charger.station?.tariff;
     const pricePerKwh = tariff?.isActive ? Number(tariff.pricePerKwh) : 2.5;
 
+    const amount = energyKwh * pricePerKwh;
     await this.prisma.chargingSession.update({
       where: { id: session.id },
       data: {
         status: 'COMPLETED',
         endTime: new Date(p.timestamp),
         energyKwh,
-        amount: energyKwh * pricePerKwh,
+        amount,
       },
     });
 
@@ -385,6 +511,17 @@ export class OcppService {
         data: { status: 'AVAILABLE' },
       });
     }
+
+    this.chargingGateway?.emitSessionCompleted({
+      sessionId: session.id,
+      userId: session.userId,
+      chargerId: charger.id,
+      status: 'COMPLETED',
+      energyKwh,
+      amount,
+      startTime: session.startTime,
+      endTime: new Date(p.timestamp),
+    });
 
     this.transactionSessions.delete(p.transactionId);
     this.transactionMeterStarts.delete(p.transactionId);
@@ -444,5 +581,46 @@ export class OcppService {
     }
     configs.set(key, value);
     return { status: 'Accepted' };
+  }
+
+  sendRemoteStartTransaction(
+    ocppId: string,
+    idTag: string,
+    connectorId?: number,
+  ): boolean {
+    const ws = this.chargerConnections.get(ocppId);
+    if (!ws || ws.readyState !== 1) {
+      this.logger.warn(
+        `Cannot send RemoteStartTransaction: charger ${ocppId} not connected`,
+      );
+      return false;
+    }
+    const uniqueId = `RemoteStartTransaction-${Date.now()}`;
+    const message = [2, uniqueId, 'RemoteStartTransaction', { connectorId, idTag }];
+    ws.send(JSON.stringify(message));
+    this.logger.log(`Sent RemoteStartTransaction to ${ocppId} (connector ${connectorId})`);
+    return true;
+  }
+
+  sendRemoteStopTransaction(ocppId: string, transactionId: number): boolean {
+    const ws = this.chargerConnections.get(ocppId);
+    if (!ws || ws.readyState !== 1) {
+      this.logger.warn(
+        `Cannot send RemoteStopTransaction: charger ${ocppId} not connected`,
+      );
+      return false;
+    }
+    const uniqueId = `RemoteStopTransaction-${Date.now()}`;
+    const message = [2, uniqueId, 'RemoteStopTransaction', { transactionId }];
+    ws.send(JSON.stringify(message));
+    this.logger.log(`Sent RemoteStopTransaction to ${ocppId} (tx ${transactionId})`);
+    return true;
+  }
+
+  getTransactionIdForSession(sessionId: string): number | null {
+    for (const [txId, sessId] of this.transactionSessions) {
+      if (sessId === sessionId) return txId;
+    }
+    return null;
   }
 }

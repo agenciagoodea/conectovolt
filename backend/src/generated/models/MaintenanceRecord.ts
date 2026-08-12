@@ -309,6 +309,7 @@ export type MaintenanceRecordOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   charger?: Prisma.ChargerOrderByWithRelationInput
   company?: Prisma.CompanyOrderByWithRelationInput
+  _relevance?: Prisma.MaintenanceRecordOrderByRelevanceInput
 }
 
 export type MaintenanceRecordWhereUniqueInput = Prisma.AtLeast<{
@@ -502,6 +503,12 @@ export type MaintenanceRecordOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type MaintenanceRecordOrderByRelevanceInput = {
+  fields: Prisma.MaintenanceRecordOrderByRelevanceFieldEnum | Prisma.MaintenanceRecordOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
+}
+
 export type MaintenanceRecordCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   chargerId?: Prisma.SortOrder
@@ -684,6 +691,7 @@ export type MaintenanceRecordCreateOrConnectWithoutCompanyInput = {
 
 export type MaintenanceRecordCreateManyCompanyInputEnvelope = {
   data: Prisma.MaintenanceRecordCreateManyCompanyInput | Prisma.MaintenanceRecordCreateManyCompanyInput[]
+  skipDuplicates?: boolean
 }
 
 export type MaintenanceRecordUpsertWithWhereUniqueWithoutCompanyInput = {
@@ -761,6 +769,7 @@ export type MaintenanceRecordCreateOrConnectWithoutChargerInput = {
 
 export type MaintenanceRecordCreateManyChargerInputEnvelope = {
   data: Prisma.MaintenanceRecordCreateManyChargerInput | Prisma.MaintenanceRecordCreateManyChargerInput[]
+  skipDuplicates?: boolean
 }
 
 export type MaintenanceRecordUpsertWithWhereUniqueWithoutChargerInput = {
@@ -928,43 +937,7 @@ export type MaintenanceRecordSelect<ExtArgs extends runtime.Types.Extensions.Int
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["maintenanceRecord"]>
 
-export type MaintenanceRecordSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  chargerId?: boolean
-  companyId?: boolean
-  title?: boolean
-  description?: boolean
-  type?: boolean
-  status?: boolean
-  priority?: boolean
-  scheduledAt?: boolean
-  completedAt?: boolean
-  assignedTo?: boolean
-  cost?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
-  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["maintenanceRecord"]>
 
-export type MaintenanceRecordSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  chargerId?: boolean
-  companyId?: boolean
-  title?: boolean
-  description?: boolean
-  type?: boolean
-  status?: boolean
-  priority?: boolean
-  scheduledAt?: boolean
-  completedAt?: boolean
-  assignedTo?: boolean
-  cost?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
-  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["maintenanceRecord"]>
 
 export type MaintenanceRecordSelectScalar = {
   id?: boolean
@@ -985,14 +958,6 @@ export type MaintenanceRecordSelectScalar = {
 
 export type MaintenanceRecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "chargerId" | "companyId" | "title" | "description" | "type" | "status" | "priority" | "scheduledAt" | "completedAt" | "assignedTo" | "cost" | "createdAt" | "updatedAt", ExtArgs["result"]["maintenanceRecord"]>
 export type MaintenanceRecordInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
-  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
-}
-export type MaintenanceRecordIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
-  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
-}
-export type MaintenanceRecordIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
 }
@@ -1136,30 +1101,6 @@ export interface MaintenanceRecordDelegate<ExtArgs extends runtime.Types.Extensi
   createMany<T extends MaintenanceRecordCreateManyArgs>(args?: Prisma.SelectSubset<T, MaintenanceRecordCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many MaintenanceRecords and returns the data saved in the database.
-   * @param {MaintenanceRecordCreateManyAndReturnArgs} args - Arguments to create many MaintenanceRecords.
-   * @example
-   * // Create many MaintenanceRecords
-   * const maintenanceRecord = await prisma.maintenanceRecord.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many MaintenanceRecords and only return the `id`
-   * const maintenanceRecordWithIdOnly = await prisma.maintenanceRecord.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends MaintenanceRecordCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, MaintenanceRecordCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaintenanceRecordPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a MaintenanceRecord.
    * @param {MaintenanceRecordDeleteArgs} args - Arguments to delete one MaintenanceRecord.
    * @example
@@ -1222,36 +1163,6 @@ export interface MaintenanceRecordDelegate<ExtArgs extends runtime.Types.Extensi
    * 
    */
   updateMany<T extends MaintenanceRecordUpdateManyArgs>(args: Prisma.SelectSubset<T, MaintenanceRecordUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more MaintenanceRecords and returns the data updated in the database.
-   * @param {MaintenanceRecordUpdateManyAndReturnArgs} args - Arguments to update many MaintenanceRecords.
-   * @example
-   * // Update many MaintenanceRecords
-   * const maintenanceRecord = await prisma.maintenanceRecord.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more MaintenanceRecords and only return the `id`
-   * const maintenanceRecordWithIdOnly = await prisma.maintenanceRecord.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends MaintenanceRecordUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, MaintenanceRecordUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaintenanceRecordPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one MaintenanceRecord.
@@ -1691,28 +1602,7 @@ export type MaintenanceRecordCreateManyArgs<ExtArgs extends runtime.Types.Extens
    * The data used to create many MaintenanceRecords.
    */
   data: Prisma.MaintenanceRecordCreateManyInput | Prisma.MaintenanceRecordCreateManyInput[]
-}
-
-/**
- * MaintenanceRecord createManyAndReturn
- */
-export type MaintenanceRecordCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the MaintenanceRecord
-   */
-  select?: Prisma.MaintenanceRecordSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the MaintenanceRecord
-   */
-  omit?: Prisma.MaintenanceRecordOmit<ExtArgs> | null
-  /**
-   * The data used to create many MaintenanceRecords.
-   */
-  data: Prisma.MaintenanceRecordCreateManyInput | Prisma.MaintenanceRecordCreateManyInput[]
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MaintenanceRecordIncludeCreateManyAndReturn<ExtArgs> | null
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1757,36 +1647,6 @@ export type MaintenanceRecordUpdateManyArgs<ExtArgs extends runtime.Types.Extens
    * Limit how many MaintenanceRecords to update.
    */
   limit?: number
-}
-
-/**
- * MaintenanceRecord updateManyAndReturn
- */
-export type MaintenanceRecordUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the MaintenanceRecord
-   */
-  select?: Prisma.MaintenanceRecordSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the MaintenanceRecord
-   */
-  omit?: Prisma.MaintenanceRecordOmit<ExtArgs> | null
-  /**
-   * The data used to update MaintenanceRecords.
-   */
-  data: Prisma.XOR<Prisma.MaintenanceRecordUpdateManyMutationInput, Prisma.MaintenanceRecordUncheckedUpdateManyInput>
-  /**
-   * Filter which MaintenanceRecords to update
-   */
-  where?: Prisma.MaintenanceRecordWhereInput
-  /**
-   * Limit how many MaintenanceRecords to update.
-   */
-  limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MaintenanceRecordIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

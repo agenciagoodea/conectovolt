@@ -1,15 +1,15 @@
-EV CHARGE PLATFORM
+CONECTOVOLT
 PRODUCT REQUIREMENTS DOCUMENT — PRD
 
 Versão: 1.0.0
 Status: Documento Mestre
 Idioma: Português (Brasil)
-Produto: EV Charge Platform
+Produto: CONECTOVOLT
 
 
 1. PROPÓSITO DO DOCUMENTO
 
-Este documento define os requisitos de produto da EV Charge Platform.
+Este documento define os requisitos de produto da CONECTOVOLT.
 
 O PRD é o documento mestre de requisitos do produto e deve ser utilizado como referência antes da implementação de qualquer funcionalidade relevante.
 

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'core/theme/app_theme.dart';
 import 'presentation/auth/screens/login_screen.dart';
+import 'presentation/auth/screens/register_screen.dart';
 import 'presentation/map/screens/map_screen.dart';
 import 'presentation/stations/screens/station_detail_screen.dart';
 import 'presentation/charging/screens/charging_screen.dart';
@@ -14,6 +15,7 @@ final router = GoRouter(
   initialLocation: '/login',
   routes: [
     GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
+    GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
     GoRoute(path: '/map', builder: (_, __) => const MapScreen()),
     GoRoute(path: '/station/:id', builder: (_, state) {
       final id = state.pathParameters['id'];

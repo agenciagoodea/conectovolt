@@ -103,4 +103,9 @@ export class UpdateStationDto {
   @IsOptional()
   @IsEnum(StationStatus)
   status?: StationStatus;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  tariffId?: string;
 }

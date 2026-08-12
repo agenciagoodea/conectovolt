@@ -268,6 +268,7 @@ export type AlertOrderByWithRelationInput = {
   company?: Prisma.CompanyOrderByWithRelationInput
   charger?: Prisma.ChargerOrderByWithRelationInput
   station?: Prisma.StationOrderByWithRelationInput
+  _relevance?: Prisma.AlertOrderByRelevanceInput
 }
 
 export type AlertWhereUniqueInput = Prisma.AtLeast<{
@@ -447,6 +448,12 @@ export type AlertListRelationFilter = {
 
 export type AlertOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type AlertOrderByRelevanceInput = {
+  fields: Prisma.AlertOrderByRelevanceFieldEnum | Prisma.AlertOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type AlertCountOrderByAggregateInput = {
@@ -660,6 +667,7 @@ export type AlertCreateOrConnectWithoutCompanyInput = {
 
 export type AlertCreateManyCompanyInputEnvelope = {
   data: Prisma.AlertCreateManyCompanyInput | Prisma.AlertCreateManyCompanyInput[]
+  skipDuplicates?: boolean
 }
 
 export type AlertUpsertWithWhereUniqueWithoutCompanyInput = {
@@ -734,6 +742,7 @@ export type AlertCreateOrConnectWithoutStationInput = {
 
 export type AlertCreateManyStationInputEnvelope = {
   data: Prisma.AlertCreateManyStationInput | Prisma.AlertCreateManyStationInput[]
+  skipDuplicates?: boolean
 }
 
 export type AlertUpsertWithWhereUniqueWithoutStationInput = {
@@ -789,6 +798,7 @@ export type AlertCreateOrConnectWithoutChargerInput = {
 
 export type AlertCreateManyChargerInputEnvelope = {
   data: Prisma.AlertCreateManyChargerInput | Prisma.AlertCreateManyChargerInput[]
+  skipDuplicates?: boolean
 }
 
 export type AlertUpsertWithWhereUniqueWithoutChargerInput = {
@@ -1008,43 +1018,7 @@ export type AlertSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   station?: boolean | Prisma.Alert$stationArgs<ExtArgs>
 }, ExtArgs["result"]["alert"]>
 
-export type AlertSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  companyId?: boolean
-  chargerId?: boolean
-  stationId?: boolean
-  type?: boolean
-  severity?: boolean
-  title?: boolean
-  message?: boolean
-  resolved?: boolean
-  resolvedAt?: boolean
-  resolvedBy?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  company?: boolean | Prisma.Alert$companyArgs<ExtArgs>
-  charger?: boolean | Prisma.Alert$chargerArgs<ExtArgs>
-  station?: boolean | Prisma.Alert$stationArgs<ExtArgs>
-}, ExtArgs["result"]["alert"]>
 
-export type AlertSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  companyId?: boolean
-  chargerId?: boolean
-  stationId?: boolean
-  type?: boolean
-  severity?: boolean
-  title?: boolean
-  message?: boolean
-  resolved?: boolean
-  resolvedAt?: boolean
-  resolvedBy?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  company?: boolean | Prisma.Alert$companyArgs<ExtArgs>
-  charger?: boolean | Prisma.Alert$chargerArgs<ExtArgs>
-  station?: boolean | Prisma.Alert$stationArgs<ExtArgs>
-}, ExtArgs["result"]["alert"]>
 
 export type AlertSelectScalar = {
   id?: boolean
@@ -1064,16 +1038,6 @@ export type AlertSelectScalar = {
 
 export type AlertOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "chargerId" | "stationId" | "type" | "severity" | "title" | "message" | "resolved" | "resolvedAt" | "resolvedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["alert"]>
 export type AlertInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  company?: boolean | Prisma.Alert$companyArgs<ExtArgs>
-  charger?: boolean | Prisma.Alert$chargerArgs<ExtArgs>
-  station?: boolean | Prisma.Alert$stationArgs<ExtArgs>
-}
-export type AlertIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  company?: boolean | Prisma.Alert$companyArgs<ExtArgs>
-  charger?: boolean | Prisma.Alert$chargerArgs<ExtArgs>
-  station?: boolean | Prisma.Alert$stationArgs<ExtArgs>
-}
-export type AlertIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   company?: boolean | Prisma.Alert$companyArgs<ExtArgs>
   charger?: boolean | Prisma.Alert$chargerArgs<ExtArgs>
   station?: boolean | Prisma.Alert$stationArgs<ExtArgs>
@@ -1218,30 +1182,6 @@ export interface AlertDelegate<ExtArgs extends runtime.Types.Extensions.Internal
   createMany<T extends AlertCreateManyArgs>(args?: Prisma.SelectSubset<T, AlertCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many Alerts and returns the data saved in the database.
-   * @param {AlertCreateManyAndReturnArgs} args - Arguments to create many Alerts.
-   * @example
-   * // Create many Alerts
-   * const alert = await prisma.alert.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many Alerts and only return the `id`
-   * const alertWithIdOnly = await prisma.alert.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends AlertCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, AlertCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AlertPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a Alert.
    * @param {AlertDeleteArgs} args - Arguments to delete one Alert.
    * @example
@@ -1304,36 +1244,6 @@ export interface AlertDelegate<ExtArgs extends runtime.Types.Extensions.Internal
    * 
    */
   updateMany<T extends AlertUpdateManyArgs>(args: Prisma.SelectSubset<T, AlertUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more Alerts and returns the data updated in the database.
-   * @param {AlertUpdateManyAndReturnArgs} args - Arguments to update many Alerts.
-   * @example
-   * // Update many Alerts
-   * const alert = await prisma.alert.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more Alerts and only return the `id`
-   * const alertWithIdOnly = await prisma.alert.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends AlertUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, AlertUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AlertPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Alert.
@@ -1773,28 +1683,7 @@ export type AlertCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * The data used to create many Alerts.
    */
   data: Prisma.AlertCreateManyInput | Prisma.AlertCreateManyInput[]
-}
-
-/**
- * Alert createManyAndReturn
- */
-export type AlertCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Alert
-   */
-  select?: Prisma.AlertSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Alert
-   */
-  omit?: Prisma.AlertOmit<ExtArgs> | null
-  /**
-   * The data used to create many Alerts.
-   */
-  data: Prisma.AlertCreateManyInput | Prisma.AlertCreateManyInput[]
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.AlertIncludeCreateManyAndReturn<ExtArgs> | null
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1839,36 +1728,6 @@ export type AlertUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Alerts to update.
    */
   limit?: number
-}
-
-/**
- * Alert updateManyAndReturn
- */
-export type AlertUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Alert
-   */
-  select?: Prisma.AlertSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Alert
-   */
-  omit?: Prisma.AlertOmit<ExtArgs> | null
-  /**
-   * The data used to update Alerts.
-   */
-  data: Prisma.XOR<Prisma.AlertUpdateManyMutationInput, Prisma.AlertUncheckedUpdateManyInput>
-  /**
-   * Filter which Alerts to update
-   */
-  where?: Prisma.AlertWhereInput
-  /**
-   * Limit how many Alerts to update.
-   */
-  limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.AlertIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

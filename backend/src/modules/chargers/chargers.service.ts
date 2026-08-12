@@ -10,12 +10,14 @@ import {
   UpdateChargerStatusDto,
 } from './dto/charger.dto';
 import { OcppService } from '../ocpp/ocpp.service';
+import { ChargingGateway } from '../charging/gateways/charging.gateway';
 
 @Injectable()
 export class ChargersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly ocppService: OcppService,
+    private readonly chargingGateway: ChargingGateway,
   ) {}
 
   private async assertCompanyAccess(
@@ -55,7 +57,10 @@ export class ChargersService {
 
     return this.prisma.charger.findMany({
       where,
-      include: { connectors: true, station: true },
+      include: {
+        connectors: true,
+        station: { include: { tariff: true } },
+      },
     });
   }
 
@@ -112,10 +117,12 @@ export class ChargersService {
     user?: { role: string; companyId?: string },
   ) {
     await this.assertCompanyAccess(id, user);
-    return this.prisma.charger.update({
+    const updated = await this.prisma.charger.update({
       where: { id },
       data: { status: dto.status },
     });
+    this.chargingGateway.emitChargerStatusUpdate(id, dto.status);
+    return updated;
   }
 
   async remove(id: string, user?: { role: string; companyId?: string }) {
@@ -193,6 +200,10 @@ export class ChargersService {
       wsReadyState: readyState,
       wsState: readyStateLabels[readyState] || 'UNKNOWN',
     };
+  }
+
+  getConnectorTelemetry() {
+    return this.ocppService.getAllConnectorTelemetry();
   }
 
   async getConnectedChargers(user?: { role: string; companyId?: string }) {

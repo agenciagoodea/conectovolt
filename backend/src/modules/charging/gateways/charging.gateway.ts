@@ -141,4 +141,19 @@ export class ChargingGateway
   emitConnectorStatusUpdate(chargerId: string, connectorId: string, status: string) {
     this.server.emit('connector:status', { chargerId, connectorId, status });
   }
+
+  emitConnectorTelemetry(
+    chargerId: string,
+    connectorId: string,
+    data: {
+      powerKw: number;
+      energyKwh: number;
+      voltage?: number;
+      current?: number;
+      frequency?: number;
+      timestamp: number;
+    },
+  ) {
+    this.server.emit('connector:telemetry', { chargerId, connectorId, ...data });
+  }
 }

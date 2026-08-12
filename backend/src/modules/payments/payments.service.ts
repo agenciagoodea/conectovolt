@@ -370,6 +370,103 @@ export class PaymentsService {
     return { received: true };
   }
 
+  async getReceipt(
+    paymentId: string,
+    user?: { id: string; role: string; companyId?: string },
+  ) {
+    const payment = await this.prisma.payment.findUnique({
+      where: { id: paymentId },
+      include: {
+        session: {
+          include: {
+            station: {
+              select: { id: true, name: true, address: true, city: true, state: true, companyId: true },
+            },
+            user: { select: { id: true, name: true, email: true, phone: true } },
+            charger: { select: { id: true, serialNumber: true } },
+            connector: { select: { type: true } },
+            tariff: { select: { name: true, pricePerKwh: true } },
+            vehicle: { select: { brand: true, model: true, plate: true } },
+          },
+        },
+        commission: true,
+      },
+    });
+
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+
+    if (user?.role === 'CUSTOMER' && payment.session?.userId !== user.id) {
+      throw new ForbiddenException('You do not own this payment');
+    }
+
+    if (
+      user?.role === 'OPERATOR' &&
+      (!user.companyId || payment.session?.station?.companyId !== user.companyId)
+    ) {
+      throw new ForbiddenException('You do not have access to this receipt');
+    }
+
+    const station = payment.session?.station;
+    const session = payment.session;
+
+    const durationMs = session?.endTime && session?.startTime
+      ? new Date(session.endTime).getTime() - new Date(session.startTime).getTime()
+      : 0;
+    const durationMinutes = Math.round(durationMs / 60000);
+    const hours = Math.floor(durationMinutes / 60);
+    const minutes = durationMinutes % 60;
+    const durationFormatted = hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
+
+    return {
+      receiptId: payment.id,
+      issuedAt: payment.paidAt || payment.createdAt,
+      status: payment.status,
+      gateway: payment.gateway,
+      externalId: payment.externalId,
+      transaction: {
+        amount: Number(payment.amount),
+        currency: 'BRL',
+      },
+      station: {
+        name: station?.name || 'N/A',
+        address: station?.address || 'N/A',
+        city: station?.city || 'N/A',
+        state: station?.state || 'N/A',
+      },
+      charger: {
+        serialNumber: session?.charger?.serialNumber || 'N/A',
+        connectorType: session?.connector?.type || 'N/A',
+      },
+      tariff: {
+        name: session?.tariff?.name || 'N/A',
+        pricePerKwh: session?.tariff?.pricePerKwh ? Number(session.tariff.pricePerKwh) : null,
+      },
+      session: {
+        energyKwh: Number(session?.energyKwh || 0),
+        duration: durationFormatted,
+        startTime: session?.startTime,
+        endTime: session?.endTime,
+        vehicle: session?.vehicle
+          ? { brand: session.vehicle.brand, model: session.vehicle.model, plate: session.vehicle.plate }
+          : null,
+      },
+      user: {
+        name: session?.user?.name || 'N/A',
+        email: session?.user?.email || 'N/A',
+        phone: session?.user?.phone || null,
+      },
+      commission: payment.commission
+        ? {
+            percentage: Number(payment.commission.percentage),
+            platformAmount: Number(payment.commission.platformAmount),
+            operatorAmount: Number(payment.commission.operatorAmount),
+          }
+        : null,
+    };
+  }
+
   async getPaymentsByStatus(
     status: string,
     user?: { id: string; role: string; companyId?: string },

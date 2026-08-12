@@ -43,6 +43,7 @@ export class BillingService {
 
   // Subscriptions
   async getSubscription(companyId: string) {
+    if (!companyId) return null;
     return this.prisma.subscription.findUnique({
       where: { companyId },
       include: { plan: true },

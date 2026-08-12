@@ -35,8 +35,16 @@ model Company {
   document  String   @unique
   email     String?
   phone     String?
+  logoUrl   String?  @map("logo_url")
   status    String   @default("PENDING")
   commissionPercent Float @default(5.0) @map("commission_percent")
+  cep       String?
+  street    String?
+  number    String?
+  complement String?
+  neighborhood String? @map("neighborhood")
+  city      String?
+  state     String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

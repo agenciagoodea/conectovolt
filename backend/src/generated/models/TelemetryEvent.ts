@@ -273,6 +273,7 @@ export type TelemetryEventOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   charger?: Prisma.ChargerOrderByWithRelationInput
   session?: Prisma.ChargingSessionOrderByWithRelationInput
+  _relevance?: Prisma.TelemetryEventOrderByRelevanceInput
 }
 
 export type TelemetryEventWhereUniqueInput = Prisma.AtLeast<{
@@ -424,6 +425,12 @@ export type TelemetryEventListRelationFilter = {
 
 export type TelemetryEventOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type TelemetryEventOrderByRelevanceInput = {
+  fields: Prisma.TelemetryEventOrderByRelevanceFieldEnum | Prisma.TelemetryEventOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type TelemetryEventCountOrderByAggregateInput = {
@@ -588,6 +595,7 @@ export type TelemetryEventCreateOrConnectWithoutChargerInput = {
 
 export type TelemetryEventCreateManyChargerInputEnvelope = {
   data: Prisma.TelemetryEventCreateManyChargerInput | Prisma.TelemetryEventCreateManyChargerInput[]
+  skipDuplicates?: boolean
 }
 
 export type TelemetryEventUpsertWithWhereUniqueWithoutChargerInput = {
@@ -653,6 +661,7 @@ export type TelemetryEventCreateOrConnectWithoutSessionInput = {
 
 export type TelemetryEventCreateManySessionInputEnvelope = {
   data: Prisma.TelemetryEventCreateManySessionInput | Prisma.TelemetryEventCreateManySessionInput[]
+  skipDuplicates?: boolean
 }
 
 export type TelemetryEventUpsertWithWhereUniqueWithoutSessionInput = {
@@ -784,35 +793,7 @@ export type TelemetryEventSelect<ExtArgs extends runtime.Types.Extensions.Intern
   session?: boolean | Prisma.TelemetryEvent$sessionArgs<ExtArgs>
 }, ExtArgs["result"]["telemetryEvent"]>
 
-export type TelemetryEventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  chargerId?: boolean
-  sessionId?: boolean
-  type?: boolean
-  measurand?: boolean
-  value?: boolean
-  unit?: boolean
-  severity?: boolean
-  rawPayload?: boolean
-  createdAt?: boolean
-  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
-  session?: boolean | Prisma.TelemetryEvent$sessionArgs<ExtArgs>
-}, ExtArgs["result"]["telemetryEvent"]>
 
-export type TelemetryEventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  chargerId?: boolean
-  sessionId?: boolean
-  type?: boolean
-  measurand?: boolean
-  value?: boolean
-  unit?: boolean
-  severity?: boolean
-  rawPayload?: boolean
-  createdAt?: boolean
-  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
-  session?: boolean | Prisma.TelemetryEvent$sessionArgs<ExtArgs>
-}, ExtArgs["result"]["telemetryEvent"]>
 
 export type TelemetryEventSelectScalar = {
   id?: boolean
@@ -829,14 +810,6 @@ export type TelemetryEventSelectScalar = {
 
 export type TelemetryEventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "chargerId" | "sessionId" | "type" | "measurand" | "value" | "unit" | "severity" | "rawPayload" | "createdAt", ExtArgs["result"]["telemetryEvent"]>
 export type TelemetryEventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
-  session?: boolean | Prisma.TelemetryEvent$sessionArgs<ExtArgs>
-}
-export type TelemetryEventIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
-  session?: boolean | Prisma.TelemetryEvent$sessionArgs<ExtArgs>
-}
-export type TelemetryEventIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   charger?: boolean | Prisma.ChargerDefaultArgs<ExtArgs>
   session?: boolean | Prisma.TelemetryEvent$sessionArgs<ExtArgs>
 }
@@ -976,30 +949,6 @@ export interface TelemetryEventDelegate<ExtArgs extends runtime.Types.Extensions
   createMany<T extends TelemetryEventCreateManyArgs>(args?: Prisma.SelectSubset<T, TelemetryEventCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many TelemetryEvents and returns the data saved in the database.
-   * @param {TelemetryEventCreateManyAndReturnArgs} args - Arguments to create many TelemetryEvents.
-   * @example
-   * // Create many TelemetryEvents
-   * const telemetryEvent = await prisma.telemetryEvent.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many TelemetryEvents and only return the `id`
-   * const telemetryEventWithIdOnly = await prisma.telemetryEvent.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends TelemetryEventCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, TelemetryEventCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TelemetryEventPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a TelemetryEvent.
    * @param {TelemetryEventDeleteArgs} args - Arguments to delete one TelemetryEvent.
    * @example
@@ -1062,36 +1011,6 @@ export interface TelemetryEventDelegate<ExtArgs extends runtime.Types.Extensions
    * 
    */
   updateMany<T extends TelemetryEventUpdateManyArgs>(args: Prisma.SelectSubset<T, TelemetryEventUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more TelemetryEvents and returns the data updated in the database.
-   * @param {TelemetryEventUpdateManyAndReturnArgs} args - Arguments to update many TelemetryEvents.
-   * @example
-   * // Update many TelemetryEvents
-   * const telemetryEvent = await prisma.telemetryEvent.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more TelemetryEvents and only return the `id`
-   * const telemetryEventWithIdOnly = await prisma.telemetryEvent.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends TelemetryEventUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, TelemetryEventUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TelemetryEventPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one TelemetryEvent.
@@ -1527,28 +1446,7 @@ export type TelemetryEventCreateManyArgs<ExtArgs extends runtime.Types.Extension
    * The data used to create many TelemetryEvents.
    */
   data: Prisma.TelemetryEventCreateManyInput | Prisma.TelemetryEventCreateManyInput[]
-}
-
-/**
- * TelemetryEvent createManyAndReturn
- */
-export type TelemetryEventCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TelemetryEvent
-   */
-  select?: Prisma.TelemetryEventSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the TelemetryEvent
-   */
-  omit?: Prisma.TelemetryEventOmit<ExtArgs> | null
-  /**
-   * The data used to create many TelemetryEvents.
-   */
-  data: Prisma.TelemetryEventCreateManyInput | Prisma.TelemetryEventCreateManyInput[]
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TelemetryEventIncludeCreateManyAndReturn<ExtArgs> | null
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1593,36 +1491,6 @@ export type TelemetryEventUpdateManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many TelemetryEvents to update.
    */
   limit?: number
-}
-
-/**
- * TelemetryEvent updateManyAndReturn
- */
-export type TelemetryEventUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TelemetryEvent
-   */
-  select?: Prisma.TelemetryEventSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the TelemetryEvent
-   */
-  omit?: Prisma.TelemetryEventOmit<ExtArgs> | null
-  /**
-   * The data used to update TelemetryEvents.
-   */
-  data: Prisma.XOR<Prisma.TelemetryEventUpdateManyMutationInput, Prisma.TelemetryEventUncheckedUpdateManyInput>
-  /**
-   * Filter which TelemetryEvents to update
-   */
-  where?: Prisma.TelemetryEventWhereInput
-  /**
-   * Limit how many TelemetryEvents to update.
-   */
-  limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TelemetryEventIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

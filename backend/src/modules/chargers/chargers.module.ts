@@ -4,9 +4,10 @@ import { ChargersService } from './chargers.service';
 import { ConnectorsController } from './connectors.controller';
 import { ConnectorsService } from './connectors.service';
 import { OcppModule } from '../ocpp/ocpp.module';
+import { ChargingModule } from '../charging/charging.module';
 
 @Module({
-  imports: [OcppModule],
+  imports: [OcppModule, ChargingModule],
   controllers: [ChargersController, ConnectorsController],
   providers: [ChargersService, ConnectorsService],
   exports: [ChargersService, ConnectorsService],
