@@ -371,19 +371,112 @@ export class PaymentsService {
   }
 
 
-  async handleWebhook(data: {
-    action?: string;
-    data?: { id?: string | number };
-    type?: string;
-  }) {
+  async handleWebhook(
+    data: {
+      action?: string;
+      data?: { id?: string | number };
+      type?: string;
+      [key: string]: any;
+    },
+    requestId?: string,
+  ) {
     this.logger.log(`Webhook received: ${JSON.stringify(data)}`);
 
+    const eventType = data.type || data.action || 'unknown';
+    const resourceId = data.data?.id ? String(data.data.id) : undefined;
+    const provider = 'MERCADO_PAGO';
+
+    // Determina o identificador único do evento para garantir idempotência formal
+    // Se o header x-request-id estiver presente, usa req_<requestId>
+    // Se ausente, compõe com tipo do evento + id do recurso + timestamp se disponível
+    const externalEventId = requestId
+      ? `req_${requestId}`
+      : `mp_${eventType}_${resourceId || 'no_resource'}_${Date.now()}`;
+
+    // Sanitiza o payload removendo campos sensíveis se existirem
+    const sanitizedPayload = JSON.stringify(data, (key, value) => {
+      if (
+        ['token', 'secret', 'access_token', 'cvv', 'card_number'].includes(
+          key.toLowerCase(),
+        )
+      ) {
+        return '[REDACTED]';
+      }
+      return value;
+    });
+
+    let webhookEvent: { id: string; status: string } | null = null;
+
+    // 1. Tenta registrar o evento no banco (status RECEIVED)
+    try {
+      webhookEvent = await this.prisma.webhookEvent.create({
+        data: {
+          provider,
+          externalEventId,
+          eventType,
+          resourceId,
+          payload: sanitizedPayload,
+          status: 'RECEIVED',
+        },
+      });
+    } catch (error: unknown) {
+      const err = error as { code?: string; message?: string };
+      const isUniqueConflict =
+        err?.code === 'P2002' ||
+        (err?.message && err.message.includes('Unique constraint'));
+
+      if (isUniqueConflict) {
+        this.logger.log(
+          `Duplicate WebhookEvent ignored (externalEventId: ${externalEventId})`,
+        );
+
+        // Busca o registro existente para verificar o status
+        const existing = await this.prisma.webhookEvent.findUnique({
+          where: {
+            provider_externalEventId: {
+              provider,
+              externalEventId,
+            },
+          },
+        });
+
+        // Se já está PROCESSED ou PROCESSING, ignora reprocessamento (idempotência formal)
+        if (
+          existing &&
+          (existing.status === 'PROCESSED' || existing.status === 'PROCESSING')
+        ) {
+          return { received: true, idempotent: true };
+        }
+
+        webhookEvent = existing;
+      } else {
+        this.logger.warn(`Failed to create WebhookEvent: ${err?.message}`);
+      }
+    }
+
+    // Atualiza status para PROCESSING
+    if (webhookEvent?.id && webhookEvent.status !== 'PROCESSED') {
+      try {
+        webhookEvent = await this.prisma.webhookEvent.update({
+          where: { id: webhookEvent.id },
+          data: { status: 'PROCESSING' },
+        });
+      } catch {
+        // Ignora falha de transição de estado secundária
+      }
+    }
+
+    // 2. Processamento financeiro
     if (data.type === 'payment' && data.data?.id) {
       const mercadoPagoPaymentId = String(data.data.id);
       const numericId = Number(mercadoPagoPaymentId);
 
       if (!mercadoPagoPaymentId || Number.isNaN(numericId)) {
         this.logger.warn('Webhook received invalid payment id');
+        await this.markWebhookEventFailed(
+          webhookEvent?.id,
+          'Invalid payment id',
+        );
         return { received: true };
       }
 
@@ -397,6 +490,10 @@ export class PaymentsService {
 
         if (!payment) {
           this.logger.warn(
+            `Payment not found for external ID: ${mercadoPagoPaymentId}`,
+          );
+          await this.markWebhookEventFailed(
+            webhookEvent?.id,
             `Payment not found for external ID: ${mercadoPagoPaymentId}`,
           );
           return { received: true };
@@ -413,13 +510,54 @@ export class PaymentsService {
           default:
             this.logger.log(`Payment ${payment.id} status: ${mpStatus.status}`);
         }
+
+        // Processamento financeiro concluído com sucesso -> marca como PROCESSED
+        await this.markWebhookEventProcessed(webhookEvent?.id);
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
         this.logger.error(`Error processing webhook: ${message}`);
+        await this.markWebhookEventFailed(webhookEvent?.id, message);
       }
+    } else {
+      // Eventos não de pagamento (ex: merchant_order) finalizados com sucesso
+      await this.markWebhookEventProcessed(webhookEvent?.id);
     }
 
     return { received: true };
+  }
+
+  private async markWebhookEventProcessed(webhookEventId?: string) {
+    if (!webhookEventId) return;
+    try {
+      await this.prisma.webhookEvent.update({
+        where: { id: webhookEventId },
+        data: {
+          status: 'PROCESSED',
+          processedAt: new Date(),
+        },
+      });
+    } catch {
+      // Ignora erro secundário
+    }
+  }
+
+  private async markWebhookEventFailed(
+    webhookEventId?: string,
+    errorMessage?: string,
+  ) {
+    if (!webhookEventId) return;
+    try {
+      await this.prisma.webhookEvent.update({
+        where: { id: webhookEventId },
+        data: {
+          status: 'FAILED',
+          errorMessage: errorMessage ? errorMessage.slice(0, 1000) : null,
+          processedAt: new Date(),
+        },
+      });
+    } catch {
+      // Ignora erro secundário
+    }
   }
 
   async getReceipt(

@@ -122,3 +122,8 @@ export type MaintenanceRecord = Prisma.MaintenanceRecordModel
  * 
  */
 export type StationImage = Prisma.StationImageModel
+/**
+ * Model WebhookEvent
+ * 
+ */
+export type WebhookEvent = Prisma.WebhookEventModel

@@ -134,4 +134,7 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
   get stationImage() {
     return this.client.stationImage;
   }
+  get webhookEvent() {
+    return this.client.webhookEvent;
+  }
 }

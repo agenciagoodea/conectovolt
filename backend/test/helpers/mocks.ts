@@ -81,6 +81,14 @@ export const mockPrismaService = {
     updateMany: jest.fn(),
   },
   transaction: { findMany: jest.fn(), create: jest.fn() },
+  webhookEvent: {
+    findUnique: jest.fn(),
+    findMany: jest.fn(),
+    findFirst: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    updateMany: jest.fn(),
+  },
   tariff: {
     findUnique: jest.fn(),
     findMany: jest.fn(),

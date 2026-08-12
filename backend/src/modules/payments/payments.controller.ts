@@ -160,6 +160,6 @@ export class WebhooksController {
       throw new BadRequestException('Invalid signature');
     }
 
-    return this.paymentsService.handleWebhook(data);
+    return this.paymentsService.handleWebhook(data, requestId);
   }
 }

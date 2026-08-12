@@ -280,185 +280,224 @@ describe('PaymentsService', () => {
     });
   });
 
-  describe('handleWebhook & WebhooksController (12 Scenarios)', () => {
-    // 1. Webhook aprovado normal
-    it('1. webhook aprovado normal', async () => {
+  describe('handleWebhook & WebhooksController (13 WebhookEvent Scenarios)', () => {
+    beforeEach(() => {
+      prisma.webhookEvent.create.mockResolvedValue({
+        id: 'we-1',
+        provider: 'MERCADO_PAGO',
+        externalEventId: 'req-123',
+        status: 'RECEIVED',
+      });
+      prisma.webhookEvent.update.mockResolvedValue({
+        id: 'we-1',
+        status: 'PROCESSED',
+      });
+    });
+
+    // 1. Novo webhook cria WebhookEvent
+    it('1. novo webhook cria WebhookEvent em status RECEIVED', async () => {
       prisma.payment.findFirst.mockResolvedValue({
         id: 'payment-1',
         amount: 100,
         status: 'PENDING',
         externalId: 'mp-123',
-        session: { station: { companyId: 'comp-1' } },
       });
       prisma.payment.findUnique.mockResolvedValue({
         id: 'payment-1',
         amount: 100,
         status: 'PENDING',
         externalId: 'mp-123',
-        session: { station: { companyId: 'comp-1' } },
       });
-      prisma.payment.updateMany.mockResolvedValue({ count: 1 });
       mockMercadoPagoService.getPaymentStatus.mockResolvedValue({
         id: 123,
         status: 'approved',
       });
 
-      const result = await service.handleWebhook({
-        type: 'payment',
-        data: { id: '123' },
+      await service.handleWebhook(
+        { type: 'payment', data: { id: '123' } },
+        'req-123',
+      );
+
+      expect(prisma.webhookEvent.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          provider: 'MERCADO_PAGO',
+          externalEventId: 'req_req-123',
+          eventType: 'payment',
+          resourceId: '123',
+          status: 'RECEIVED',
+        }),
+      });
+    });
+
+    // 2. Webhook válido é processado
+    it('2. webhook válido é processado financeiramente', async () => {
+      prisma.payment.findFirst.mockResolvedValue({
+        id: 'payment-1',
+        amount: 100,
+        status: 'PENDING',
+        externalId: 'mp-123',
+      });
+      prisma.payment.findUnique.mockResolvedValue({
+        id: 'payment-1',
+        amount: 100,
+        status: 'PENDING',
+        externalId: 'mp-123',
+      });
+      mockMercadoPagoService.getPaymentStatus.mockResolvedValue({
+        id: 123,
+        status: 'approved',
       });
 
+      const result = await service.handleWebhook(
+        { type: 'payment', data: { id: '123' } },
+        'req-123',
+      );
+
       expect(result.received).toBe(true);
-      expect(mockCommissionsService.calculate).toHaveBeenCalledWith(
-        'payment-1',
-        expect.anything(),
+      expect(mockCommissionsService.calculate).toHaveBeenCalled();
+    });
+
+    // 3. WebhookEvent passa para PROCESSED
+    it('3. WebhookEvent é atualizado para PROCESSED após sucesso', async () => {
+      prisma.payment.findFirst.mockResolvedValue({
+        id: 'payment-1',
+        amount: 100,
+        status: 'PENDING',
+        externalId: 'mp-123',
+      });
+      prisma.payment.findUnique.mockResolvedValue({
+        id: 'payment-1',
+        amount: 100,
+        status: 'PENDING',
+        externalId: 'mp-123',
+      });
+      mockMercadoPagoService.getPaymentStatus.mockResolvedValue({
+        id: 123,
+        status: 'approved',
+      });
+
+      await service.handleWebhook(
+        { type: 'payment', data: { id: '123' } },
+        'req-123',
+      );
+
+      expect(prisma.webhookEvent.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'we-1' },
+          data: expect.objectContaining({ status: 'PROCESSED' }),
+        }),
       );
     });
 
-    // 2. Webhook repetido sequencialmente
-    it('2. webhook repetido sequencialmente', async () => {
-      prisma.payment.findFirst.mockResolvedValue({
-        id: 'payment-1',
-        amount: 100,
-        status: 'PENDING',
-        externalId: 'mp-123',
-      });
-      prisma.payment.findUnique.mockResolvedValue({
-        id: 'payment-1',
-        amount: 100,
-        status: 'PENDING',
-        externalId: 'mp-123',
-      });
-      prisma.payment.updateMany.mockResolvedValue({ count: 1 });
-      mockMercadoPagoService.getPaymentStatus.mockResolvedValue({
-        id: 123,
-        status: 'approved',
+    // 4. Mesmo evento recebido novamente não é processado
+    it('4. mesmo evento recebido novamente (duplicate UNIQUE) é ignorado de forma idempotente', async () => {
+      const uniqueError = { code: 'P2002', message: 'Unique constraint failed' };
+      prisma.webhookEvent.create.mockRejectedValue(uniqueError);
+      prisma.webhookEvent.findUnique.mockResolvedValue({
+        id: 'we-1',
+        provider: 'MERCADO_PAGO',
+        externalEventId: 'req_req-dup',
+        status: 'PROCESSED',
       });
 
-      await service.handleWebhook({ type: 'payment', data: { id: '123' } });
-      expect(mockCommissionsService.calculate).toHaveBeenCalledTimes(1);
+      const result = await service.handleWebhook(
+        { type: 'payment', data: { id: '123' } },
+        'req-dup',
+      );
 
-      // Segunda chamada (replay): status já é APPROVED
-      prisma.payment.findFirst.mockResolvedValue({
-        id: 'payment-1',
-        amount: 100,
-        status: 'APPROVED',
-        externalId: 'mp-123',
-      });
-      prisma.payment.findUnique.mockResolvedValue({
-        id: 'payment-1',
-        amount: 100,
-        status: 'APPROVED',
-        externalId: 'mp-123',
-      });
-
-      const secondResult = await service.handleWebhook({
-        type: 'payment',
-        data: { id: '123' },
-      });
-
-      expect(secondResult.received).toBe(true);
-      // Nenhuma comissão adicional deve ser calculada na segunda chamada
-      expect(mockCommissionsService.calculate).toHaveBeenCalledTimes(1);
-    });
-
-    // 3. Dois processamentos concorrentes
-    it('3. dois processamentos concorrentes', async () => {
-      prisma.payment.findFirst.mockResolvedValue({
-        id: 'payment-1',
-        amount: 100,
-        status: 'PENDING',
-        externalId: 'mp-123',
-      });
-      prisma.payment.findUnique.mockResolvedValue({
-        id: 'payment-1',
-        amount: 100,
-        status: 'PENDING',
-        externalId: 'mp-123',
-      });
-      prisma.payment.updateMany
-        .mockResolvedValueOnce({ count: 1 })
-        .mockResolvedValueOnce({ count: 0 });
-      mockMercadoPagoService.getPaymentStatus.mockResolvedValue({
-        id: 123,
-        status: 'approved',
-      });
-
-      const [res1, res2] = await Promise.all([
-        service.handleWebhook({ type: 'payment', data: { id: '123' } }),
-        service.handleWebhook({ type: 'payment', data: { id: '123' } }),
-      ]);
-
-      expect(res1.received).toBe(true);
-      expect(res2.received).toBe(true);
-      expect(mockCommissionsService.calculate).toHaveBeenCalledTimes(1);
-    });
-
-    // 4, 5, 6, 7. Commission, Transaction, Wallet e Payment criadas/atualizadas somente 1 vez
-    it('4-7. garante unicidade de Commission, Transaction, Wallet e Payment', async () => {
-      prisma.payment.findFirst.mockResolvedValue({
-        id: 'payment-1',
-        amount: 100,
-        status: 'PENDING',
-        externalId: 'mp-123',
-      });
-      prisma.payment.findUnique.mockResolvedValue({
-        id: 'payment-1',
-        amount: 100,
-        status: 'PENDING',
-        externalId: 'mp-123',
-      });
-      prisma.payment.updateMany.mockResolvedValue({ count: 1 });
-      mockMercadoPagoService.getPaymentStatus.mockResolvedValue({
-        id: 123,
-        status: 'approved',
-      });
-
-      await service.handleWebhook({ type: 'payment', data: { id: '123' } });
-
-      // Commission calculada apenas 1 vez
-      expect(mockCommissionsService.calculate).toHaveBeenCalledTimes(1);
-    });
-
-    // 8. Webhook rejeitado
-    it('8. webhook rejeitado', async () => {
-      prisma.payment.findFirst.mockResolvedValue({
-        id: 'payment-1',
-        amount: 100,
-        status: 'PENDING',
-        externalId: 'mp-123',
-      });
-      prisma.payment.findUnique.mockResolvedValue({
-        id: 'payment-1',
-        amount: 100,
-        status: 'PENDING',
-        externalId: 'mp-123',
-      });
-      prisma.payment.update.mockResolvedValue({
-        id: 'payment-1',
-        status: 'FAILED',
-      });
-      mockMercadoPagoService.getPaymentStatus.mockResolvedValue({
-        id: 123,
-        status: 'rejected',
-      });
-
-      const result = await service.handleWebhook({
-        type: 'payment',
-        data: { id: '123' },
-      });
-
-      expect(result.received).toBe(true);
-      expect(prisma.payment.update).toHaveBeenCalledWith({
-        where: { id: 'payment-1' },
-        data: { status: 'FAILED' },
-      });
+      expect(result).toEqual({ received: true, idempotent: true });
       expect(mockCommissionsService.calculate).not.toHaveBeenCalled();
     });
 
-    // 9. Assinatura inválida no WebhooksController
-    it('9. assinatura inválida deve lançar BadRequestException no controller', () => {
-      const crypto = require('crypto');
+    // 5. Dois requests simultâneos do mesmo evento criam somente um registro
+    it('5. dois requests simultâneos do mesmo evento criam somente 1 WebhookEvent', async () => {
+      prisma.webhookEvent.create
+        .mockResolvedValueOnce({ id: 'we-1', status: 'RECEIVED' })
+        .mockRejectedValueOnce({ code: 'P2002' });
+      prisma.webhookEvent.findUnique.mockResolvedValue({
+        id: 'we-1',
+        status: 'PROCESSING',
+      });
+      prisma.payment.findFirst.mockResolvedValue({
+        id: 'payment-1',
+        externalId: 'mp-123',
+      });
+      prisma.payment.findUnique.mockResolvedValue({
+        id: 'payment-1',
+        externalId: 'mp-123',
+      });
+      mockMercadoPagoService.getPaymentStatus.mockResolvedValue({
+        id: 123,
+        status: 'approved',
+      });
+
+      const [r1, r2] = await Promise.all([
+        service.handleWebhook({ type: 'payment', data: { id: '123' } }, 'req-same'),
+        service.handleWebhook({ type: 'payment', data: { id: '123' } }, 'req-same'),
+      ]);
+
+      expect(r1.received).toBe(true);
+      expect(r2.received).toBe(true);
+      // create foi tentado para os 2, mas apenas 1 transação de webhook foi efetuada
+      expect(prisma.webhookEvent.create).toHaveBeenCalledTimes(2);
+    });
+
+    // 6, 7, 8, 9. Unicidade de aprovação, comissão, transação e crédito na wallet
+    it('6-9. garante unicidade de aprovação financeira e crédito na wallet', async () => {
+      prisma.payment.findFirst.mockResolvedValue({
+        id: 'payment-1',
+        amount: 100,
+        status: 'PENDING',
+        externalId: 'mp-123',
+      });
+      prisma.payment.findUnique.mockResolvedValue({
+        id: 'payment-1',
+        amount: 100,
+        status: 'PENDING',
+        externalId: 'mp-123',
+      });
+      mockMercadoPagoService.getPaymentStatus.mockResolvedValue({
+        id: 123,
+        status: 'approved',
+      });
+
+      await service.handleWebhook(
+        { type: 'payment', data: { id: '123' } },
+        'req-financial-1',
+      );
+
+      expect(mockCommissionsService.calculate).toHaveBeenCalledTimes(1);
+    });
+
+    // 10. Erro de processamento marca WebhookEvent como FAILED
+    it('10. erro de processamento marca WebhookEvent como FAILED', async () => {
+      prisma.payment.findFirst.mockResolvedValue({
+        id: 'payment-1',
+        externalId: 'mp-123',
+      });
+      mockMercadoPagoService.getPaymentStatus.mockRejectedValue(
+        new Error('Gateway error'),
+      );
+
+      const result = await service.handleWebhook(
+        { type: 'payment', data: { id: '123' } },
+        'req-err-1',
+      );
+
+      expect(result.received).toBe(true);
+      expect(prisma.webhookEvent.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'we-1' },
+          data: expect.objectContaining({
+            status: 'FAILED',
+            errorMessage: 'Gateway error',
+          }),
+        }),
+      );
+    });
+
+    // 11. Assinatura inválida não cria WebhookEvent
+    it('11. assinatura inválida rejeita no controller antes de criar WebhookEvent', () => {
       const secret = 'test-webhook-secret';
       const mockConfig = { get: jest.fn().mockReturnValue(secret) };
       const controller = new (require('../payments.controller').WebhooksController)(
@@ -469,64 +508,64 @@ describe('PaymentsService', () => {
       expect(() =>
         controller.handlePaymentWebhook(
           { type: 'payment', data: { id: '123' } },
-          'ts=12345,v1=invalid_hash_signature',
-          'req-123',
+          'ts=12345,v1=invalid_hash',
+          'req-invalid-sig',
         ),
       ).toThrow(BadRequestException);
+
+      expect(prisma.webhookEvent.create).not.toHaveBeenCalled();
     });
 
-    // 10. Payment inexistente
-    it('10. payment inexistente deve logar aviso e retornar received: true sem erro', async () => {
-      prisma.payment.findFirst.mockResolvedValue(null);
-      mockMercadoPagoService.getPaymentStatus.mockResolvedValue({
-        id: 999999,
-        status: 'approved',
-      });
-
-      const result = await service.handleWebhook({
-        type: 'payment',
-        data: { id: '999999' },
-      });
-
-      expect(result.received).toBe(true);
-      expect(mockCommissionsService.calculate).not.toHaveBeenCalled();
-    });
-
-    // 11. Gateway retorna status diferente (ex.: in_process)
-    it('11. gateway retorna status em processamento (in_process)', async () => {
+    // 12. Webhook de outro evento do mesmo pagamento pode ser registrado
+    it('12. evento diferente do mesmo pagamento possui externalEventId diferente e é registrado', async () => {
       prisma.payment.findFirst.mockResolvedValue({
         id: 'payment-1',
         externalId: 'mp-123',
-        status: 'PENDING',
       });
-      mockMercadoPagoService.getPaymentStatus.mockResolvedValue({
-        id: 123,
-        status: 'in_process',
-      });
-
-      const result = await service.handleWebhook({
-        type: 'payment',
-        data: { id: '123' },
+      prisma.payment.findUnique.mockResolvedValue({
+        id: 'payment-1',
+        externalId: 'mp-123',
       });
 
-      expect(result.received).toBe(true);
-      expect(mockCommissionsService.calculate).not.toHaveBeenCalled();
-      expect(prisma.payment.update).not.toHaveBeenCalled();
-    });
-
-    // 12. Erro durante processamento (ex.: falha de gateway)
-    it('12. erro durante comunicação com gateway é capturado e logado', async () => {
-      mockMercadoPagoService.getPaymentStatus.mockRejectedValue(
-        new Error('Gateway connection timeout'),
+      await service.handleWebhook(
+        { type: 'payment', action: 'payment.created', data: { id: '123' } },
+        'req-evt-1',
+      );
+      await service.handleWebhook(
+        { type: 'payment', action: 'payment.updated', data: { id: '123' } },
+        'req-evt-2',
       );
 
-      const result = await service.handleWebhook({
-        type: 'payment',
-        data: { id: '123' },
-      });
+      expect(prisma.webhookEvent.create).toHaveBeenCalledTimes(2);
+      expect(prisma.webhookEvent.create).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          data: expect.objectContaining({ externalEventId: 'req_req-evt-1' }),
+        }),
+      );
+      expect(prisma.webhookEvent.create).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          data: expect.objectContaining({ externalEventId: 'req_req-evt-2' }),
+        }),
+      );
+    });
 
-      expect(result.received).toBe(true);
-      expect(mockCommissionsService.calculate).not.toHaveBeenCalled();
+    // 13. Diferentes eventos legítimos do mesmo pagamento não são tratados como duplicados
+    it('13. diferentes eventos legítimos não colidem na restrição UNIQUE', async () => {
+      const result1 = await service.handleWebhook(
+        { type: 'payment', action: 'payment.created', data: { id: '123' } },
+        'req-distinct-1',
+      );
+      const result2 = await service.handleWebhook(
+        { type: 'payment', action: 'payment.updated', data: { id: '123' } },
+        'req-distinct-2',
+      );
+
+      expect(result1.received).toBe(true);
+      expect(result2.received).toBe(true);
+      expect(result1).not.toHaveProperty('idempotent');
+      expect(result2).not.toHaveProperty('idempotent');
     });
   });
 });

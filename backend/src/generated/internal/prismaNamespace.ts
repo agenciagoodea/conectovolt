@@ -417,7 +417,8 @@ export const ModelName = {
   TelemetryEvent: 'TelemetryEvent',
   Alert: 'Alert',
   MaintenanceRecord: 'MaintenanceRecord',
-  StationImage: 'StationImage'
+  StationImage: 'StationImage',
+  WebhookEvent: 'WebhookEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -433,7 +434,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "company" | "station" | "charger" | "connector" | "vehicle" | "tariff" | "chargingSession" | "payment" | "commission" | "wallet" | "transaction" | "notification" | "auditLog" | "plan" | "subscription" | "platformUsage" | "telemetryEvent" | "alert" | "maintenanceRecord" | "stationImage"
+    modelProps: "user" | "company" | "station" | "charger" | "connector" | "vehicle" | "tariff" | "chargingSession" | "payment" | "commission" | "wallet" | "transaction" | "notification" | "auditLog" | "plan" | "subscription" | "platformUsage" | "telemetryEvent" | "alert" | "maintenanceRecord" | "stationImage" | "webhookEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1823,6 +1824,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    WebhookEvent: {
+      payload: Prisma.$WebhookEventPayload<ExtArgs>
+      fields: Prisma.WebhookEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WebhookEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebhookEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WebhookEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebhookEventPayload>
+        }
+        findFirst: {
+          args: Prisma.WebhookEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebhookEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WebhookEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebhookEventPayload>
+        }
+        findMany: {
+          args: Prisma.WebhookEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebhookEventPayload>[]
+        }
+        create: {
+          args: Prisma.WebhookEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebhookEventPayload>
+        }
+        createMany: {
+          args: Prisma.WebhookEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.WebhookEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebhookEventPayload>
+        }
+        update: {
+          args: Prisma.WebhookEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebhookEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.WebhookEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WebhookEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.WebhookEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebhookEventPayload>
+        }
+        aggregate: {
+          args: Prisma.WebhookEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWebhookEvent>
+        }
+        groupBy: {
+          args: Prisma.WebhookEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WebhookEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WebhookEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WebhookEventCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2185,6 +2252,22 @@ export const StationImageScalarFieldEnum = {
 export type StationImageScalarFieldEnum = (typeof StationImageScalarFieldEnum)[keyof typeof StationImageScalarFieldEnum]
 
 
+export const WebhookEventScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  externalEventId: 'externalEventId',
+  eventType: 'eventType',
+  resourceId: 'resourceId',
+  payload: 'payload',
+  status: 'status',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  processedAt: 'processedAt'
+} as const
+
+export type WebhookEventScalarFieldEnum = (typeof WebhookEventScalarFieldEnum)[keyof typeof WebhookEventScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2453,6 +2536,20 @@ export const StationImageOrderByRelevanceFieldEnum = {
 export type StationImageOrderByRelevanceFieldEnum = (typeof StationImageOrderByRelevanceFieldEnum)[keyof typeof StationImageOrderByRelevanceFieldEnum]
 
 
+export const WebhookEventOrderByRelevanceFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  externalEventId: 'externalEventId',
+  eventType: 'eventType',
+  resourceId: 'resourceId',
+  payload: 'payload',
+  status: 'status',
+  errorMessage: 'errorMessage'
+} as const
+
+export type WebhookEventOrderByRelevanceFieldEnum = (typeof WebhookEventOrderByRelevanceFieldEnum)[keyof typeof WebhookEventOrderByRelevanceFieldEnum]
+
+
 
 /**
  * Field references
@@ -2665,6 +2762,7 @@ export type GlobalOmitConfig = {
   alert?: Prisma.AlertOmit
   maintenanceRecord?: Prisma.MaintenanceRecordOmit
   stationImage?: Prisma.StationImageOmit
+  webhookEvent?: Prisma.WebhookEventOmit
 }
 
 /* Types for Logging */

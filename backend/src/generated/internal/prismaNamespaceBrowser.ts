@@ -71,7 +71,8 @@ export const ModelName = {
   TelemetryEvent: 'TelemetryEvent',
   Alert: 'Alert',
   MaintenanceRecord: 'MaintenanceRecord',
-  StationImage: 'StationImage'
+  StationImage: 'StationImage',
+  WebhookEvent: 'WebhookEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -413,6 +414,22 @@ export const StationImageScalarFieldEnum = {
 export type StationImageScalarFieldEnum = (typeof StationImageScalarFieldEnum)[keyof typeof StationImageScalarFieldEnum]
 
 
+export const WebhookEventScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  externalEventId: 'externalEventId',
+  eventType: 'eventType',
+  resourceId: 'resourceId',
+  payload: 'payload',
+  status: 'status',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  processedAt: 'processedAt'
+} as const
+
+export type WebhookEventScalarFieldEnum = (typeof WebhookEventScalarFieldEnum)[keyof typeof WebhookEventScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -679,4 +696,18 @@ export const StationImageOrderByRelevanceFieldEnum = {
 } as const
 
 export type StationImageOrderByRelevanceFieldEnum = (typeof StationImageOrderByRelevanceFieldEnum)[keyof typeof StationImageOrderByRelevanceFieldEnum]
+
+
+export const WebhookEventOrderByRelevanceFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  externalEventId: 'externalEventId',
+  eventType: 'eventType',
+  resourceId: 'resourceId',
+  payload: 'payload',
+  status: 'status',
+  errorMessage: 'errorMessage'
+} as const
+
+export type WebhookEventOrderByRelevanceFieldEnum = (typeof WebhookEventOrderByRelevanceFieldEnum)[keyof typeof WebhookEventOrderByRelevanceFieldEnum]
 

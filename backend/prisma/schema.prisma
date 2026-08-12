@@ -421,3 +421,25 @@ model StationImage {
   @@index([stationId])
   @@map("station_images")
 }
+
+model WebhookEvent {
+  id              String    @id @default(cuid())
+  provider        String    @default("MERCADO_PAGO")
+  externalEventId String    @map("external_event_id")
+  eventType       String    @map("event_type")
+  resourceId      String?   @map("resource_id")
+  payload         String?   @map("payload")
+  status          String    @default("RECEIVED")
+  errorMessage    String?   @map("error_message")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  processedAt     DateTime? @map("processed_at")
+
+  @@unique([provider, externalEventId])
+  @@index([provider])
+  @@index([externalEventId])
+  @@index([resourceId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("webhook_events")
+}
+
