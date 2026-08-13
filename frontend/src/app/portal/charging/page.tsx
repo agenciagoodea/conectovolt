@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import api from '@/lib/api';
 import { useChargingSocket } from '@/lib/use-charging-socket';
-import { ArrowLeft, CircleStop, Loader2, Zap, Plug, Battery, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, CircleStop, Loader2, Zap, Plug, Battery, CheckCircle2, Car } from 'lucide-react';
+import CarChargingAnimation from '@/components/car-charging-animation';
 
 interface Connector {
   id: string;
@@ -46,6 +47,7 @@ interface Session {
   startTime: string;
   endTime?: string;
   tariff?: { name: string; pricePerKwh: number };
+  vehicle?: { id: string; brand: string; model: string; plate: string; batteryCapacity?: number };
 }
 
 function unwrap<T>(value: T | { data: T }): T {
@@ -70,6 +72,7 @@ function ChargingContent() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [durationSec, setDurationSec] = useState(0);
 
   const socket = useChargingSocket();
 
@@ -80,9 +83,10 @@ function ChargingContent() {
       return;
     }
     try {
-      const [{ data: stationData }, { data: vehicleData }] = await Promise.all([
+      const [{ data: stationData }, { data: vehicleData }, { data: activeData }] = await Promise.all([
         api.get(`/stations/${stationId}`),
         api.get('/vehicles'),
+        api.get('/charging/active').catch(() => ({ data: null })),
       ]);
       const loadedStation = unwrap<Station>(stationData);
       const loadedVehicles = unwrap<Vehicle[]>(vehicleData);
@@ -91,6 +95,11 @@ function ChargingContent() {
       setStation(loadedStation);
       setVehicles(loadedVehicles);
       setConnectorId(loadedCharger.connectors?.find((c) => c.status === 'AVAILABLE')?.id || '');
+
+      const active = unwrap<Session | null>(activeData);
+      if (active && active.status === 'ACTIVE') {
+        setSession(active);
+      }
     } catch {
       setError('Nao foi possivel carregar dados.');
     } finally {
@@ -102,7 +111,6 @@ function ChargingContent() {
 
   useEffect(() => {
     if (!session?.id || session.status !== 'ACTIVE') return;
-
     socket.subscribeSession(session.id);
     return () => { socket.unsubscribeSession(session.id); };
   }, [session?.id, session?.status]);
@@ -132,14 +140,24 @@ function ChargingContent() {
         setSession((prev) => {
           if (!prev) return prev;
           if (updated.status === 'COMPLETED' && prev.status === 'ACTIVE') {
-            return { ...prev, status: 'COMPLETED', energyKwh: updated.energyKwh, amount: updated.amount, endTime: updated.endTime };
+            router.push(`/portal/payment?session=${prev.id}&amount=${Number(updated.amount || 0).toFixed(2)}`);
+            return { ...prev, status: 'COMPLETED', energyKwh: updated.energyKwh, amount: updated.amount };
           }
           return { ...prev, energyKwh: updated.energyKwh, amount: updated.amount };
         });
       } catch { /* silent */ }
-    }, 10000);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [session?.id, session?.status]);
+
+  useEffect(() => {
+    if (!session || session.status !== 'ACTIVE') return;
+    setDurationSec(Math.round((Date.now() - new Date(session.startTime).getTime()) / 1000));
+    const timer = window.setInterval(() => {
+      setDurationSec(Math.round((Date.now() - new Date(session.startTime).getTime()) / 1000));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [session?.startTime, session?.status]);
 
   async function startCharging() {
     setSubmitting(true);
@@ -149,7 +167,12 @@ function ChargingContent() {
         chargerId, stationId, connectorId: connectorId || undefined, vehicleId: vehicleId || undefined,
       });
       const started = unwrap<Session & { sessionId?: string }>(data);
-      setSession({ ...started, id: started.id || started.sessionId || '' });
+      const sessionVehicle = vehicles.find((v) => v.id === vehicleId) || null;
+      setSession({
+        ...started,
+        id: started.id || started.sessionId || '',
+        vehicle: sessionVehicle ? { id: sessionVehicle.id, brand: sessionVehicle.brand, model: sessionVehicle.model, plate: sessionVehicle.plate, batteryCapacity: sessionVehicle.batteryCapacity } : undefined,
+      });
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
       setError(msg || 'Nao foi possivel iniciar. Verifique a disponibilidade.');
@@ -167,12 +190,10 @@ function ChargingContent() {
         energyKwh: Number(session.energyKwh || 0),
       });
       const finished = unwrap<Session>(data);
-      setSession(finished);
-      router.push(`/portal/payment?session=${session.id}&amount=${Number(finished.amount || 0).toFixed(2)}`);
+      router.replace(`/portal/payment?session=${session.id}&amount=${Number(finished.amount || 0).toFixed(2)}`);
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
       setError(msg || 'Nao foi possivel finalizar.');
-    } finally {
       setSubmitting(false);
     }
   }
@@ -180,7 +201,9 @@ function ChargingContent() {
   const charger = station?.chargers?.find((c) => c.id === chargerId);
   const pricePerKwh = Number(session?.tariff?.pricePerKwh || station?.tariff?.pricePerKwh || 0);
   const currentAmount = Number(session?.amount || 0) || Number(session?.energyKwh || 0) * pricePerKwh;
-  const durationMin = session ? Math.round((Date.now() - new Date(session.startTime).getTime()) / 60000) : 0;
+  const durationMin = Math.floor(durationSec / 60);
+  const durationSecRem = durationSec % 60;
+  const selectedVehicle = vehicles.find((v) => v.id === vehicleId);
 
   if (loading) {
     return (
@@ -210,6 +233,18 @@ function ChargingContent() {
 
       {!session ? (
         <div className="space-y-4 rounded-2xl p-5" style={{ background: '#111', border: '1px solid #1f1f1f' }}>
+          {selectedVehicle && (
+            <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: '#0a0a0a', border: '1px solid #1f1f1f' }}>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)' }}>
+                <Car className="text-white" size={18} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-white text-sm font-bold">{selectedVehicle.brand} {selectedVehicle.model}</p>
+                <p className="text-slate-500 text-xs">{selectedVehicle.plate} {selectedVehicle.batteryCapacity ? `· ${selectedVehicle.batteryCapacity} kWh` : ''}</p>
+              </div>
+            </div>
+          )}
+
           <div>
             <label className="block text-xs text-slate-400 mb-1.5">Veiculo</label>
             <select
@@ -269,6 +304,13 @@ function ChargingContent() {
             </div>
           </div>
 
+          {session.vehicle && (
+            <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: '#0a0a0a' }}>
+              <Car className="text-slate-500" size={18} />
+              <span className="text-white text-sm">{session.vehicle.brand} {session.vehicle.model} · {session.vehicle.plate}</span>
+            </div>
+          )}
+
           <div className="grid grid-cols-3 gap-2">
             <div className="text-center rounded-xl py-3" style={{ background: '#0a0a0a' }}>
               <p className="text-xl font-bold text-white">{Number(session.energyKwh || 0).toFixed(1)}</p>
@@ -279,8 +321,8 @@ function ChargingContent() {
               <p className="text-[10px] text-slate-500">total</p>
             </div>
             <div className="text-center rounded-xl py-3" style={{ background: '#0a0a0a' }}>
-              <p className="text-xl font-bold text-white">{durationMin}</p>
-              <p className="text-[10px] text-slate-500">min</p>
+              <p className="text-xl font-bold text-white">{durationMin}m {durationSecRem}s</p>
+              <p className="text-[10px] text-slate-500">duracao</p>
             </div>
           </div>
 
@@ -303,9 +345,11 @@ function ChargingContent() {
             </div>
             <div>
               <p className="text-white font-bold">Recarga em andamento</p>
-              <p className="text-slate-500 text-xs">{new Date(session.startTime).toLocaleString('pt-BR')}</p>
+              <p className="text-slate-500 text-xs">{session.vehicle ? `${session.vehicle.brand} ${session.vehicle.model} · ${session.vehicle.plate}` : new Date(session.startTime).toLocaleString('pt-BR')}</p>
             </div>
           </div>
+
+          <CarChargingAnimation energyKwh={session.energyKwh} />
 
           <div className="grid grid-cols-3 gap-2">
             <div className="text-center rounded-xl py-3" style={{ background: '#0a0a0a' }}>
@@ -317,8 +361,8 @@ function ChargingContent() {
               <p className="text-[10px] text-slate-500">parcial</p>
             </div>
             <div className="text-center rounded-xl py-3" style={{ background: '#0a0a0a' }}>
-              <p className="text-xl font-bold text-white">{durationMin}</p>
-              <p className="text-[10px] text-slate-500">min</p>
+              <p className="text-xl font-bold text-white">{durationMin}m {String(durationSecRem).padStart(2, '0')}s</p>
+              <p className="text-[10px] text-slate-500">tempo</p>
             </div>
           </div>
 

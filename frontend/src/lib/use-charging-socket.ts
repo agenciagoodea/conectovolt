@@ -48,13 +48,15 @@ export function useChargingSocket() {
   useEffect(() => {
     if (!user) return;
 
-    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-    if (!token) return;
-
     const socket = io(`${SOCKET_URL}/charging`, {
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'],
       autoConnect: true,
-      auth: { token },
+      reconnection: true,
+      reconnectionAttempts: 50,
+      reconnectionDelay: 2000,
+      auth: () => ({
+        token: typeof window !== 'undefined' ? localStorage.getItem('access_token') || '' : '',
+      }),
     });
     socketRef.current = socket;
 
@@ -64,6 +66,10 @@ export function useChargingSocket() {
     });
 
     socket.on('disconnect', () => {
+      setConnected(false);
+    });
+
+    socket.on('connect_error', () => {
       setConnected(false);
     });
 

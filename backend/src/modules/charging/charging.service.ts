@@ -239,7 +239,15 @@ export class ChargingService {
       });
     }
 
-    const txId = this.ocppService.getTransactionIdForSession(sessionId);
+    let txId = this.ocppService.getTransactionIdForSession(sessionId);
+    if (txId === null) {
+      await new Promise((r) => setTimeout(r, 1500));
+      txId = this.ocppService.getTransactionIdForSession(sessionId);
+    }
+    if (txId === null) {
+      await new Promise((r) => setTimeout(r, 2000));
+      txId = this.ocppService.getTransactionIdForSession(sessionId);
+    }
     let ocppSent = false;
     if (txId !== null && updated.charger?.ocppId) {
       ocppSent = this.ocppService.sendRemoteStopTransaction(
