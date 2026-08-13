@@ -195,25 +195,33 @@ export class ChargingService {
   async stop(sessionId: string, userId: string, dto: StopChargingDto) {
     const session = await this.assertSessionOwner(sessionId, userId);
 
+    if (session.status === 'COMPLETED') {
+      return this.getSessionById(sessionId, userId);
+    }
+
     if (session.status !== 'ACTIVE') {
       throw new BadRequestException('Session is not active');
     }
 
-    if (dto.energyKwh < Number(session.energyKwh)) {
+    const finalEnergy = dto.energyKwh !== undefined
+      ? dto.energyKwh
+      : Number(session.energyKwh);
+
+    if (finalEnergy < Number(session.energyKwh)) {
       throw new BadRequestException(
         'Energy consumption cannot decrease during a session',
       );
     }
 
     const tariff = await this.getSessionTariff(sessionId);
-    const amount = dto.energyKwh * Number(tariff.pricePerKwh);
+    const amount = finalEnergy * Number(tariff.pricePerKwh);
 
     const updated = await this.prisma.chargingSession.update({
       where: { id: sessionId },
       data: {
         status: 'COMPLETED',
         endTime: new Date(),
-        energyKwh: dto.energyKwh,
+        energyKwh: finalEnergy,
         amount,
       },
       include: {
@@ -252,7 +260,7 @@ export class ChargingService {
     });
 
     this.logger.log(
-      `Charging completed: session=${session.id}, energy=${dto.energyKwh}kWh, amount=R$${amount}, ocpp=${ocppSent ? 'sent' : 'n/a'}`,
+      `Charging completed: session=${session.id}, energy=${finalEnergy}kWh, amount=R$${amount}, ocpp=${ocppSent ? 'sent' : 'n/a'}`,
     );
 
     return {

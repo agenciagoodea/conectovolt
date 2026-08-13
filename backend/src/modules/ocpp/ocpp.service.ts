@@ -489,6 +489,13 @@ export class OcppService {
         });
     if (!session) return { idTagInfo: { status: 'Invalid' } };
 
+    if (session.status === 'COMPLETED') {
+      this.logger.log(`Session ${session.id} already completed, ignoring duplicate StopTransaction`);
+      this.transactionSessions.delete(p.transactionId);
+      this.transactionMeterStarts.delete(p.transactionId);
+      return { idTagInfo: { status: 'Accepted' } };
+    }
+
     const meterStart = this.transactionMeterStarts.get(p.transactionId) || 0;
     const energyKwh = Math.max(0, (p.meterStop - meterStart) / 1000);
     const tariff = charger.station?.tariff;

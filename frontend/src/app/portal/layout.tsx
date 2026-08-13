@@ -3,8 +3,7 @@
 import { useAuth } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import { useEffect, ReactNode } from 'react';
-import Link from 'next/link';
-import { Zap, LogOut, Car, MapPin, History, Home, User } from 'lucide-react';
+import { Zap, LogOut } from 'lucide-react';
 
 export default function PortalLayout({ children }: { children: ReactNode }) {
   const { user, loading, logout } = useAuth();
@@ -31,23 +30,18 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-slate-950">
-      <header className="bg-slate-900 border-b border-slate-800">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Zap className="text-emerald-400" size={22} />
-            <span className="text-white font-bold">ConectoVolt</span>
+      <header className="bg-slate-900/80 backdrop-blur-sm border-b border-slate-800/50 sticky top-0 z-50">
+        <div className="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Zap className="text-emerald-400" size={20} />
+            <span className="text-white font-bold text-sm">ConectoVolt</span>
           </div>
-          <nav className="flex items-center gap-1">
-            <Link href="/portal" className="flex items-center gap-1 text-slate-300 hover:text-white px-3 py-1.5 rounded text-sm"><Home size={16} /> Inicio</Link>
-            <Link href="/portal/stations" className="flex items-center gap-1 text-slate-300 hover:text-white px-3 py-1.5 rounded text-sm"><MapPin size={16} /> Postos</Link>
-            <Link href="/portal/vehicles" className="flex items-center gap-1 text-slate-300 hover:text-white px-3 py-1.5 rounded text-sm"><Car size={16} /> Veiculos</Link>
-            <Link href="/portal/history" className="flex items-center gap-1 text-slate-300 hover:text-white px-3 py-1.5 rounded text-sm"><History size={16} /> Historico</Link>
-            <Link href="/portal/profile" className="flex items-center gap-1 text-slate-300 hover:text-white px-3 py-1.5 rounded text-sm"><User size={16} /> Perfil</Link>
-            <button onClick={logout} className="flex items-center gap-1 text-slate-400 hover:text-white px-3 py-1.5 rounded text-sm ml-2"><LogOut size={16} /> Sair</button>
-          </nav>
+          <button onClick={logout} className="flex items-center gap-1.5 text-slate-400 hover:text-white px-2 py-1.5 rounded text-xs">
+            <LogOut size={14} /> Sair
+          </button>
         </div>
       </header>
-      <main className="max-w-5xl mx-auto px-4 py-6">{children}</main>
+      <main className="max-w-lg mx-auto px-4 py-5">{children}</main>
     </div>
   );
 }

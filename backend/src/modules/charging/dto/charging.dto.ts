@@ -40,8 +40,9 @@ export class UpdateEnergyDto {
 }
 
 export class StopChargingDto {
-  @ApiProperty({ description: 'Energia total consumida em kWh' })
+  @ApiPropertyOptional({ description: 'Energia total consumida em kWh (opcional — usa ultimo valor da sessao)' })
+  @IsOptional()
   @IsNumber()
   @Min(0)
-  energyKwh: number;
+  energyKwh?: number;
 }

@@ -145,16 +145,13 @@ export default function ChargingPage() {
 
   async function stopCharging() {
     if (!session) return;
-    const energyKwh = Number(session.energyKwh || 0);
-    if (energyKwh <= 0) {
-      setError('A recarga ainda nao recebeu telemetria de energia.');
-      return;
-    }
 
     setSubmitting(true);
     setError('');
     try {
-      const { data } = await api.post(`/charging/${session.id}/stop`, { energyKwh });
+      const { data } = await api.post(`/charging/${session.id}/stop`, {
+        energyKwh: Number(session.energyKwh || 0),
+      });
       const finished = unwrap<Session>(data);
       setSession(finished);
       router.push(`/portal/payment?session=${encodeURIComponent(session.id)}&amount=${encodeURIComponent(Number(finished.amount || 0).toFixed(2))}`);
