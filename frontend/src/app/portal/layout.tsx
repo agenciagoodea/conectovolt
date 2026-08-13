@@ -39,7 +39,7 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
   if (!user || user.role !== 'CUSTOMER') return null;
 
   return (
-    <div className="flex flex-col" style={{ height: '100dvh', maxWidth: '430px', margin: '0 auto', background: '#0a0a0a' }}>
+    <div className="flex flex-col w-full max-w-lg mx-auto" style={{ height: '100dvh', background: '#0a0a0a' }}>
       <header className="flex items-center justify-between px-4 h-12 shrink-0" style={{ background: '#0f0f0f', borderBottom: '1px solid #1a1a1a' }}>
         <div className="flex items-center gap-2">
           <Zap className="text-emerald-400" size={18} />
@@ -50,7 +50,7 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
 
       <main className="flex-1 overflow-y-auto px-4 py-4 pb-20">{children}</main>
 
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] flex items-center justify-around py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]" style={{ background: '#0f0f0f', borderTop: '1px solid #1a1a1a' }}>
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg flex items-center justify-around py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]" style={{ background: '#0f0f0f', borderTop: '1px solid #1a1a1a' }}>
         {TABS.map((tab) => {
           const active = pathname === tab.href || (tab.href !== '/portal' && pathname.startsWith(tab.href));
           return (

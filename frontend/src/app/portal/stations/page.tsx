@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import api from '@/lib/api';
 import { useChargingSocket } from '@/lib/use-charging-socket';
-import { MapPin, Zap, Navigation, ChevronRight, Search } from 'lucide-react';
+import { MapPin, Zap, Navigation, ChevronRight, Search, Battery, Plug, Wifi, WifiOff } from 'lucide-react';
 
 interface Station {
   id: string;
@@ -16,7 +16,14 @@ interface Station {
   longitude?: number;
   status: string;
   tariff?: { name: string; pricePerKwh: number };
-  chargers?: { id: string; status: string; powerKw: number; model?: string }[];
+  chargers?: {
+    id: string;
+    status: string;
+    powerKw: number;
+    model?: string;
+    ocppId?: string;
+    connectors?: { id: string; status: string; type: string }[];
+  }[];
 }
 
 function unwrap<T>(value: T | { data: T }): T {
@@ -25,6 +32,22 @@ function unwrap<T>(value: T | { data: T }): T {
   }
   return value as T;
 }
+
+const CHARGER_STATUS: Record<string, { label: string; color: string; bg: string }> = {
+  ONLINE: { label: 'Online', color: '#10b981', bg: '#10b98115' },
+  OFFLINE: { label: 'Offline', color: '#6b7280', bg: '#6b728015' },
+  CHARGING: { label: 'Em uso', color: '#f59e0b', bg: '#f59e0b15' },
+  FAULTED: { label: 'Com defeito', color: '#ef4444', bg: '#ef444415' },
+  UNKNOWN: { label: 'Desconhecido', color: '#6b7280', bg: '#6b728015' },
+};
+
+const CONNECTOR_STATUS: Record<string, { label: string; color: string }> = {
+  AVAILABLE: { label: 'Livre', color: '#10b981' },
+  OCCUPIED: { label: 'Ocupado', color: '#f59e0b' },
+  CHARGING: { label: 'Carregando', color: '#3b82f6' },
+  FAULTED: { label: 'Defeito', color: '#ef4444' },
+  UNKNOWN: { label: 'Desconhecido', color: '#6b7280' },
+};
 
 export default function StationsPage() {
   const searchParams = useSearchParams();
@@ -76,10 +99,21 @@ export default function StationsPage() {
     (s) => !filter || s.name.toLowerCase().includes(filter.toLowerCase()) || s.address.toLowerCase().includes(filter.toLowerCase()) || (s.city || '').toLowerCase().includes(filter.toLowerCase()),
   );
 
+  function getStationStats(station: Station) {
+    const chargers = station.chargers || [];
+    const total = chargers.length;
+    const online = chargers.filter((c) => c.status === 'ONLINE' || c.status === 'CHARGING').length;
+    const available = chargers.filter((c) => {
+      if (c.status !== 'ONLINE') return false;
+      return c.connectors?.some((conn) => conn.status === 'AVAILABLE') ?? true;
+    }).length;
+    return { total, online, available };
+  }
+
   if (loading) {
     return (
       <div className="space-y-3 pt-2">
-        {[1, 2, 3].map((i) => <div key={i} className="h-20 rounded-2xl animate-pulse" style={{ background: '#111' }} />)}
+        {[1, 2, 3].map((i) => <div key={i} className="h-24 rounded-2xl animate-pulse" style={{ background: '#111' }} />)}
       </div>
     );
   }
@@ -107,8 +141,7 @@ export default function StationsPage() {
       ) : (
         <div className="space-y-3">
           {filtered.map((station) => {
-            const onlineCount = station.chargers?.filter((c) => c.status === 'ONLINE').length || 0;
-            const totalCount = station.chargers?.length || 0;
+            const stats = getStationStats(station);
             return (
               <button
                 key={station.id}
@@ -121,51 +154,87 @@ export default function StationsPage() {
                     <p className="text-white font-bold text-base">{station.name}</p>
                     <p className="text-slate-400 text-xs mt-0.5">{station.address}</p>
                   </div>
-                  <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                    <span className={`h-2 w-2 rounded-full ${onlineCount > 0 ? 'bg-emerald-400' : 'bg-slate-600'}`} />
-                    <span className="text-xs text-slate-400">{onlineCount}/{totalCount}</span>
+                  <div className="flex items-center gap-2 shrink-0 ml-2">
+                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg" style={{ background: stats.online > 0 ? '#10b98115' : '#6b728015' }}>
+                      <span className={`h-2 w-2 rounded-full ${stats.online > 0 ? 'bg-emerald-400 animate-pulse' : 'bg-slate-600'}`} />
+                      <span className="text-xs font-medium" style={{ color: stats.online > 0 ? '#10b981' : '#6b7280' }}>
+                        {stats.online}/{stats.total}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 text-xs text-slate-500">
+
+                <div className="flex items-center gap-4 text-xs text-slate-500">
                   {station.tariff && (
                     <span className="flex items-center gap-1"><Zap size={10} className="text-emerald-400" /> R$ {Number(station.tariff.pricePerKwh).toFixed(2)}/kWh</span>
                   )}
                   {station.city && <span>{station.city}</span>}
+                  {stats.available > 0 && (
+                    <span className="flex items-center gap-1 text-emerald-400">
+                      <Battery size={10} /> {stats.available} livre{stats.available > 1 ? 's' : ''}
+                    </span>
+                  )}
                 </div>
 
                 {selected?.id === station.id && (
                   <div className="mt-3 pt-3 space-y-3" style={{ borderTop: '1px solid #1f1f1f' }}>
-                    {station.chargers?.map((charger) => (
-                      <div key={charger.id} className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className={`h-2 w-2 rounded-full ${charger.status === 'ONLINE' ? 'bg-emerald-400' : 'bg-slate-600'}`} />
-                          <span className="text-white text-sm">{charger.model || charger.id.slice(-6)}</span>
-                          <span className="text-slate-500 text-xs">{charger.powerKw}kW</span>
+                    {station.chargers?.map((charger) => {
+                      const statusInfo = CHARGER_STATUS[charger.status] || CHARGER_STATUS.UNKNOWN;
+                      return (
+                        <div key={charger.id} className="rounded-xl p-3" style={{ background: '#0a0a0a', border: '1px solid #1f1f1f' }}>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full" style={{ background: statusInfo.bg }}>
+                                <span className="h-1.5 w-1.5 rounded-full" style={{ background: statusInfo.color }} />
+                                <span className="text-[10px] font-medium" style={{ color: statusInfo.color }}>{statusInfo.label}</span>
+                              </div>
+                              <span className="text-white text-sm font-medium">{charger.model || `Carregador ${charger.id.slice(-4)}`}</span>
+                            </div>
+                            <span className="text-slate-500 text-xs">{charger.powerKw}kW</span>
+                          </div>
+
+                          {charger.connectors && charger.connectors.length > 0 && (
+                            <div className="flex gap-2 mb-2">
+                              {charger.connectors.map((conn) => {
+                                const connStatus = CONNECTOR_STATUS[conn.status] || CONNECTOR_STATUS.UNKNOWN;
+                                return (
+                                  <div key={conn.id} className="flex items-center gap-1.5 px-2 py-1 rounded-lg" style={{ background: `${connStatus.color}10` }}>
+                                    <Plug size={10} style={{ color: connStatus.color }} />
+                                    <span className="text-[10px] font-medium" style={{ color: connStatus.color }}>{connStatus.label}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          <div className="flex items-center gap-2">
+                            {charger.status === 'ONLINE' ? (
+                              <Link
+                                href={`/portal/charging?station=${station.id}&charger=${charger.id}${vehicleId ? `&vehicle=${vehicleId}` : ''}`}
+                                className="flex-1 flex items-center justify-center gap-1 text-emerald-400 text-xs font-medium py-2 rounded-lg"
+                                style={{ background: '#10b98115' }}
+                              >
+                                Recargar <ChevronRight size={14} />
+                              </Link>
+                            ) : (
+                              <span className="flex-1 text-center text-slate-600 text-xs py-2">Indisponivel</span>
+                            )}
+                            {station.latitude && station.longitude && (
+                              <a
+                                href={`https://www.google.com/maps/dir/?api=1&destination=${station.latitude},${station.longitude}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-1 text-blue-400 text-xs py-2 px-3 rounded-lg"
+                                style={{ background: '#1e40af15' }}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Navigation size={14} />
+                              </a>
+                            )}
+                          </div>
                         </div>
-                        {charger.status === 'ONLINE' ? (
-                          <Link
-                            href={`/portal/charging?station=${station.id}&charger=${charger.id}${vehicleId ? `&vehicle=${vehicleId}` : ''}`}
-                            className="flex items-center gap-1 text-emerald-400 text-xs font-medium px-3 py-1.5 rounded-lg"
-                            style={{ background: '#10b98115' }}
-                          >
-                            Recargar <ChevronRight size={14} />
-                          </Link>
-                        ) : (
-                          <span className="text-slate-600 text-xs px-3 py-1.5">Offline</span>
-                        )}
-                      </div>
-                    ))}
-                    {station.latitude && station.longitude && (
-                      <a
-                        href={`https://www.google.com/maps/dir/?api=1&destination=${station.latitude},${station.longitude}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 w-full text-blue-400 text-xs py-2 rounded-lg"
-                        style={{ background: '#1e40af15' }}
-                      >
-                        <Navigation size={14} /> Como chegar
-                      </a>
-                    )}
+                      );
+                    })}
                   </div>
                 )}
               </button>

@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Patch,
   Body,
   Get,
   UseGuards,
@@ -60,6 +61,17 @@ export class AuthController {
   @ApiOperation({ summary: 'Obter perfil do usuario autenticado' })
   getProfile(@CurrentUser('id') userId: string) {
     return this.authService.getProfile(userId);
+  }
+
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Atualizar perfil do usuario autenticado' })
+  updateProfile(
+    @CurrentUser('id') userId: string,
+    @Body() dto: { name?: string; phone?: string; avatarUrl?: string },
+  ) {
+    return this.authService.updateProfile(userId, dto);
   }
 
   @Post('forgot-password')

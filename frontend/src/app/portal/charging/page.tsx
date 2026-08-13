@@ -96,6 +96,10 @@ function ChargingContent() {
       setVehicles(loadedVehicles);
       setConnectorId(loadedCharger.connectors?.find((c) => c.status === 'AVAILABLE')?.id || '');
 
+      if (!vehicleParam && loadedVehicles.length === 1) {
+        setVehicleId(loadedVehicles[0].id);
+      }
+
       const active = unwrap<Session | null>(activeData);
       if (active && active.status === 'ACTIVE') {
         setSession(active);

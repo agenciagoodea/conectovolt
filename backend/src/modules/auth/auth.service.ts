@@ -212,6 +212,7 @@ export class AuthService {
         phone: true,
         role: true,
         companyId: true,
+        avatarUrl: true,
         createdAt: true,
       },
     });
@@ -221,6 +222,37 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async updateProfile(
+    userId: string,
+    dto: { name?: string; phone?: string; avatarUrl?: string },
+  ) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const updateData: { name?: string; phone?: string; avatarUrl?: string } = {};
+    if (dto.name !== undefined) updateData.name = dto.name;
+    if (dto.phone !== undefined) updateData.phone = dto.phone;
+    if (dto.avatarUrl !== undefined) updateData.avatarUrl = dto.avatarUrl;
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+        companyId: true,
+        avatarUrl: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 
   async forgotPassword(dto: ForgotPasswordDto) {
