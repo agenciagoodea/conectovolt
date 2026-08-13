@@ -182,6 +182,13 @@ export class OcppServer implements OnModuleInit, OnModuleDestroy {
         const payload = (typed[3] ?? {}) as Record<string, unknown>;
 
         await this.processCall(ocppId, ws, uniqueId, action, payload);
+      } else if (messageTypeId === 3) {
+        const payload = (typed[2] ?? {}) as Record<string, unknown>;
+        this.logger.log(`CALLRESULT from ${ocppId} for ${uniqueId}: ${JSON.stringify(payload)}`);
+      } else if (messageTypeId === 4) {
+        const errorCode = typed[2] as string;
+        const errorDescription = typed[3] as string;
+        this.logger.warn(`CALLERROR from ${ocppId} for ${uniqueId}: ${errorCode} - ${errorDescription}`);
       }
     } catch (error) {
       const err = error as { message?: string };

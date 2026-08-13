@@ -2,67 +2,147 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import api from '@/lib/api';
-import { History, Clock, Zap } from 'lucide-react';
+import { useChargingSocket } from '@/lib/use-charging-socket';
+import { Clock, Zap, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 
-interface Session { id: string; startTime: string; endTime?: string; energyKwh: number; amount: number; status: string; station?: { name: string }; charger?: { serialNumber: string }; }
+interface HistoryItem {
+  id: string;
+  startTime: string;
+  endTime?: string;
+  energyKwh: number;
+  amount: number;
+  status: string;
+  station?: { name: string; address: string };
+  charger?: { serialNumber: string };
+}
+
+function unwrap<T>(value: T | { data: T }): T {
+  if (value && typeof value === 'object' && 'data' in value) {
+    return value.data;
+  }
+  return value as T;
+}
+
+const STATUS_MAP: Record<string, { label: string; color: string }> = {
+  ACTIVE: { label: 'Em andamento', color: '#10b981' },
+  COMPLETED: { label: 'Concluida', color: '#3b82f6' },
+  CANCELLED: { label: 'Cancelada', color: '#6b7280' },
+  PENDING: { label: 'Pendente', color: '#f59e0b' },
+};
 
 export default function HistoryPage() {
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [items, setItems] = useState<HistoryItem[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+
+  const socket = useChargingSocket();
 
   const load = useCallback(async () => {
+    setLoading(true);
     try {
-      const { data } = await api.get('/charging/history', { params: { page, limit: 20 } });
-      const rows = Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : [];
-      setSessions(rows);
-      setTotalPages(Number(data?.pagination?.totalPages || 1));
+      const { data } = await api.get(`/charging/history?page=${page}&limit=10`);
+      const result = unwrap<{ data: HistoryItem[]; pagination: { totalPages: number } }>(data);
+      setItems(result.data || []);
+      setTotalPages(result.pagination?.totalPages || 1);
     } catch {
-      setError('Não foi possível carregar o histórico. Tente novamente.');
+      // silent
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [page]);
 
+  useEffect(() => { void load(); }, [load]);
+
   useEffect(() => {
-    void load();
-  }, [load]);
+    socket.onSessionCompleted((data) => {
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === data.sessionId
+            ? { ...item, status: 'COMPLETED', energyKwh: data.energyKwh, amount: data.amount || item.amount, endTime: String(data.endTime || '') }
+            : item
+        )
+      );
+    });
 
-  const labels: Record<string, string> = { ACTIVE: 'Em andamento', COMPLETED: 'Concluida', CANCELLED: 'Cancelada', PENDING: 'Pendente' };
-  const colors: Record<string, string> = { ACTIVE: 'text-blue-400 bg-blue-500/10 border-blue-500/20', COMPLETED: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', CANCELLED: 'text-red-400 bg-red-500/10 border-red-500/20', PENDING: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20' };
+    socket.onSessionUpdate((data) => {
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === data.sessionId && item.status === 'ACTIVE'
+            ? { ...item, energyKwh: data.energyKwh, amount: data.amount || item.amount }
+            : item
+        )
+      );
+    });
+  }, [socket.onSessionCompleted, socket.onSessionUpdate]);
 
-  if (loading) return <div className="animate-pulse space-y-3">{[...Array(3)].map((_, i) => <div key={i} className="h-20 bg-slate-800 rounded-xl" />)}</div>;
+  if (loading) {
+    return (
+      <div className="space-y-3 pt-2">
+        {[1, 2, 3].map((i) => <div key={i} className="h-24 rounded-2xl animate-pulse" style={{ background: '#111' }} />)}
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <h2 className="text-xl font-bold text-white mb-4">Historico de Recargas</h2>
-      {error && <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">{error}</div>}
-      {sessions.length === 0 ? (
-        <div className="text-center py-12 text-slate-500"><History className="mx-auto mb-3" size={40} /><p>Nenhuma recarga realizada</p></div>
+    <div className="space-y-4">
+      <h1 className="text-xl font-bold text-white">Historico</h1>
+
+      {items.length === 0 ? (
+        <div className="text-center py-16">
+          <Clock className="mx-auto mb-3 text-slate-700" size={48} />
+          <p className="text-slate-500 font-medium">Nenhuma recarga registrada</p>
+        </div>
       ) : (
-         <div className="space-y-3">
-          {sessions.map((s) => (
-            <div key={s.id} className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Zap className="text-emerald-400" size={18} />
-                  <div>
-                    <p className="text-white font-medium text-sm">{s.station?.name || 'Posto'} {s.charger?.serialNumber ? `- ${s.charger.serialNumber}` : ''}</p>
-                    <p className="text-slate-500 text-xs flex items-center gap-1 mt-0.5"><Clock size={12} /> {new Date(s.startTime).toLocaleString('pt-BR')}</p>
+        <div className="space-y-3">
+          {items.map((item) => {
+            const status = STATUS_MAP[item.status] || STATUS_MAP.PENDING;
+            const durationMin = item.endTime
+              ? Math.round((new Date(item.endTime).getTime() - new Date(item.startTime).getTime()) / 60000)
+              : null;
+            return (
+              <div key={item.id} className="rounded-2xl p-4" style={{ background: '#111', border: '1px solid #1f1f1f' }}>
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-bold text-sm">{item.station?.name || 'Posto'}</p>
+                    <p className="text-slate-500 text-xs mt-0.5 flex items-center gap-1">
+                      <MapPin size={10} /> {item.station?.address || '-'}
+                    </p>
                   </div>
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ml-2" style={{ background: `${status.color}20`, color: status.color }}>
+                    {status.label}
+                  </span>
                 </div>
-                <span className={`text-xs px-2 py-0.5 rounded-full border ${colors[s.status] || colors.PENDING}`}>{labels[s.status] || s.status}</span>
+                <div className="flex items-center gap-4 text-xs text-slate-400">
+                  <span className="flex items-center gap-1"><Zap size={10} className="text-emerald-400" /> {Number(item.energyKwh).toFixed(2)} kWh</span>
+                  <span className="text-white font-bold">R$ {Number(item.amount).toFixed(2)}</span>
+                  {durationMin !== null && <span>{durationMin} min</span>}
+                  <span className="ml-auto">{new Date(item.startTime).toLocaleDateString('pt-BR')}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-4 text-sm">
-                <span className="text-slate-300"><span className="text-white font-semibold">{Number(s.energyKwh).toFixed(1)}</span> kWh</span>
-                {s.amount > 0 && <span className="text-emerald-400 font-semibold">R$ {Number(s.amount).toFixed(2)}</span>}
-                {s.endTime && <span className="text-slate-500 text-xs ml-auto">{new Date(s.endTime).toLocaleTimeString('pt-BR')}</span>}
-              </div>
-            </div>
-           ))}
-           {totalPages > 1 && <div className="flex items-center justify-between pt-3"><button disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="rounded-lg bg-slate-800 px-3 py-2 text-sm text-slate-300 disabled:opacity-40">Anterior</button><span className="text-xs text-slate-500">Pagina {page} de {totalPages}</span><button disabled={page >= totalPages} onClick={() => setPage((current) => current + 1)} className="rounded-lg bg-slate-800 px-3 py-2 text-sm text-slate-300 disabled:opacity-40">Proxima</button></div>}
-         </div>
+            );
+          })}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-4 pt-2">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            className="flex items-center gap-1 text-sm text-slate-400 disabled:text-slate-700"
+          >
+            <ChevronLeft size={16} /> Anterior
+          </button>
+          <span className="text-xs text-slate-500">{page}/{totalPages}</span>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+            className="flex items-center gap-1 text-sm text-slate-400 disabled:text-slate-700"
+          >
+            Proximo <ChevronRight size={16} />
+          </button>
+        </div>
       )}
     </div>
   );

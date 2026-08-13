@@ -1,98 +1,176 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import api from '@/lib/api';
 import Link from 'next/link';
-import { MapPin, Zap, Search, Navigation, Play } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import api from '@/lib/api';
+import { useChargingSocket } from '@/lib/use-charging-socket';
+import { MapPin, Zap, Navigation, ChevronRight, Search } from 'lucide-react';
 
 interface Station {
-  id: string; name: string; address: string; city: string; state: string;
-  latitude: number; longitude: number; status: string; tariff?: { name: string; pricePerKwh: number };
-  chargers?: { id: string; serialNumber: string; status: string; powerKw: number; connectors?: { id: string; type: string; status: string }[] }[]; _count?: { chargers: number };
+  id: string;
+  name: string;
+  address: string;
+  city?: string;
+  latitude?: number;
+  longitude?: number;
+  status: string;
+  tariff?: { name: string; pricePerKwh: number };
+  chargers?: { id: string; status: string; powerKw: number; model?: string }[];
+}
+
+function unwrap<T>(value: T | { data: T }): T {
+  if (value && typeof value === 'object' && 'data' in value) {
+    return value.data;
+  }
+  return value as T;
 }
 
 export default function StationsPage() {
+  const searchParams = useSearchParams();
+  const vehicleId = searchParams.get('vehicle') || '';
   const [stations, setStations] = useState<Station[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('');
   const [selected, setSelected] = useState<Station | null>(null);
-  const [error, setError] = useState('');
+
+  const socket = useChargingSocket();
 
   const load = useCallback(async () => {
     try {
       const { data } = await api.get('/stations');
-      setStations(data.filter((s: Station) => s.status === 'ACTIVE'));
+      const list = unwrap<Station[]>(data);
+      setStations(list.filter((s) => s.status === 'ACTIVE'));
     } catch {
-      setError('Nao foi possivel carregar os postos.');
+      // silent
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
-  useEffect(() => {
-    void load();
-  }, [load]);
+  useEffect(() => { void load(); }, [load]);
 
-  const filtered = stations.filter(s =>
-    s.name.toLowerCase().includes(search.toLowerCase()) ||
-    s.address.toLowerCase().includes(search.toLowerCase()) ||
-    s.city.toLowerCase().includes(search.toLowerCase())
+  useEffect(() => {
+    socket.onChargerStatus((data) => {
+      setStations((prev) =>
+        prev.map((station) => ({
+          ...station,
+          chargers: station.chargers?.map((c) =>
+            c.id === data.chargerId ? { ...c, status: data.status } : c
+          ),
+        }))
+      );
+      setSelected((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          chargers: prev.chargers?.map((c) =>
+            c.id === data.chargerId ? { ...c, status: data.status } : c
+          ),
+        };
+      });
+    });
+  }, [socket.onChargerStatus]);
+
+  const filtered = stations.filter(
+    (s) => !filter || s.name.toLowerCase().includes(filter.toLowerCase()) || s.address.toLowerCase().includes(filter.toLowerCase()) || (s.city || '').toLowerCase().includes(filter.toLowerCase()),
   );
 
-  if (loading) return <div className="animate-pulse space-y-3">{[...Array(3)].map((_, i) => <div key={i} className="h-24 bg-slate-800 rounded-xl" />)}</div>;
+  if (loading) {
+    return (
+      <div className="space-y-3 pt-2">
+        {[1, 2, 3].map((i) => <div key={i} className="h-20 rounded-2xl animate-pulse" style={{ background: '#111' }} />)}
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <h2 className="text-xl font-bold text-white mb-4">Postos de Recarga</h2>
-      {error && <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">{error}</div>}
-      <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-        <input placeholder="Buscar por nome, endereco ou cidade..." value={search} onChange={e => setSearch(e.target.value)} className="input-field pl-10" />
+    <div className="space-y-4">
+      <h1 className="text-xl font-bold text-white">Postos de Recarga</h1>
+
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+        <input
+          placeholder="Buscar por nome, endereco..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="w-full rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-slate-500 outline-none"
+          style={{ background: '#111', border: '1px solid #1f1f1f' }}
+        />
       </div>
-      {selected && (
-        <div className="bg-slate-900 border border-emerald-500/20 rounded-xl p-4 mb-4">
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <h3 className="text-white font-bold text-lg">{selected.name}</h3>
-              <p className="text-slate-400 text-sm">{selected.address} - {selected.city}/{selected.state}</p>
-              {selected.tariff && <p className="mt-1 text-xs text-emerald-400">R$ {Number(selected.tariff.pricePerKwh).toFixed(2)}/kWh</p>}
-            </div>
-            <button onClick={() => setSelected(null)} className="text-slate-400 hover:text-white text-lg">&times;</button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="bg-slate-800 rounded-lg p-3">
-              <p className="text-slate-400 text-xs mb-1">Carregadores disponiveis</p>
-              <p className="text-white font-bold text-lg">{selected._count?.chargers || selected.chargers?.length || 0}</p>
-            </div>
-            <a href={`https://www.google.com/maps/dir/?api=1&destination=${selected.latitude},${selected.longitude}`} target="_blank" className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg p-3 flex items-center justify-center gap-2 text-sm font-medium"><Navigation size={16} /> Como chegar</a>
-          </div>
-          <div className="mt-4 space-y-2">
-            <p className="text-sm font-medium text-white">Escolha um carregador</p>
-            {(selected.chargers || []).map((charger) => (
-              <div key={charger.id} className="flex items-center justify-between rounded-lg bg-slate-800 p-3">
-                <div><p className="text-sm text-white">{charger.serialNumber}</p><p className="text-xs text-slate-400">{charger.powerKw} kW · {charger.status}</p></div>
-                <Link href={`/portal/charging?station=${encodeURIComponent(selected.id)}&charger=${encodeURIComponent(charger.id)}`} className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-medium text-white disabled:opacity-50"><Play size={13} /> Iniciar</Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+
       {filtered.length === 0 ? (
-        <div className="text-center py-12 text-slate-500"><MapPin className="mx-auto mb-3" size={40} /><p>Nenhum posto encontrado</p></div>
+        <div className="text-center py-16">
+          <MapPin className="mx-auto mb-3 text-slate-700" size={40} />
+          <p className="text-slate-500 text-sm">Nenhum posto encontrado</p>
+        </div>
       ) : (
         <div className="space-y-3">
-          {filtered.map((s) => (
-            <button key={s.id} onClick={() => setSelected(s)} className="w-full text-left bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl p-4 transition-colors">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0 mt-0.5"><Zap className="text-emerald-400" size={20} /></div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-medium">{s.name}</p>
-                  <p className="text-slate-400 text-sm truncate">{s.address} - {s.city}/{s.state}</p>
-                  <span className="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full mt-1 inline-block">{s._count?.chargers || s.chargers?.length || 0} carregador(es)</span>
+          {filtered.map((station) => {
+            const onlineCount = station.chargers?.filter((c) => c.status === 'ONLINE').length || 0;
+            const totalCount = station.chargers?.length || 0;
+            return (
+              <button
+                key={station.id}
+                onClick={() => setSelected(selected?.id === station.id ? null : station)}
+                className="w-full text-left rounded-2xl p-4 active:scale-[0.98] transition-transform"
+                style={{ background: '#111', border: `1px solid ${selected?.id === station.id ? '#10b98133' : '#1f1f1f'}` }}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-bold text-base">{station.name}</p>
+                    <p className="text-slate-400 text-xs mt-0.5">{station.address}</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                    <span className={`h-2 w-2 rounded-full ${onlineCount > 0 ? 'bg-emerald-400' : 'bg-slate-600'}`} />
+                    <span className="text-xs text-slate-400">{onlineCount}/{totalCount}</span>
+                  </div>
                 </div>
-                <Navigation className="text-slate-500 flex-shrink-0" size={16} />
-              </div>
-            </button>
-          ))}
+                <div className="flex items-center gap-3 text-xs text-slate-500">
+                  {station.tariff && (
+                    <span className="flex items-center gap-1"><Zap size={10} className="text-emerald-400" /> R$ {Number(station.tariff.pricePerKwh).toFixed(2)}/kWh</span>
+                  )}
+                  {station.city && <span>{station.city}</span>}
+                </div>
+
+                {selected?.id === station.id && (
+                  <div className="mt-3 pt-3 space-y-3" style={{ borderTop: '1px solid #1f1f1f' }}>
+                    {station.chargers?.map((charger) => (
+                      <div key={charger.id} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className={`h-2 w-2 rounded-full ${charger.status === 'ONLINE' ? 'bg-emerald-400' : 'bg-slate-600'}`} />
+                          <span className="text-white text-sm">{charger.model || charger.id.slice(-6)}</span>
+                          <span className="text-slate-500 text-xs">{charger.powerKw}kW</span>
+                        </div>
+                        {charger.status === 'ONLINE' ? (
+                          <Link
+                            href={`/portal/charging?station=${station.id}&charger=${charger.id}${vehicleId ? `&vehicle=${vehicleId}` : ''}`}
+                            className="flex items-center gap-1 text-emerald-400 text-xs font-medium px-3 py-1.5 rounded-lg"
+                            style={{ background: '#10b98115' }}
+                          >
+                            Recargar <ChevronRight size={14} />
+                          </Link>
+                        ) : (
+                          <span className="text-slate-600 text-xs px-3 py-1.5">Offline</span>
+                        )}
+                      </div>
+                    ))}
+                    {station.latitude && station.longitude && (
+                      <a
+                        href={`https://www.google.com/maps/dir/?api=1&destination=${station.latitude},${station.longitude}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 w-full text-blue-400 text-xs py-2 rounded-lg"
+                        style={{ background: '#1e40af15' }}
+                      >
+                        <Navigation size={14} /> Como chegar
+                      </a>
+                    )}
+                  </div>
+                )}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
