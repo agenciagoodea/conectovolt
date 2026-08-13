@@ -133,7 +133,25 @@ function ChargingContent() {
         return { ...prev, status: 'COMPLETED', energyKwh: data.energyKwh, amount: data.amount || prev.amount, endTime: String(data.endTime || '') };
       });
     });
-  }, [socket.onSessionUpdate, socket.onSessionCompleted]);
+
+    socket.onConnectorStatus((data) => {
+      setStation((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          chargers: prev.chargers?.map((c) => {
+            if (c.id !== data.chargerId) return c;
+            return {
+              ...c,
+              connectors: c.connectors?.map((conn) =>
+                conn.id === data.connectorId ? { ...conn, status: data.status } : conn
+              ),
+            };
+          }),
+        };
+      });
+    });
+  }, [socket.onSessionUpdate, socket.onSessionCompleted, socket.onConnectorStatus]);
 
   useEffect(() => {
     if (!session || session.status !== 'ACTIVE') return;
@@ -264,20 +282,41 @@ function ChargingContent() {
             </select>
           </div>
 
-          {(charger?.connectors || []).length > 1 && (
+          {(charger?.connectors || []).length > 0 && (
             <div>
               <label className="block text-xs text-slate-400 mb-1.5">Conector</label>
-              <select
-                value={connectorId}
-                onChange={(e) => setConnectorId(e.target.value)}
-                className="w-full rounded-xl py-3 px-4 text-sm text-white outline-none appearance-none"
-                style={{ background: '#0a0a0a', border: '1px solid #1f1f1f' }}
-              >
-                <option value="">Automatico</option>
-                {charger?.connectors?.map((c) => (
-                  <option key={c.id} value={c.id}>{c.type} · {c.status}</option>
-                ))}
-              </select>
+              <div className="flex gap-2 flex-wrap">
+                {(charger?.connectors || []).map((c) => {
+                  const isSelected = connectorId === c.id;
+                  const isAvailable = c.status === 'AVAILABLE';
+                  const isCharging = c.status === 'CHARGING';
+                  const isFaulted = c.status === 'FAULT' || c.status === 'FAULTED';
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      disabled={!isAvailable}
+                      onClick={() => setConnectorId(c.id)}
+                      className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all active:scale-[0.97]"
+                      style={{
+                        background: isSelected ? '#10b98125' : '#0a0a0a',
+                        border: `1.5px solid ${isSelected ? '#10b981' : isAvailable ? '#1f1f1f' : isCharging ? '#f59e0b44' : isFaulted ? '#ef444444' : '#1f1f1f'}`,
+                        color: isSelected ? '#10b981' : isAvailable ? '#e2e8f0' : '#64748b',
+                        opacity: !isAvailable && !isSelected ? 0.6 : 1,
+                      }}
+                    >
+                      <Plug size={14} className={isSelected ? 'text-emerald-400' : isAvailable ? 'text-slate-400' : isCharging ? 'text-amber-400' : 'text-slate-600'} />
+                      <span>{c.type}</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{
+                        background: isAvailable ? '#10b98115' : isCharging ? '#f59e0b15' : isFaulted ? '#ef444415' : '#6b728015',
+                        color: isAvailable ? '#10b981' : isCharging ? '#f59e0b' : isFaulted ? '#ef4444' : '#6b7280',
+                      }}>
+                        {isAvailable ? 'Livre' : isCharging ? 'Em uso' : isFaulted ? 'Defeito' : 'Indisp.'}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
 

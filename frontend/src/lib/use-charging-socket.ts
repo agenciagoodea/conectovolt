@@ -22,6 +22,12 @@ export interface ChargerStatusUpdate {
   status: string;
 }
 
+export interface ConnectorStatusUpdate {
+  chargerId: string;
+  connectorId: string;
+  status: string;
+}
+
 export interface ConnectorTelemetry {
   chargerId: string;
   connectorId: string;
@@ -42,6 +48,7 @@ export function useChargingSocket() {
     onSessionStarted?: (data: SessionUpdate) => void;
     onSessionCompleted?: (data: SessionUpdate) => void;
     onChargerStatus?: (data: ChargerStatusUpdate) => void;
+    onConnectorStatus?: (data: ConnectorStatusUpdate) => void;
     onConnectorTelemetry?: (data: ConnectorTelemetry) => void;
   }>({});
 
@@ -95,6 +102,10 @@ export function useChargingSocket() {
       handlersRef.current.onChargerStatus?.(data);
     });
 
+    socket.on('connector:status', (data: ConnectorStatusUpdate) => {
+      handlersRef.current.onConnectorStatus?.(data);
+    });
+
     socket.on('connector:telemetry', (data: ConnectorTelemetry) => {
       handlersRef.current.onConnectorTelemetry?.(data);
     });
@@ -130,6 +141,10 @@ export function useChargingSocket() {
     handlersRef.current.onChargerStatus = handler;
   }, []);
 
+  const onConnectorStatus = useCallback((handler: (data: ConnectorStatusUpdate) => void) => {
+    handlersRef.current.onConnectorStatus = handler;
+  }, []);
+
   const onConnectorTelemetry = useCallback((handler: (data: ConnectorTelemetry) => void) => {
     handlersRef.current.onConnectorTelemetry = handler;
   }, []);
@@ -142,6 +157,7 @@ export function useChargingSocket() {
     onSessionStarted,
     onSessionCompleted,
     onChargerStatus,
+    onConnectorStatus,
     onConnectorTelemetry,
   };
 }

@@ -93,7 +93,24 @@ export default function StationsPage() {
         };
       });
     });
-  }, [socket.onChargerStatus]);
+
+    socket.onConnectorStatus((data) => {
+      const updateConnectors = (station: Station) => ({
+        ...station,
+        chargers: station.chargers?.map((c) => {
+          if (c.id !== data.chargerId) return c;
+          return {
+            ...c,
+            connectors: c.connectors?.map((conn) =>
+              conn.id === data.connectorId ? { ...conn, status: data.status } : conn
+            ),
+          };
+        }),
+      });
+      setStations((prev) => prev.map(updateConnectors));
+      setSelected((prev) => (prev ? updateConnectors(prev) : null));
+    });
+  }, [socket.onChargerStatus, socket.onConnectorStatus]);
 
   const filtered = stations.filter(
     (s) => !filter || s.name.toLowerCase().includes(filter.toLowerCase()) || s.address.toLowerCase().includes(filter.toLowerCase()) || (s.city || '').toLowerCase().includes(filter.toLowerCase()),
@@ -194,14 +211,28 @@ export default function StationsPage() {
                           </div>
 
                           {charger.connectors && charger.connectors.length > 0 && (
-                            <div className="flex gap-2 mb-2">
+                            <div className="flex gap-2 mb-2 flex-wrap">
                               {charger.connectors.map((conn) => {
                                 const connStatus = CONNECTOR_STATUS[conn.status] || CONNECTOR_STATUS.UNKNOWN;
+                                const isAvailable = conn.status === 'AVAILABLE';
                                 return (
-                                  <div key={conn.id} className="flex items-center gap-1.5 px-2 py-1 rounded-lg" style={{ background: `${connStatus.color}10` }}>
-                                    <Plug size={10} style={{ color: connStatus.color }} />
-                                    <span className="text-[10px] font-medium" style={{ color: connStatus.color }}>{connStatus.label}</span>
-                                  </div>
+                                  <button
+                                    key={conn.id}
+                                    disabled={!isAvailable}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all active:scale-[0.97]"
+                                    style={{
+                                      background: `${connStatus.color}10`,
+                                      border: `1.5px solid ${isAvailable ? connStatus.color + '44' : connStatus.color + '22'}`,
+                                      color: connStatus.color,
+                                      opacity: isAvailable ? 1 : 0.7,
+                                    }}
+                                  >
+                                    <Plug size={12} />
+                                    <span>{conn.type}</span>
+                                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: connStatus.color }} />
+                                    <span className="text-[10px]">{connStatus.label}</span>
+                                  </button>
                                 );
                               })}
                             </div>

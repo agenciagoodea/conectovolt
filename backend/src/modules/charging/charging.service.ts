@@ -204,14 +204,8 @@ export class ChargingService {
     }
 
     const finalEnergy = dto.energyKwh !== undefined
-      ? dto.energyKwh
+      ? Math.max(dto.energyKwh, Number(session.energyKwh))
       : Number(session.energyKwh);
-
-    if (finalEnergy < Number(session.energyKwh)) {
-      throw new BadRequestException(
-        'Energy consumption cannot decrease during a session',
-      );
-    }
 
     const tariff = await this.getSessionTariff(sessionId);
     const amount = finalEnergy * Number(tariff.pricePerKwh);
